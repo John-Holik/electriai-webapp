@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Python (for compute_embeddings.py)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Local secrets - never commit
+.env
+.env.local
+secrets.json
+
+# Optional: local-only key file pattern
+# If you keep a local copy of app.js with the real key as app.local.js, ignore it
+*.local.js

@@ -1,0 +1,149 @@
+ID,AI Model Categories,AI Model,Area of Construction
+1,Traditional ML for Prediction,"FP-Growth, ARM (Association Rule Mining)",BIM and Digital Twins
+2,Optimization for Design,Genetic Algorithm,Design Automation and Optimization
+3,Hybrid Approaches,"ANN, Fuzzy-AHP",Cost Estimation and Financial Management
+4,Traditional ML for Prediction,"LM-ANN, ANN",Cost Estimation and Financial Management
+5,Traditional ML for Prediction,"Genetic Algorithm, Multiple Regression, CBR (Case-Based Reasoning)",Cost Estimation and Financial Management
+6,No Specific AI Model / Review Studies,Not applicable,Safety and Risk Management
+7,Deep Learning for Visual Recognition,ResNet-18,Safety and Risk Management
+8,Deep Learning for Visual Recognition,"EfficientNet, DNN",Equipment and Machinery Operations
+9,NLP for Documents,GPT-4o,Sustainability and Environmental Impact
+10,Hybrid Approaches,Belief Rule-Based,Safety and Risk Management
+11,Optimization for Design,"Genetic Algorithm, PSO, ICA",Design Automation and Optimization
+12,Traditional ML for Prediction,"LSTM, XGBoost, SVR, BAS-BP, Isolation Forest",Equipment and Machinery Operations
+13,Traditional ML for Prediction,"XGBoost, Random Forest, SVM, Logistic Regression",Safety and Risk Management
+14,Hybrid Approaches,Fuzzy set theory,Project Planning and Scheduling
+15,Deep Learning for Visual Recognition,YOLOv7-s,Project Planning and Scheduling
+16,Traditional ML for Prediction,"Random Forest, Decision Tree",Project Planning and Scheduling
+17,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+18,Traditional ML for Prediction,k-means,BIM and Digital Twins
+19,Deep Learning for Visual Recognition,YOLOv5m,Quality Control and Inspection
+20,Traditional ML for Prediction,"ANN, CBR (Case-Based Reasoning)",Collaboration and Knowledge Management
+21,Optimization for Design,"ABC (Artificial Bee Colony), EMARS, MARS, SVM, BPNN, RBFNN",Specialized Engineering Analysis
+22,Traditional ML for Prediction,"Random Forest, Decision Tree, LSSVM, SVM, BPNN, KNN, Linear Regression, LSMBM",Cost Estimation and Financial Management
+23,Hybrid Approaches,"Genetic Algorithm, k-means, Fuzzy Logic, EFNIM",Cost Estimation and Financial Management
+24,Sensor/IoT Integration,"NN-LSTM, LSTM, LSSVM, SVM, BPNN, FNN",Project Planning and Scheduling
+25,Sensor/IoT Integration,"GloVe, LSTM, GRU, SOS (Symbiotic Organisms Search), Decision Tree, SVM, KNN, Naive Bayes, Logistic Regression",Safety and Risk Management
+26,Sensor/IoT Integration,"SBiGRU, NN-LSTM, BiGRU, LSTM, GRU, SOS (Symbiotic Organisms Search), LSSVM, SVM",Cost Estimation and Financial Management
+27,Traditional ML for Prediction,"Genetic Algorithm, ANN, Multiple Regression, Nonlinear Regression, CBR (Case-Based Reasoning)",Cost Estimation and Financial Management
+28,Hybrid Approaches,ANFIS,Sustainability and Environmental Impact
+29,Generative AI Emergence,"YOLOv10, SDXL 1.0, ControlNet, CLIP, GPT-4o",Safety and Risk Management
+30,NLP for Documents,"Stanford CoreNLP, FSTN",BIM and Digital Twins
+31,Deep Learning for Visual Recognition,"Faster R-CNN, Disp R-CNN, SSD, YOLOv5-x, YOLOv3, YOLOX-s, YoLoStereo3D, SMOKE, FCOS3D, MonoFlex, ImVoxelNet, DSGN++, DSGN",Safety and Risk Management
+32,No Specific AI Model / Review Studies,Not applicable,Safety and Risk Management
+33,Deep Learning for Visual Recognition,Image recognition (model not specified),Quality Control and Inspection
+34,NLP for Documents,"GPT-4 (1106-preview), o1-mini, Claude Sonnet 4, Gemini 2.5 Flash, Mistral, Codestral",BIM and Digital Twins
+35,Deep Learning for Visual Recognition,"VGG-16, CNN",Design Automation and Optimization
+36,Deep Learning for Visual Recognition,CNN,Safety and Risk Management
+37,Traditional ML for Prediction,Linear Regression,Equipment and Machinery Operations
+38,No Specific AI Model / Review Studies,Not applicable,Advanced Manufacturing and Robotics
+39,Traditional ML for Prediction,Random Forest,Sustainability and Environmental Impact
+40,No Specific AI Model / Review Studies,Not applicable,Advanced Manufacturing and Robotics
+41,Optimization for Design,"NSGA-II, Genetic Algorithm",Advanced Manufacturing and Robotics
+42,Traditional ML for Prediction,"XGBoost, Random Forest, SVM",Specialized Engineering Analysis
+43,Optimization for Design,Q-learning,Cost Estimation and Financial Management
+44,Optimization for Design,"TQL, DQN, Q-learning",Cost Estimation and Financial Management
+45,Optimization for Design,"Firefly Algorithm, LS-SVC, SVC, LM-ANN, SCG-ANN, RBP-ANN, ANN, BDA, RVM",Geotechnical and Underground Construction
+46,NLP for Documents,"GCN, GPT-3.5 Turbo, BART",Safety and Risk Management
+47,NLP for Documents,"Word2Vec, fastText, LSA (Latent Semantic Analysis), LDA (Latent Dirichlet Allocation), k-means, GMM",Project Planning and Scheduling
+48,Generative AI Emergence,"YOLOv6, OpenPose, VGG-19, EfficientNet-B0, SDXL 1.0, CLIP, CNN",Quality Control and Inspection
+49,NLP for Documents,"ChatGPT, Whisper",Safety and Risk Management
+50,No Specific AI Model / Review Studies,Not applicable,Cost Estimation and Financial Management
+51,NLP for Documents,"GPT-3.5 Turbo, GPT-3.5",Safety and Risk Management
+52,NLP for Documents,"BERT, Word2Vec, GloVe, spaCy",Cost Estimation and Financial Management
+53,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+54,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+55,Deep Learning for Visual Recognition,"ResNet-50, ResNet-18, VGG-19, AlexNet, CNN",Safety and Risk Management
+56,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+57,Optimization for Design,"NSGA-II, Genetic Algorithm",Design Automation and Optimization
+58,Optimization for Design,MDP,Design Automation and Optimization
+59,Deep Learning for Visual Recognition,Mask R-CNN,Quality Control and Inspection
+60,Traditional ML for Prediction,Logistic Regression,Quality Control and Inspection
+61,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+62,Traditional ML for Prediction,ANN,Design Automation and Optimization
+63,Deep Learning for Visual Recognition,"Cascade R-CNN, ResNet-50",Quality Control and Inspection
+64,Deep Learning for Visual Recognition,"SSD, YOLOv5, YOLOv8, YOLOv4, YOLOv3, VGG-16, EfficientDet-d0, Transfer Learning",Safety and Risk Management
+65,Generative AI Emergence,"YOLOv5s, Stable Diffusion",Safety and Risk Management
+66,Traditional ML for Prediction,SVM,Design Automation and Optimization
+67,Deep Learning for Visual Recognition,"ST-GCN, YOLOv8, AlphaPose, LSTM, KNN, CNN",Safety and Risk Management
+68,Hybrid Approaches,"Genetic Algorithm, Fuzzy Logic, EFNIM",Collaboration and Knowledge Management
+69,Deep Learning for Visual Recognition,YOLO,Safety and Risk Management
+70,NLP for Documents,GPT-4,Sustainability and Environmental Impact
+71,Deep Learning for Visual Recognition,"Faster R-CNN, Mask R-CNN, YOLO, ResNet-50, VGG-16, Xception, LSTM, SVM, DCNN, CNN",Safety and Risk Management
+72,NLP for Documents,GPT-4o,BIM and Digital Twins
+73,Generative AI Emergence,"YOLOv8n, Stable Diffusion, DALL-E, Midjourney",Safety and Risk Management
+74,No Specific AI Model / Review Studies,Not applicable,Quality Control and Inspection
+75,Graph-Based BIM,"GCN, Word2Vec",Collaboration and Knowledge Management
+76,Generative AI Emergence,"ResNet, U-Net, CGAN",Project Planning and Scheduling
+77,Graph-Based BIM,"GraphSAGE, GATConv, GAT, GNN",Design Automation and Optimization
+78,NLP for Documents,"DeepSeek, ERNIE Bot, Doubao, Baidu AI",Geotechnical and Underground Construction
+79,No Specific AI Model / Review Studies,Not applicable,Advanced Manufacturing and Robotics
+80,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+81,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+82,No Specific AI Model / Review Studies,Not applicable,Project Planning and Scheduling
+83,Optimization for Design,"LSTM, GRU, DQN, Q-learning, DDPG, PPO, XGBoost, SVM, ELM, CNN",Geotechnical and Underground Construction
+84,Optimization for Design,"LSTM, GRU, TD3, DDPG, PPO, CNN",Geotechnical and Underground Construction
+85,Traditional ML for Prediction,"IGWO, Random Forest, SVR, DNN, Transfer Learning",Geotechnical and Underground Construction
+86,No Specific AI Model / Review Studies,Not applicable,Geotechnical and Underground Construction
+87,NLP for Documents,"Mask R-CNN, CLIP, GPT-4o mini, GPT-4o, GPT-3.5 Turbo, Claude 3.5 Sonnet, Claude 3.5 Haiku, DeepSeek-V3, LLaVA, InstructBLIP, SemanticSAM",Quality Control and Inspection
+88,No Specific AI Model / Review Studies,Not applicable,Geotechnical and Underground Construction
+89,Deep Learning for Visual Recognition,"DDETR, DINO, DDQ, YOLOv7, HRNet, SimCC, ViTPose, InternImage-L",Safety and Risk Management
+90,Deep Learning for Visual Recognition,"YOLOv8, ResNet-50, Bayesian Network, CNN",Project Planning and Scheduling
+91,NLP for Documents,"GPT-4, ChatGPT-4",Safety and Risk Management
+92,Deep Learning for Visual Recognition,"Faster R-CNN, Posenet",Safety and Risk Management
+93,NLP for Documents,"GPT-4, GPT-3.5, Llama2-70B, Llama2-7B, Gemini",Safety and Risk Management
+94,Traditional ML for Prediction,"Genetic Algorithm, ANN, Symbolic Regression",Specialized Engineering Analysis
+95,Traditional ML for Prediction,"Random Forest, M5P model tree, SVM, ANN",Cost Estimation and Financial Management
+96,Optimization for Design,"DDPG, PPO, MPC",Equipment and Machinery Operations
+97,Traditional ML for Prediction,"LSTM, LightGBM, CatBoost, AdaBoost, Gradient Boosting, Extra Trees, CBR (Case-Based Reasoning)",Project Planning and Scheduling
+98,NLP for Documents,"GPT-4, ChatGPT",Safety and Risk Management
+99,Deep Learning for Visual Recognition,"Faster R-CNN, VTransE, VGG-16",Collaboration and Knowledge Management
+100,No Specific AI Model / Review Studies,Not applicable,Project Planning and Scheduling
+101,NLP for Documents,ChatGPT 4.5,Safety and Risk Management
+102,Traditional ML for Prediction,"XGBoost, NGBoost, CART, KNN",Project Planning and Scheduling
+103,No Specific AI Model / Review Studies,Not applicable,Equipment and Machinery Operations
+104,Deep Learning for Visual Recognition,"SSD, YOLOv5",Quality Control and Inspection
+105,No Specific AI Model / Review Studies,Not applicable,Cost Estimation and Financial Management
+106,Hybrid Approaches,"Multiple Linear Regression, Mamdani FIS, Fuzzy Inference System",Project Planning and Scheduling
+107,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+108,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+109,Traditional ML for Prediction,ANN,Cost Estimation and Financial Management
+110,NLP for Documents,"ChatGPT-3.5, InstructGPT",Safety and Risk Management
+111,NLP for Documents,"GPT-4, ChatGPT, Whisper",Safety and Risk Management
+112,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+113,NLP for Documents,"RoBERTa, BERT, Word2Vec, TextRank, LexRank, XGBoost, Random Forest, SVM, KNN",Collaboration and Knowledge Management
+114,Traditional ML for Prediction,"XGBoost, DNN, KNN",Quality Control and Inspection
+115,Traditional ML for Prediction,BPNN,Cost Estimation and Financial Management
+116,Optimization for Design,"PDDL planners (POPF, LPG)",Advanced Manufacturing and Robotics
+117,Graph-Based BIM,"GNN, Simulated Annealing, KNN",Project Planning and Scheduling
+118,Deep Learning for Visual Recognition,"ViT-base, ResNet-101, DeepLabv3+, U-Net, SAM (Segment Anything Model)",Sustainability and Environmental Impact
+119,No Specific AI Model / Review Studies,Not applicable,BIM and Digital Twins
+120,Traditional ML for Prediction,"Extra Trees, Random Forest",Cost Estimation and Financial Management
+121,Traditional ML for Prediction,"XGBoost, Histogram-based Gradient Boosting, Gradient Boosting, Random Forest, Decision Tree, ANN, CNN",Design Automation and Optimization
+122,Deep Learning for Visual Recognition,CNN,BIM and Digital Twins
+123,NLP for Documents,"GPT-3.5, ChatGPT",Safety and Risk Management
+124,Traditional ML for Prediction,"Genetic Algorithm, PSO, Gradient Boosting, Random Forest, DNN, Multivariate Regression",Specialized Engineering Analysis
+125,NLP for Documents,"RoBERTa, BERT, BiLSTM, RNN",BIM and Digital Twins
+126,Sensor/IoT Integration,"CX-GRU, LSTM, XGBoost, SVR, MLP",Geotechnical and Underground Construction
+127,Traditional ML for Prediction,"BPNN, MLP, ANN, Multiple Linear Regression",Specialized Engineering Analysis
+128,Deep Learning for Visual Recognition,"mSRCNN, SRCNN, FSRCNN, ESPCN",Geotechnical and Underground Construction
+129,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+130,No Specific AI Model / Review Studies,Not applicable,Sustainability and Environmental Impact
+131,No Specific AI Model / Review Studies,Not applicable,Safety and Risk Management
+132,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+133,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+134,Traditional ML for Prediction,"LM-ANN, BPNN",Quality Control and Inspection
+135,NLP for Documents,"GATE (text engineering), POS tagging, NER",Collaboration and Knowledge Management
+136,Optimization for Design,"ChatGPT-4, PPO, DRL, DIL (Deep Imitation Learning), GAIL, Behavioral Cloning, PointNet++",Advanced Manufacturing and Robotics
+137,No Specific AI Model / Review Studies,Not applicable,Geotechnical and Underground Construction
+138,Hybrid Approaches,"Genetic Algorithm, ANFIS, Neuro-fuzzy",Design Automation and Optimization
+139,No Specific AI Model / Review Studies,Not applicable,Collaboration and Knowledge Management
+140,Generative AI Emergence,"Stable Diffusion 2.1, ControlNet, DALL-E 2, LayoutGPT, Holodeck, T5, CLIP",Design Automation and Optimization
+141,Deep Learning for Visual Recognition,"ResNet-152, ResNet-101, DenseNet-161, LSTM, CNN",Safety and Risk Management
+142,Deep Learning for Visual Recognition,"ResNet, VGG-16, Inception-ResNet",Advanced Manufacturing and Robotics
+143,Optimization for Design,"LSTM, DQN, TD3, DDPG",Geotechnical and Underground Construction
+144,Deep Learning for Visual Recognition,"Faster R-CNN, RT-DETR, DETR, CenterNet, YOLOv5, YOLOv7, YOLOv8, YOLOX, ViTDet, StyleGAN3",Advanced Manufacturing and Robotics
+145,Traditional ML for Prediction,"Hoeffding Tree, ROSE (ensemble)",Design Automation and Optimization
+146,Graph-Based BIM,"Mask2Former, GATv2, GAT, GCN, GNN, ASAP pooling, SAGPooling",Cost Estimation and Financial Management
+147,No Specific AI Model / Review Studies,Not applicable,Design Automation and Optimization
+148,NLP for Documents,"CoGAN, GAN, GPT-4, BERT, Ollama, Transformer-XL, Sentence Transformers, KGQA, BiGRU, NSGA-II, Genetic Algorithm, Reinforcement Learning, Random Forest",Design Automation and Optimization

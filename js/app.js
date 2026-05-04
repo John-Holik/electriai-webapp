@@ -356,7 +356,7 @@
               <div className="mb-6">
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">AI Assistant</p>
                 <h2 className="serif text-2xl sm:text-3xl font-semibold text-slate-900 leading-tight">
-                  Ask the corpus anything
+                  Ask the reviewed literature
                 </h2>
                 <p className="text-slate-600 mt-2 leading-relaxed text-sm sm:text-base">
                   Free-form Q&amp;A grounded in the {data.length} reviewed papers. Each question retrieves the most relevant papers via semantic search and asks Gemini to answer with citations. Click any citation chip in the answer or any paper in the references list to open its full record.

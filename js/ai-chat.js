@@ -1,24 +1,3 @@
-/* =========================================================
-   AI Chat (RAG-based Q&A)
-   ─────────────────────────────────────────────────────────
-   Free-form question answering grounded in the 148 reviewed
-   papers. Uses a Retrieval-Augmented Generation pattern:
-
-     1. paper_embeddings.json (pre-computed by Python script)
-        is loaded once at component mount.
-     2. When the user asks a question, we embed the question
-        via Gemini Embedding API, compute cosine similarity
-        with all paper embeddings, and select the top-k most
-        relevant papers.
-     3. Only those top-k paper summaries are sent to Gemini
-        along with the question, so each Q&A call costs
-        ~3-5K tokens regardless of corpus size.
-
-   ⚠️ TESTING MODE - Same security caveats as ai-assistant.js:
-   the API key is inlined client-side. Move to a Cloudflare
-   Worker proxy before public deployment.
-   ========================================================= */
-
 window.AppCharts = window.AppCharts || {};
 
 (function() {
@@ -472,7 +451,7 @@ python compute_embeddings.py`}</pre>
         <div className="bg-white border border-slate-200 rounded-lg p-5">
           <div className="flex items-baseline justify-between gap-3 mb-3">
             <div>
-              <h3 className="serif text-lg font-semibold text-slate-900">Ask the corpus</h3>
+              <h3 className="serif text-lg font-semibold text-slate-900">Ask the reviewed literature</h3>
               <p className="text-xs text-slate-500">
                 Question goes in. Top {CITED_K} most relevant papers become primary citations, {MENTIONED_K} more become supporting references, and {FURTHER_K} are surfaced as further reading. Embeddings cover {embeddings?.n_papers || 0} papers.
               </p>
@@ -595,7 +574,7 @@ python compute_embeddings.py`}</pre>
               {loading && (
                 <div className="bg-slate-50 border border-slate-200 px-4 py-3 rounded-lg text-sm text-slate-500 italic flex items-center gap-2">
                   <div className="inline-block w-3 h-3 border border-slate-300 border-t-slate-700 rounded-full animate-spin"></div>
-                  Searching corpus and generating answer…
+                  Searching the reviewed papers and generating answer…
                 </div>
               )}
               <div ref={messagesEndRef} />

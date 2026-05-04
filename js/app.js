@@ -1,27 +1,11 @@
-/* =========================================================
-   Main application: tab navigation, CSV loading, layout,
-   and React mount. To add a new chart:
-     1. Create a new file js/chart-foo.js that registers the
-        component on window.AppCharts.FooChart.
-     2. Add the script tag to index.html.
-     3. Render <FooChart .../> in a new ChartCard within the
-        Overview tab below.
-   ========================================================= */
-
 (function() {
   const { useState, useEffect, useMemo } = React;
   const { splitMulti, uniqueValues, countBy } = window.AppUtils;
   const { BarChart, YearChart, BubbleChart, SankeyChart, HeatmapChart, AIChat } = window.AppCharts;
   const { PaperCard, PaperModal, StatCard, ChartCard, FilterGroup } = window.AppComponents;
 
-  // ⚠️ TESTING ONLY - Inlined Gemini API key.
-  // Get one free at https://aistudio.google.com/app/apikey
-  // Anyone viewing this page source can read this key, so:
-  //   - Do NOT commit this file to a public Git repo with a real key
-  //   - Do NOT deploy publicly with the key inline
-  //   - Before deploying, replace this with a Cloudflare Worker proxy
-  //     and update GEMINI_GENERATE_ENDPOINT and GEMINI_EMBED_ENDPOINT
-  //     in js/ai-chat.js
+  const GEMINI_WORKER_BASE = 'cm-electriai-proxy.chauducanh.workers.dev';
+
   const GEMINI_API_KEY = 'YOUR_API_KEY_HERE';
 
   function App() {
@@ -381,6 +365,7 @@
               <AIChat
                 papersData={data}
                 apiKey={GEMINI_API_KEY}
+                workerBase={GEMINI_WORKER_BASE}
                 onPaperClick={(p) => setSelectedPaper(p)}
               />
             </div>

@@ -24,6 +24,10 @@ window.AppCharts = window.AppCharts || {};
 (function() {
   const { useState, useEffect, useRef } = React;
 
+  // ─── API endpoints ──────────────────────────────────────
+  // The component prefers a Cloudflare Worker proxy if `workerBase`
+  // prop is set. Otherwise it falls back to calling Gemini directly
+  // with `apiKey` (only suitable for local development).
   const GEMINI_GENERATE_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
   const GEMINI_EMBED_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent';
   // Three-tier retrieval strategy:
@@ -49,8 +53,15 @@ window.AppCharts = window.AppCharts || {};
   };
 
   // ─── Embedding API call ─────────────────────────────────
-  const embedQuestion = async (apiKey, text) => {
-    const res = await fetch(`${GEMINI_EMBED_ENDPOINT}?key=${encodeURIComponent(apiKey)}`, {
+  // If `workerBase` is set, posts to {workerBase}/api/embed and the
+  // Worker injects the API key server-side. Otherwise calls Gemini
+  // directly with `apiKey` (local development only).
+  const embedQuestion = async (workerBase, apiKey, text) => {
+    const useWorker = !!workerBase;
+    const url = useWorker
+      ? `${workerBase}/api/embed`
+      : `${GEMINI_EMBED_ENDPOINT}?key=${encodeURIComponent(apiKey)}`;
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -70,7 +81,7 @@ window.AppCharts = window.AppCharts || {};
   // ─── Generation API call ────────────────────────────────
   // citedPapers: top papers with full context (LLM should cite these)
   // mentionedPapers: supporting papers with compact context (LLM may cite if relevant)
-  const askGemini = async (apiKey, question, citedPapers, mentionedPapers, conversationHistory) => {
+  const askGemini = async (workerBase, apiKey, question, citedPapers, mentionedPapers, conversationHistory) => {
     // Full context block for top-tier cited papers
     const citedBlocks = citedPapers.map((p, i) => {
       const s = p.summary || {};
@@ -144,7 +155,11 @@ ${mentionedBlocks}`;
       contents.push({ role: 'user', parts: [{ text: systemContext + '\n\nUSER QUESTION: ' + question }] });
     }
 
-    const res = await fetch(`${GEMINI_GENERATE_ENDPOINT}?key=${encodeURIComponent(apiKey)}`, {
+    const useWorker = !!workerBase;
+    const url = useWorker
+      ? `${workerBase}/api/generate`
+      : `${GEMINI_GENERATE_ENDPOINT}?key=${encodeURIComponent(apiKey)}`;
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -167,7 +182,7 @@ ${mentionedBlocks}`;
   };
 
   // ─── Main component ─────────────────────────────────────
-  const AIChat = ({ papersData, apiKey, onPaperClick }) => {
+  const AIChat = ({ papersData, apiKey, workerBase, onPaperClick }) => {
     const [embeddings, setEmbeddings] = useState(null);
     const [embeddingError, setEmbeddingError] = useState(null);
     const [embeddingLoading, setEmbeddingLoading] = useState(true);
@@ -212,13 +227,15 @@ ${mentionedBlocks}`;
       return map;
     }, [papersData]);
 
-    const apiKeyConfigured = apiKey && apiKey !== 'YOUR_API_KEY_HERE' && apiKey.length > 10;
+    // Either a Worker proxy URL or a valid inlined API key allows us to call Gemini.
+    const apiConfigured = !!workerBase || (apiKey && apiKey !== 'YOUR_API_KEY_HERE' && apiKey.length > 10);
+    const usingWorker = !!workerBase;
 
     const submit = async () => {
       const q = question.trim();
       if (!q) return;
-      if (!apiKeyConfigured) {
-        setError('No Gemini API key configured. Open js/app.js and set GEMINI_API_KEY.');
+      if (!apiConfigured) {
+        setError('AI Assistant not configured. Set GEMINI_WORKER_BASE (production) or GEMINI_API_KEY (local) in js/app.js.');
         return;
       }
       if (!embeddings) {
@@ -236,7 +253,7 @@ ${mentionedBlocks}`;
 
       try {
         // Step 1: Embed the question
-        const queryVec = await embedQuestion(apiKey, q);
+        const queryVec = await embedQuestion(workerBase, apiKey, q);
         if (!queryVec || queryVec.length === 0) {
           throw new Error('Embedding API returned empty vector.');
         }
@@ -295,7 +312,7 @@ ${mentionedBlocks}`;
         // Step 3: Ask Gemini with retrieved context
         // Pass conversation history so follow-up questions work
         const history = messages.map(m => ({ role: m.role === 'user' ? 'user' : 'model', text: m.text }));
-        const answer = await askGemini(apiKey, q, citedDisambig, mentionedDisambig, history);
+        const answer = await askGemini(workerBase, apiKey, q, citedDisambig, mentionedDisambig, history);
 
         // Build the unified retrieved list with tier annotations.
         // Citation indices [1]-[CITED_K] are cited papers, [CITED_K+1]-[CITED_K+MENTIONED_K]
@@ -442,12 +459,12 @@ python compute_embeddings.py`}</pre>
 
     return (
       <div className="space-y-4">
-        {!apiKeyConfigured && (
+        {!apiConfigured && (
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-900">
-            <div className="font-semibold mb-1">API key not configured</div>
+            <div className="font-semibold mb-1">AI Assistant not configured</div>
             <div className="text-xs leading-relaxed">
-              Open <code className="bg-amber-100 px-1 rounded">js/app.js</code> and set
-              <code className="bg-amber-100 px-1 rounded mx-1">GEMINI_API_KEY</code>.
+              For production: set <code className="bg-amber-100 px-1 rounded">GEMINI_WORKER_BASE</code> in <code className="bg-amber-100 px-1 rounded">js/app.js</code> to your Cloudflare Worker URL.
+              For local testing only: set <code className="bg-amber-100 px-1 rounded">GEMINI_API_KEY</code> in the same file.
             </div>
           </div>
         )}
@@ -619,11 +636,11 @@ python compute_embeddings.py`}</pre>
               placeholder={messages.length === 0 ? "Ask anything about the 148 reviewed papers…" : "Follow up…"}
               rows={2}
               className="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 resize-none"
-              disabled={loading || !apiKeyConfigured}
+              disabled={loading || !apiConfigured}
             />
             <button
               onClick={submit}
-              disabled={loading || !question.trim() || !apiKeyConfigured}
+              disabled={loading || !question.trim() || !apiConfigured}
               className="px-4 py-2 text-sm font-medium bg-slate-900 text-white rounded-md hover:bg-slate-800 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed"
             >
               Ask

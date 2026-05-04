@@ -4,7 +4,7 @@
   const { BarChart, YearChart, BubbleChart, SankeyChart, HeatmapChart, AIChat } = window.AppCharts;
   const { PaperCard, PaperModal, StatCard, ChartCard, FilterGroup } = window.AppComponents;
 
-  const GEMINI_WORKER_BASE = 'cm-electriai-proxy.chauducanh.workers.dev';
+  const GEMINI_WORKER_BASE = 'https://cm-electriai-proxy.chauducanh.workers.dev';
 
   const GEMINI_API_KEY = 'YOUR_API_KEY_HERE';
 

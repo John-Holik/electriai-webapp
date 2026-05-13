@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI in Construction Management — Systematic Review Database</title>
+  <title>ElectriAI — YouTube Q&A Knowledge for Electrical Contractors</title>
+  <meta name="description" content="Companion site for the ElectriAI Research paper: 794 YouTube videos and 18,000 viewer Q&A comments on electrical-construction topics, with figures, a labeled comment explorer, and a chatbot grounded in a markdown knowledge base." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
@@ -30,18 +31,17 @@
 
   <!--
     The application is split across multiple files for maintainability.
-    Each file registers its components onto window.AppComponents, and
+    Each file registers its components onto a window.App* namespace, and
     app.js reads from there. All scripts use type="text/babel" so that
-    Babel transpiles JSX in the browser. Add a new chart by creating a
+    Babel transpiles JSX in the browser. Add a new tab by creating a
     new file in js/ and registering it the same way.
   -->
   <script src="./js/utils.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/chart-bar.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/chart-bubble.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/chart-sankey.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/chart-heatmap.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/ai-chat.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/paper-components.js" type="text/babel" data-presets="react"></script>
+  <script src="./js/components.js" type="text/babel" data-presets="react"></script>
+  <script src="./js/overview.js" type="text/babel" data-presets="react"></script>
+  <script src="./js/findings.js" type="text/babel" data-presets="react"></script>
+  <script src="./js/comments.js" type="text/babel" data-presets="react"></script>
+  <script src="./js/chat.js" type="text/babel" data-presets="react"></script>
   <script src="./js/app.js" type="text/babel" data-presets="react"></script>
 </body>
 </html>

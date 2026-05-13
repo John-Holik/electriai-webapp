@@ -83,7 +83,9 @@ Commit the resulting JSON. The site reads everything from static files at load t
 
 ## Deploying
 
-The site is two pieces: a static front-end (Cloudflare Pages) and a Worker that proxies Gemini calls (Cloudflare Workers).
+> **Status: deferred.** The site currently runs locally only — the Cloudflare account, custom domain, and Worker secrets aren't set up yet. The instructions below are the planned path for when those details land.
+
+The deployed site is two pieces: a static front-end (Cloudflare Pages) and a Worker that proxies Gemini calls (Cloudflare Workers).
 
 ### 1. Worker
 

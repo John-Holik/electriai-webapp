@@ -338,13 +338,10 @@ Rules for your response:
           });
         });
 
-        // 5. Mark assistant message complete and attach references. If the
-        // stream produced no text, surface a useful explanation instead of
-        // an empty bubble.
+        // 5. Mark assistant message complete and attach references. Surface a
+        // friendly error if the model returned nothing.
         if (!result.text) {
-          const reason = result.finishReason ? ` (finish reason: ${result.finishReason})` : '';
-          const blocked = result.promptFeedback?.blockReason ? ` — prompt blocked: ${result.promptFeedback.blockReason}` : '';
-          setError(`Model returned no text${reason}${blocked}. See browser console for raw stream details.`);
+          setError('The model returned no text. Try rephrasing the question.');
         }
         setMessages((m) => {
           const next = m.slice();

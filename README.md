@@ -5,9 +5,9 @@ Companion website for the ElectriAI Research paper analyzing **794 YouTube video
 The site has four tabs:
 
 - **Overview** — Project summary, top-line stats, and the 10-class category schema (LV, HVAC, GBF, OCP, RE, DL, CRR, CISF, PDS, OTH).
-- **Findings** — All five visualizations from `notebooks/05_Visualizations.ipynb`: the knowledge-bottleneck bubble chart (interactive Plotly), theme dictionary frequency, transcript topics treemap, data-collection & comment-analysis panel.
-- **Comments** — Searchable, filterable browser over the 2,117-comment curated set (`data/processed/qualtrics_comments.csv`) with every label attached: category, themes, topic/sub-topic, Q&A excerpts and summaries, reply counts, video metadata.
-- **Wiki Chat** — RAG chatbot grounded in `knowledge_base/wiki/**/*.md`. Uses `gemini-embedding-001` (build-time) and `gemini-2.5-flash` (generation) via a Cloudflare Worker proxy. Cites video IDs and comment IDs from the underlying corpus.
+- **Findings** — Four visualizations from `notebooks/05_Visualizations.ipynb`: the knowledge-bottleneck bubble chart (interactive Plotly with an SVG fallback), theme dictionary frequency, transcript topics treemap, and a data-collection / comment-analysis panel.
+- **Comments** — Searchable, filterable browser over the 200-comment curated set (20 per category × 10, sourced from `data/processed/qualtrics_comments.csv`) with every label attached: category, themes, topic / sub-topic, Q&A excerpts and summaries, reply counts, and video metadata.
+- **Wiki Chat** — RAG chatbot grounded in `knowledge_base/wiki/**/*.md`. Uses `gemini-embedding-001` (build-time) and `gemini-2.5-flash` (generation). Local-first: calls the Gemini API directly from the browser with a dev key in `localStorage`. A Cloudflare Worker proxy is planned for public deployment (see "Deploying" below). Cites video IDs and comment IDs from the underlying corpus.
 
 ## Architecture
 

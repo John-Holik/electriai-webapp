@@ -56,15 +56,17 @@ python -m http.server 8000
 
 Or use VS Code's Live Server extension, or `npx http-server`.
 
-### Local-dev Gemini key (no Worker)
+Three tabs (Overview, Findings, Comments) work with no extra setup. The Wiki Chat tab needs a Gemini key.
 
-To exercise the Wiki Chat without standing up a Worker, paste a Gemini API key into `localStorage`:
+### Gemini dev key for Wiki Chat
+
+Paste a Google AI Studio key into `localStorage` once, then reload:
 
 ```js
-localStorage.setItem('GEMINI_DEV_KEY', '<your-free-tier-key>')
+localStorage.setItem('GEMINI_DEV_KEY', '<your-key>'); location.reload();
 ```
 
-The frontend will use the inline key instead of hitting `/api/*`. **Do not commit a key. Do not enable this on a deployed site.**
+The frontend will call the Gemini API directly from the browser. The key never leaves your machine. **Do not commit a key. Do not enable this path on a deployed site** — once the Cloudflare Worker is in place (see "Deploying"), the Worker holds the key as a secret and the browser stops needing one.
 
 ## Refreshing the data after notebook updates
 

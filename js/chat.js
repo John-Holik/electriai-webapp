@@ -79,7 +79,6 @@ window.AppChat = (function() {
       const errText = await res.text();
       throw new Error(`generate (${res.status}): ${errText.slice(0, 240)}`);
     }
-    const contentType = res.headers.get('content-type') || '';
     const reader = res.body.getReader();
     const decoder = new TextDecoder('utf-8');
     let buffer = '';
@@ -87,11 +86,9 @@ window.AppChat = (function() {
     let full = '';
     let lastFinishReason = null;
     let lastPromptFeedback = null;
-    let eventCount = 0;
-    let textDeltaCount = 0;
-    const rawEvents = [];
+    let sseEventCount = 0;
 
-    // Processes any complete events at the head of `buffer`. SSE events are
+    // Drains any complete events at the head of `buffer`. SSE events are
     // separated by a blank line; we tolerate both LF and CRLF endings.
     const drainEvents = () => {
       const events = buffer.split(/\r?\n\r?\n/);
@@ -101,16 +98,14 @@ window.AppChat = (function() {
         if (!line) continue;
         const payload = line.slice(5).trim();
         if (!payload || payload === '[DONE]') continue;
-        eventCount++;
+        sseEventCount++;
         try {
           const json = JSON.parse(payload);
-          if (rawEvents.length < 3) rawEvents.push(json);
           const cand = json?.candidates?.[0];
           const parts = cand?.content?.parts || [];
           for (const p of parts) {
             if (p.text) {
               full += p.text;
-              textDeltaCount++;
               onDelta(full);
             }
           }
@@ -135,41 +130,25 @@ window.AppChat = (function() {
       drainEvents();
     }
 
-    // Fallback: if SSE parsing produced no events, the body may have been
-    // returned as a JSON array (the non-SSE `streamGenerateContent` shape).
-    // Try parsing the entire raw body as JSON and walking the candidates.
-    if (eventCount === 0 && rawBody.trim()) {
+    // Fallback: if SSE parsing produced zero events, the body may have come
+    // back as a single JSON document (the non-SSE shape). Walk it directly.
+    if (sseEventCount === 0 && rawBody.trim()) {
       try {
         const parsed = JSON.parse(rawBody);
         const arr = Array.isArray(parsed) ? parsed : [parsed];
         for (const json of arr) {
-          if (rawEvents.length < 3) rawEvents.push(json);
           const cand = json?.candidates?.[0];
           const parts = cand?.content?.parts || [];
           for (const p of parts) {
             if (p.text) {
               full += p.text;
-              textDeltaCount++;
               onDelta(full);
             }
           }
           if (cand?.finishReason) lastFinishReason = cand.finishReason;
           if (json?.promptFeedback) lastPromptFeedback = json.promptFeedback;
-          eventCount++;
         }
-      } catch (e) { /* not JSON either — fall through to diagnostic */ }
-    }
-
-    // Diagnostic: when the stream completes with no visible text, surface
-    // enough state to debug from the browser console.
-    if (!full) {
-      console.warn('[ElectriAI chat] empty stream', {
-        eventCount, textDeltaCount, lastFinishReason, lastPromptFeedback,
-        contentType,
-        rawBodyLength: rawBody.length,
-        rawBodyHead: rawBody.slice(0, 600),
-        firstThreeEvents: rawEvents,
-      });
+      } catch (e) { /* not JSON either — caller will see empty text */ }
     }
     return { text: full, finishReason: lastFinishReason, promptFeedback: lastPromptFeedback };
   };

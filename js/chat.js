@@ -305,8 +305,8 @@ Rules for your response:
     const handleAsk = async () => {
       const question = input.trim();
       if (!question) return;
-      if (!devKeyAvailable) {
-        setError('No local Gemini dev key set. See instructions below the chat box.');
+      if (!apiReady) {
+        setError('Chat is not configured. Set the Worker URL in js/app.js for production, or paste a Gemini key into localStorage for local development.');
         return;
       }
       if (!embeddingsReady) {

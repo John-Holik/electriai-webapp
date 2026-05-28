@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI in Construction Management — Systematic Review Database</title>
+  <title>ElectriAI — YouTube Q&A Knowledge for Electrical Contractors</title>
+  <meta name="description" content="Companion site for the ElectriAI Research paper: 794 YouTube videos and 18,000 viewer Q&A comments on electrical-construction topics, with figures, a labeled comment explorer, and a chatbot grounded in a markdown knowledge base." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
@@ -12,6 +13,7 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-3.4.0.min.js"></script>
   <style>
     html { font-family: 'Inter', system-ui, sans-serif; }
     .serif { font-family: 'Source Serif 4', Georgia, serif; }
@@ -23,25 +25,133 @@
     .backdrop-blur-modal { backdrop-filter: blur(4px); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade { animation: fadeIn 200ms ease-out; }
+
+    /* drchau.homes site header (matches ElectriAI skeleton template) */
+    .drchau-navbar {
+      background-color: #0a192f;
+      padding: 0.86rem;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: Arial, sans-serif;
+    }
+    .drchau-navbar .logo img {
+      height: 25px;
+      width: auto;
+      display: block;
+    }
+    .drchau-navbar .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    .drchau-navbar .nav-links a {
+      color: white;
+      text-decoration: none;
+      transition: color 0.3s;
+      font-size: 1.15rem;
+    }
+    .drchau-navbar .nav-links a:hover { color: #ffd700; }
+    .drchau-navbar .menu-button {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .drchau-mobile-menu {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100vh;
+      background-color: #0a192f;
+      padding: 2rem;
+      font-size: 1rem;
+      font-family: Arial, sans-serif;
+      z-index: 60;
+    }
+    .drchau-mobile-menu a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 1rem 0;
+      border-bottom: 1px solid #1a2942;
+    }
+    .drchau-mobile-menu .close-button {
+      color: white;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 768px) {
+      .drchau-navbar .nav-links { display: none; }
+      .drchau-navbar .menu-button { display: block; }
+      .drchau-mobile-menu.active { display: block; }
+    }
   </style>
 </head>
 <body class="bg-stone-50 text-slate-900 antialiased">
+  <nav class="drchau-navbar">
+    <button class="menu-button" aria-label="Open menu">&#9776;</button>
+    <a href="https://www.drchau.homes/" class="logo">
+      <img src="DrChauHomeslogo.jpg" alt="DrChau.homes Logo">
+    </a>
+    <div class="nav-links">
+      <a href="https://www.drchau.homes/">Home</a>
+      <a href="https://www.drchau.homes/apps">Apps</a>
+      <a href="https://www.drchau.homes/teaching">Teaching</a>
+      <a href="https://www.drchau.homes/bio">Bio</a>
+      <a href="https://www.drchau.homes/publications">Publications</a>
+      <a href="https://www.drchau.homes/electriai-lab">ElectriAI+ Lab</a>
+      <a href="https://www.drchau.homes/office-hours-contact">Office Hours &amp; Contact</a>
+    </div>
+  </nav>
+
+  <div class="drchau-mobile-menu">
+    <button class="close-button" aria-label="Close menu">X</button>
+    <a href="https://www.drchau.homes/">Home</a>
+    <a href="https://www.drchau.homes/apps">Apps</a>
+    <a href="https://www.drchau.homes/teaching">Teaching</a>
+    <a href="https://www.drchau.homes/bio">Bio</a>
+    <a href="https://www.drchau.homes/publications">Publications</a>
+    <a href="https://www.drchau.homes/electriai-lab">ElectriAI+ Lab</a>
+    <a href="https://www.drchau.homes/office-hours-contact">Office Hours &amp; Contact</a>
+  </div>
+
+  <script>
+    (function () {
+      var menuButton = document.querySelector('.drchau-navbar .menu-button');
+      var closeButton = document.querySelector('.drchau-mobile-menu .close-button');
+      var mobileMenu = document.querySelector('.drchau-mobile-menu');
+      if (menuButton && mobileMenu) {
+        menuButton.addEventListener('click', function () { mobileMenu.classList.add('active'); });
+      }
+      if (closeButton && mobileMenu) {
+        closeButton.addEventListener('click', function () { mobileMenu.classList.remove('active'); });
+      }
+    })();
+  </script>
+
   <div id="root"></div>
 
   <!--
     The application is split across multiple files for maintainability.
-    Each file registers its components onto window.AppComponents, and
+    Each file registers its components onto a window.App* namespace, and
     app.js reads from there. All scripts use type="text/babel" so that
-    Babel transpiles JSX in the browser. Add a new chart by creating a
+    Babel transpiles JSX in the browser. Add a new tab by creating a
     new file in js/ and registering it the same way.
   -->
   <script src="./js/utils.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/chart-bar.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/chart-bubble.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/chart-sankey.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/chart-heatmap.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/ai-chat.js" type="text/babel" data-presets="react"></script>
-  <script src="./js/paper-components.js" type="text/babel" data-presets="react"></script>
+  <script src="./js/components.js" type="text/babel" data-presets="react"></script>
+  <script src="./js/research.js" type="text/babel" data-presets="react"></script>
+  <script src="./js/comments.js" type="text/babel" data-presets="react"></script>
+  <script src="./js/chat.js" type="text/babel" data-presets="react"></script>
+  <script src="./js/about.js" type="text/babel" data-presets="react"></script>
   <script src="./js/app.js" type="text/babel" data-presets="react"></script>
 </body>
 </html>

@@ -1,0 +1,310 @@
+{
+  "themes": [
+    {
+      "name": "Grounding systems",
+      "count": 4039
+    },
+    {
+      "name": "Bonding systems",
+      "count": 3572
+    },
+    {
+      "name": "Conduit and raceway systems",
+      "count": 2768
+    },
+    {
+      "name": "Conductor terminations and splicing",
+      "count": 2705
+    },
+    {
+      "name": "Conductor sizing and ampacity",
+      "count": 2582
+    },
+    {
+      "name": "Panelboards and load centers",
+      "count": 2507
+    },
+    {
+      "name": "Branch circuit design",
+      "count": 2068
+    },
+    {
+      "name": "Electrical service equipment",
+      "count": 1866
+    },
+    {
+      "name": "Jobsite workflow, tools, and best practices",
+      "count": 1768
+    },
+    {
+      "name": "Workmanship and installation quality",
+      "count": 1729
+    },
+    {
+      "name": "Switching devices and control",
+      "count": 1633
+    },
+    {
+      "name": "Overcurrent protection",
+      "count": 1626
+    },
+    {
+      "name": "Conductor routing methods",
+      "count": 1607
+    },
+    {
+      "name": "Inspection and testing procedures",
+      "count": 1253
+    },
+    {
+      "name": "Code compliance and standards",
+      "count": 1176
+    },
+    {
+      "name": "Battery storage systems",
+      "count": 1165
+    },
+    {
+      "name": "Ground fault protection",
+      "count": 1126
+    },
+    {
+      "name": "Wire gauge and conductor selection",
+      "count": 1062
+    },
+    {
+      "name": "Motor circuits and motor controls",
+      "count": 1003
+    },
+    {
+      "name": "NEC article interpretation",
+      "count": 989
+    },
+    {
+      "name": "Power distribution systems",
+      "count": 962
+    },
+    {
+      "name": "Device mounting and installation",
+      "count": 956
+    },
+    {
+      "name": "Cable management and labeling",
+      "count": 940
+    },
+    {
+      "name": "Conductor insulation types",
+      "count": 905
+    },
+    {
+      "name": "Transformers and power conversion",
+      "count": 830
+    },
+    {
+      "name": "Receptacles and device outlets",
+      "count": 817
+    },
+    {
+      "name": "Electrical enclosures and boxes",
+      "count": 781
+    },
+    {
+      "name": "Junction boxes and pull boxes",
+      "count": 779
+    },
+    {
+      "name": "Raceway fill and conductor count",
+      "count": 690
+    },
+    {
+      "name": "Load calculation methods",
+      "count": 666
+    },
+    {
+      "name": "Electrical theory and fundamentals",
+      "count": 636
+    },
+    {
+      "name": "Luminaires and lighting fixtures",
+      "count": 621
+    },
+    {
+      "name": "Blueprint reading and electrical drafting",
+      "count": 475
+    },
+    {
+      "name": "Commissioning and troubleshooting",
+      "count": 473
+    },
+    {
+      "name": "Voltage drop and circuit performance",
+      "count": 459
+    },
+    {
+      "name": "Electrical safety practices",
+      "count": 377
+    },
+    {
+      "name": "Variable frequency drive applications",
+      "count": 341
+    },
+    {
+      "name": "Grounding electrode systems",
+      "count": 319
+    },
+    {
+      "name": "Project planning and electrical layout",
+      "count": 312
+    },
+    {
+      "name": "EV charging system installation",
+      "count": 300
+    },
+    {
+      "name": "Arc fault protection",
+      "count": 291
+    },
+    {
+      "name": "Low-voltage systems",
+      "count": 290
+    },
+    {
+      "name": "Solar PV system installation",
+      "count": 261
+    },
+    {
+      "name": "Protection coordination and device selection",
+      "count": 260
+    },
+    {
+      "name": "Feeder circuit design",
+      "count": 231
+    },
+    {
+      "name": "Fault current paths",
+      "count": 227
+    },
+    {
+      "name": "Cable tray and cable support systems",
+      "count": 222
+    },
+    {
+      "name": "Building automation and controls",
+      "count": 191
+    },
+    {
+      "name": "Overhead service installation",
+      "count": 187
+    },
+    {
+      "name": "Underground service installation",
+      "count": 148
+    },
+    {
+      "name": "PPE usage and hazard mitigation",
+      "count": 148
+    },
+    {
+      "name": "Energy management systems",
+      "count": 141
+    },
+    {
+      "name": "Lighting system design",
+      "count": 137
+    },
+    {
+      "name": "Surge protection and transient mitigation",
+      "count": 133
+    },
+    {
+      "name": "Lockout\u2013tagout procedures",
+      "count": 124
+    },
+    {
+      "name": "Power quality analysis",
+      "count": 117
+    },
+    {
+      "name": "Ethernet and communication wiring",
+      "count": 97
+    },
+    {
+      "name": "Switchgear assemblies",
+      "count": 94
+    },
+    {
+      "name": "Lighting control systems",
+      "count": 84
+    },
+    {
+      "name": "Short-circuit protection",
+      "count": 79
+    },
+    {
+      "name": "Structured cabling systems",
+      "count": 69
+    },
+    {
+      "name": "Renewable energy interconnection",
+      "count": 50
+    },
+    {
+      "name": "HVAC electrical systems",
+      "count": 45
+    },
+    {
+      "name": "Rooftop solar installation",
+      "count": 42
+    },
+    {
+      "name": "Arc flash safety procedures",
+      "count": 38
+    },
+    {
+      "name": "Dimming and smart control systems",
+      "count": 33
+    },
+    {
+      "name": "Audio/visual system wiring",
+      "count": 32
+    },
+    {
+      "name": "Fire alarm system wiring",
+      "count": 21
+    },
+    {
+      "name": "Smart home wiring",
+      "count": 20
+    },
+    {
+      "name": "Lightning protection systems",
+      "count": 20
+    },
+    {
+      "name": "Harmonics and waveform distortion",
+      "count": 16
+    },
+    {
+      "name": "Fiber optic cable systems",
+      "count": 9
+    },
+    {
+      "name": "CCTV and surveillance wiring",
+      "count": 7
+    },
+    {
+      "name": "Security alarm system wiring",
+      "count": 3
+    },
+    {
+      "name": "Access control system wiring",
+      "count": 3
+    },
+    {
+      "name": "Ground-mounted solar infrastructure",
+      "count": 1
+    }
+  ],
+  "totalAssignments": 54754,
+  "totalThemes": 76
+}

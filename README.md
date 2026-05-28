@@ -1,82 +1,119 @@
-# AI in Construction Management — Systematic Review Database
+# ElectriAI — YouTube Q&A Knowledge for Electrical Contractors
 
-Interactive companion website for the systematic review *"A Systematic Review of Artificial Intelligence Applications in Construction Management: Current Trends and Future Research Directions"* (International Journal of Construction Management, 2026).
+Companion website for the ElectriAI Research paper analyzing **794 YouTube videos** and **~18,000 viewer comments** about electrical-construction topics. The site exposes the dataset, the figures, and a chatbot grounded in the project's markdown knowledge base.
 
-The site presents the full dataset behind the review (148 peer-reviewed articles, 14 journals, 2006-2026) through interactive visualisations and an AI-assisted Q&A interface.
+The site has four tabs:
 
-**Live site:** https://cm.electriai.com
-
-## Features
-
-- **Findings tab** — Interactive bar charts (publication trends, geography, journals, topics), bubble matrix (data sources × validation strategies), Sankey diagram (AI techniques → methodologies → themes), and heatmap (AI categories × construction areas). Every chart is clickable and drills down to the underlying papers.
-- **Papers tab** — Full searchable database with filters by year, country, journal, research method, and construction topic. Each paper opens a detail modal with abstract, methodology, results, gaps, and future-research statements.
-- **AI Assistant tab** — Free-form Q&A grounded in the 148 papers. Uses retrieval-augmented generation (RAG): each question is embedded, the most relevant papers are retrieved by semantic similarity, and Gemini answers with inline citations. Citations link to full paper records.
+- **Research Results** — Project summary, top-line stats, the 10-class category schema (LV, HVAC, GBF, OCP, RE, DL, CRR, CISF, PDS, OTH), and the four paper visualizations from `notebooks/05_Visualizations.ipynb`: the knowledge-bottleneck bubble chart (interactive Plotly with an SVG fallback), theme dictionary frequency, transcript topics treemap, and a data-collection / comment-analysis panel.
+- **Ask ElectriAI** — RAG chatbot grounded in `knowledge_base/wiki/**/*.md`. Uses `gemini-embedding-001` (build-time) and `gemini-2.5-flash` (generation). Local-first: calls the Gemini API directly from the browser with a dev key in `localStorage`. A Cloudflare Worker proxy is planned for public deployment (see "Deploying" below). Cites video IDs and comment IDs from the underlying corpus.
+- **Raw Data** — Searchable, filterable browser over the 200-comment curated set (20 per category × 10, sourced from `data/processed/qualtrics_comments.csv`) with every label attached: category, themes, topic / sub-topic, Q&A excerpts and summaries, reply counts, and video metadata.
+- **About** — Static page with authors, citation, code & data links, acknowledgments, and contact.
 
 ## Architecture
 
-Vanilla React (CDN) + Tailwind CSS + Babel standalone. No build step. All visualisations are pure SVG. Data lives in CSV files alongside `index.html` and is loaded at startup via PapaParse.
+Vanilla React 18 (CDN) + Tailwind CSS (CDN) + Babel standalone for in-browser JSX. No build step. PapaParse handles CSVs; native `fetch` handles JSON. Embeddings are pre-computed and shipped as a static JSON file; cosine similarity runs in the browser.
 
 ```
-project/
-├── index.html                  # Slim entry, loads all JS modules
-├── data.csv                    # 148-paper master database
-├── bubble_chart.csv            # One-hot encoded sources and validation strategies
-├── sankey_diagram.csv          # AI Model → Methodology → Goal mapping
-├── heat_map.csv                # AI Model Categories × Construction Areas
-├── paper_embeddings.json       # Pre-computed Gemini embeddings for RAG
-├── compute_embeddings.py       # Generates paper_embeddings.json (run once)
-└── js/
-    ├── utils.js
-    ├── chart-bar.js            # Bar and year charts
-    ├── chart-bubble.js         # Bubble matrix
-    ├── chart-sankey.js         # Sankey with two-hop highlighting
-    ├── chart-heatmap.js        # Frequency heatmap
-    ├── ai-chat.js              # RAG-based Q&A
-    ├── paper-components.js     # Paper card, modal, helpers
-    └── app.js                  # Main app, layout, state
+web_app/
+├── index.html                    # Shell, tab nav, root mount, CDN script tags
+├── README.md                     # This file
+├── data/                         # JSON exports built by src/web/export_data.py
+│   ├── comments.json
+│   ├── categories.json
+│   ├── summary_stats.json
+│   ├── theme_dictionary.json
+│   ├── wiki_pages.json
+│   ├── wiki_embeddings.json
+│   └── wiki_chunks.json
+├── figures/                      # PNG/SVG/HTML figure artifacts copied from notebooks
+│   ├── knowledge_bottleneck_bubble.html
+│   ├── knowledge_bottleneck_bubble.svg
+│   ├── theme_dictionary_frequency.svg
+│   ├── transcript_topics_treemap_views.svg
+│   └── data_collection_comment_analysis.svg
+├── js/
+│   ├── utils.js                  # Small shared helpers
+│   ├── components.js             # Shared UI primitives (Chip, Card, modal overlay)
+│   ├── research.js               # Research Results tab (intro, stats, schema, 4 figures)
+│   ├── comments.js               # Raw Data tab (comment explorer)
+│   ├── chat.js                   # Ask ElectriAI (RAG)
+│   ├── about.js                  # About tab
+│   └── app.js                    # Root component, tab routing, data loaders
+└── worker/
+    ├── worker.js                 # Cloudflare Worker: /api/embed, /api/generate, CORS, rate limit
+    └── wrangler.toml             # Worker deploy config
 ```
 
 ## Local development
 
-The site requires HTTP serving (file:// will not work due to fetch and CORS).
+The site requires HTTP serving (`file://` breaks `fetch`).
 
-```bash
-# Python
+```powershell
+cd web_app
 python -m http.server 8000
-
-# Or Node
-npx http-server
-
-# Or VS Code: Live Server extension
+# Open http://localhost:8000
 ```
 
-Then open http://localhost:8000.
+Or use VS Code's Live Server extension, or `npx http-server`.
 
-## Updating the data
+Three tabs (Research Results, Raw Data, About) work with no extra setup. The Ask ElectriAI tab needs a Gemini key.
 
-To update the paper list, edit `data.csv`, `bubble_chart.csv`, `sankey_diagram.csv`, or `heat_map.csv` and commit. The site reads CSVs at startup.
+### Gemini dev key for Ask ElectriAI
 
-If `data.csv` changes meaningfully (new papers added or abstracts revised), regenerate the embeddings:
+Paste a Google AI Studio key into `localStorage` once, then reload:
 
-```bash
-pip install google-genai pandas
-python compute_embeddings.py
+```js
+localStorage.setItem('GEMINI_DEV_KEY', '<your-key>'); location.reload();
 ```
 
-This produces a new `paper_embeddings.json` (~1MB). Commit and the AI Assistant will use the updated embeddings on next page load.
+The frontend will call the Gemini API directly from the browser. The key never leaves your machine. **Do not commit a key. Do not enable this path on a deployed site** — once the Cloudflare Worker is in place (see "Deploying"), the Worker holds the key as a secret and the browser stops needing one.
 
-## AI Assistant configuration
+## Refreshing the data after notebook updates
 
-The Q&A feature uses the Gemini API. The API key is held server-side in a Cloudflare Worker (see `worker/` if present) and accessed via `/api/*` endpoints. For local testing, the key may be inlined in `js/app.js`; this is **not** committed to the public repo.
+All JSON under `web_app/data/` is generated from the upstream notebook outputs. After re-running notebooks `01–05`, regenerate the webapp data:
 
-Free tier (gemini-2.5-flash): 1500 requests/day, 15 RPM.
+```powershell
+python -m src.web.export_data
+python -m src.web.compute_wiki_embeddings   # requires GEMINI_API_KEY in .env
+```
+
+The first script writes every JSON in `web_app/data/` and copies the five figure assets into `web_app/figures/`. The second computes one Gemini embedding per wiki page (chunked at H2 boundaries) and writes `wiki_embeddings.json` + `wiki_chunks.json`.
+
+Commit the resulting JSON. The site reads everything from static files at load time, so no rebuild is needed beyond a redeploy.
+
+## Deploying
+
+The site is two pieces: a static front-end (Cloudflare Pages) and a Worker that proxies Gemini calls (Cloudflare Workers).
+
+### 1. Worker
+
+```powershell
+npm i -g wrangler
+wrangler login
+cd web_app/worker
+wrangler kv:namespace create ELECTRIAI_RL_KV
+# Paste the returned id into wrangler.toml
+wrangler secret put GEMINI_API_KEY
+# Paste the Gemini free-tier API key when prompted
+wrangler deploy
+```
+
+Note the deployed URL (e.g. `https://electriai-proxy.<account>.workers.dev`) and ensure it appears as `API_BASE` in `web_app/js/app.js`.
+
+### 2. Pages
+
+Connect this repo to Cloudflare Pages with:
+
+- Build command: **None**
+- Build output directory: `/`
+- Root directory: `web_app`
+
+Once the Pages domain is final, add it to `ALLOWED_ORIGINS` in `web_app/worker/worker.js` and redeploy the Worker.
 
 ## Citation
 
-If you use this database in your own work, please cite:
-
-> [Author(s)]. (2026). A Systematic Review of Artificial Intelligence Applications in Construction Management: Current Trends and Future Research Directions. *International Journal of Construction Management*.
+If you reference this dataset or chatbot, please cite the underlying ElectriAI Research paper (preprint pending).
 
 ## Licence
 
-The code is released under the MIT Licence. The dataset is released under CC BY 4.0; please attribute the systematic review when reusing.
+Code released under the MIT Licence. Dataset (CSV/JSON) released under CC BY 4.0 — please attribute the ElectriAI Research paper when reusing.

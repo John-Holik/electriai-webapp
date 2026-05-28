@@ -1,0 +1,384 @@
+{
+  "elements": [
+    {
+      "gid": "theme-bar-0",
+      "theme": "Ground-mounted solar infrastructure",
+      "count": 1
+    },
+    {
+      "gid": "theme-bar-1",
+      "theme": "Access control system wiring",
+      "count": 3
+    },
+    {
+      "gid": "theme-bar-2",
+      "theme": "Security alarm system wiring",
+      "count": 3
+    },
+    {
+      "gid": "theme-bar-3",
+      "theme": "CCTV and surveillance wiring",
+      "count": 7
+    },
+    {
+      "gid": "theme-bar-4",
+      "theme": "Fiber optic cable systems",
+      "count": 9
+    },
+    {
+      "gid": "theme-bar-5",
+      "theme": "Harmonics and waveform distortion",
+      "count": 16
+    },
+    {
+      "gid": "theme-bar-6",
+      "theme": "Lightning protection systems",
+      "count": 20
+    },
+    {
+      "gid": "theme-bar-7",
+      "theme": "Smart home wiring",
+      "count": 20
+    },
+    {
+      "gid": "theme-bar-8",
+      "theme": "Fire alarm system wiring",
+      "count": 21
+    },
+    {
+      "gid": "theme-bar-9",
+      "theme": "Audio/visual system wiring",
+      "count": 32
+    },
+    {
+      "gid": "theme-bar-10",
+      "theme": "Dimming and smart control systems",
+      "count": 33
+    },
+    {
+      "gid": "theme-bar-11",
+      "theme": "Arc flash safety procedures",
+      "count": 38
+    },
+    {
+      "gid": "theme-bar-12",
+      "theme": "Rooftop solar installation",
+      "count": 42
+    },
+    {
+      "gid": "theme-bar-13",
+      "theme": "HVAC electrical systems",
+      "count": 45
+    },
+    {
+      "gid": "theme-bar-14",
+      "theme": "Renewable energy interconnection",
+      "count": 50
+    },
+    {
+      "gid": "theme-bar-15",
+      "theme": "Structured cabling systems",
+      "count": 69
+    },
+    {
+      "gid": "theme-bar-16",
+      "theme": "Short-circuit protection",
+      "count": 79
+    },
+    {
+      "gid": "theme-bar-17",
+      "theme": "Lighting control systems",
+      "count": 84
+    },
+    {
+      "gid": "theme-bar-18",
+      "theme": "Switchgear assemblies",
+      "count": 94
+    },
+    {
+      "gid": "theme-bar-19",
+      "theme": "Ethernet and communication wiring",
+      "count": 97
+    },
+    {
+      "gid": "theme-bar-20",
+      "theme": "Power quality analysis",
+      "count": 117
+    },
+    {
+      "gid": "theme-bar-21",
+      "theme": "Lockout\u2013tagout procedures",
+      "count": 124
+    },
+    {
+      "gid": "theme-bar-22",
+      "theme": "Surge protection and transient mitigation",
+      "count": 133
+    },
+    {
+      "gid": "theme-bar-23",
+      "theme": "Lighting system design",
+      "count": 137
+    },
+    {
+      "gid": "theme-bar-24",
+      "theme": "Energy management systems",
+      "count": 141
+    },
+    {
+      "gid": "theme-bar-25",
+      "theme": "PPE usage and hazard mitigation",
+      "count": 148
+    },
+    {
+      "gid": "theme-bar-26",
+      "theme": "Underground service installation",
+      "count": 148
+    },
+    {
+      "gid": "theme-bar-27",
+      "theme": "Overhead service installation",
+      "count": 187
+    },
+    {
+      "gid": "theme-bar-28",
+      "theme": "Building automation and controls",
+      "count": 191
+    },
+    {
+      "gid": "theme-bar-29",
+      "theme": "Cable tray and cable support systems",
+      "count": 222
+    },
+    {
+      "gid": "theme-bar-30",
+      "theme": "Fault current paths",
+      "count": 227
+    },
+    {
+      "gid": "theme-bar-31",
+      "theme": "Feeder circuit design",
+      "count": 231
+    },
+    {
+      "gid": "theme-bar-32",
+      "theme": "Protection coordination and device selection",
+      "count": 260
+    },
+    {
+      "gid": "theme-bar-33",
+      "theme": "Solar PV system installation",
+      "count": 261
+    },
+    {
+      "gid": "theme-bar-34",
+      "theme": "Low-voltage systems",
+      "count": 290
+    },
+    {
+      "gid": "theme-bar-35",
+      "theme": "Arc fault protection",
+      "count": 291
+    },
+    {
+      "gid": "theme-bar-36",
+      "theme": "EV charging system installation",
+      "count": 300
+    },
+    {
+      "gid": "theme-bar-37",
+      "theme": "Project planning and electrical layout",
+      "count": 312
+    },
+    {
+      "gid": "theme-bar-38",
+      "theme": "Grounding electrode systems",
+      "count": 319
+    },
+    {
+      "gid": "theme-bar-39",
+      "theme": "Variable frequency drive applications",
+      "count": 341
+    },
+    {
+      "gid": "theme-bar-40",
+      "theme": "Electrical safety practices",
+      "count": 377
+    },
+    {
+      "gid": "theme-bar-41",
+      "theme": "Voltage drop and circuit performance",
+      "count": 459
+    },
+    {
+      "gid": "theme-bar-42",
+      "theme": "Commissioning and troubleshooting",
+      "count": 473
+    },
+    {
+      "gid": "theme-bar-43",
+      "theme": "Blueprint reading and electrical drafting",
+      "count": 475
+    },
+    {
+      "gid": "theme-bar-44",
+      "theme": "Luminaires and lighting fixtures",
+      "count": 621
+    },
+    {
+      "gid": "theme-bar-45",
+      "theme": "Electrical theory and fundamentals",
+      "count": 636
+    },
+    {
+      "gid": "theme-bar-46",
+      "theme": "Load calculation methods",
+      "count": 666
+    },
+    {
+      "gid": "theme-bar-47",
+      "theme": "Raceway fill and conductor count",
+      "count": 690
+    },
+    {
+      "gid": "theme-bar-48",
+      "theme": "Junction boxes and pull boxes",
+      "count": 779
+    },
+    {
+      "gid": "theme-bar-49",
+      "theme": "Electrical enclosures and boxes",
+      "count": 781
+    },
+    {
+      "gid": "theme-bar-50",
+      "theme": "Receptacles and device outlets",
+      "count": 817
+    },
+    {
+      "gid": "theme-bar-51",
+      "theme": "Transformers and power conversion",
+      "count": 830
+    },
+    {
+      "gid": "theme-bar-52",
+      "theme": "Conductor insulation types",
+      "count": 905
+    },
+    {
+      "gid": "theme-bar-53",
+      "theme": "Cable management and labeling",
+      "count": 940
+    },
+    {
+      "gid": "theme-bar-54",
+      "theme": "Device mounting and installation",
+      "count": 956
+    },
+    {
+      "gid": "theme-bar-55",
+      "theme": "Power distribution systems",
+      "count": 962
+    },
+    {
+      "gid": "theme-bar-56",
+      "theme": "NEC article interpretation",
+      "count": 989
+    },
+    {
+      "gid": "theme-bar-57",
+      "theme": "Motor circuits and motor controls",
+      "count": 1003
+    },
+    {
+      "gid": "theme-bar-58",
+      "theme": "Wire gauge and conductor selection",
+      "count": 1062
+    },
+    {
+      "gid": "theme-bar-59",
+      "theme": "Ground fault protection",
+      "count": 1126
+    },
+    {
+      "gid": "theme-bar-60",
+      "theme": "Battery storage systems",
+      "count": 1165
+    },
+    {
+      "gid": "theme-bar-61",
+      "theme": "Code compliance and standards",
+      "count": 1176
+    },
+    {
+      "gid": "theme-bar-62",
+      "theme": "Inspection and testing procedures",
+      "count": 1253
+    },
+    {
+      "gid": "theme-bar-63",
+      "theme": "Conductor routing methods",
+      "count": 1607
+    },
+    {
+      "gid": "theme-bar-64",
+      "theme": "Overcurrent protection",
+      "count": 1626
+    },
+    {
+      "gid": "theme-bar-65",
+      "theme": "Switching devices and control",
+      "count": 1633
+    },
+    {
+      "gid": "theme-bar-66",
+      "theme": "Workmanship and installation quality",
+      "count": 1729
+    },
+    {
+      "gid": "theme-bar-67",
+      "theme": "Jobsite workflow, tools, and best practices",
+      "count": 1768
+    },
+    {
+      "gid": "theme-bar-68",
+      "theme": "Electrical service equipment",
+      "count": 1866
+    },
+    {
+      "gid": "theme-bar-69",
+      "theme": "Branch circuit design",
+      "count": 2068
+    },
+    {
+      "gid": "theme-bar-70",
+      "theme": "Panelboards and load centers",
+      "count": 2507
+    },
+    {
+      "gid": "theme-bar-71",
+      "theme": "Conductor sizing and ampacity",
+      "count": 2582
+    },
+    {
+      "gid": "theme-bar-72",
+      "theme": "Conductor terminations and splicing",
+      "count": 2705
+    },
+    {
+      "gid": "theme-bar-73",
+      "theme": "Conduit and raceway systems",
+      "count": 2768
+    },
+    {
+      "gid": "theme-bar-74",
+      "theme": "Bonding systems",
+      "count": 3572
+    },
+    {
+      "gid": "theme-bar-75",
+      "theme": "Grounding systems",
+      "count": 4039
+    }
+  ]
+}

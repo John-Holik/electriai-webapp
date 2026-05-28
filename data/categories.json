@@ -1,0 +1,62 @@
+[
+  {
+    "code": "LV",
+    "name": "Low-Voltage, Communications, and Control Systems",
+    "description": "Communications, security, fire alarm, controls, and other low-voltage systems.",
+    "color": "#4E79A7"
+  },
+  {
+    "code": "HVAC",
+    "name": "Motors, HVAC, and Specialized Power Loads",
+    "description": "Motors, HVAC equipment, and specialized power loads such as elevators and welders.",
+    "color": "#F28E2B"
+  },
+  {
+    "code": "GBF",
+    "name": "Grounding, Bonding, and Fault Management",
+    "description": "System and equipment grounding, bonding, ground-fault protection, and earth electrodes.",
+    "color": "#E15759"
+  },
+  {
+    "code": "OCP",
+    "name": "Overcurrent, Short-Circuit, and Protective Devices",
+    "description": "Overcurrent and short-circuit protection: breakers, fuses, AFCI/GFCI, selective coordination.",
+    "color": "#76B7B2"
+  },
+  {
+    "code": "RE",
+    "name": "Renewable Energy, EV, and Energy Management Systems",
+    "description": "Solar PV, wind, energy storage, EV charging, and energy management systems.",
+    "color": "#59A14F"
+  },
+  {
+    "code": "DL",
+    "name": "Devices, Lighting, and Utilization Equipment",
+    "description": "Receptacles, switches, lighting fixtures, and other utilization equipment.",
+    "color": "#EDC948"
+  },
+  {
+    "code": "CRR",
+    "name": "Conductors, Raceway, and Physical Routing",
+    "description": "Conductor sizing and insulation, conduit and raceway, cable tray, and physical routing.",
+    "color": "#B07AA1"
+  },
+  {
+    "code": "CISF",
+    "name": "Code Interpretation, Safety, and Field Operations",
+    "description": "Code interpretation, NEC application, safety, inspections, and field operations.",
+    "color": "#FF9DA7"
+  },
+  {
+    "code": "PDS",
+    "name": "Power Distribution and Service Infrastructure",
+    "description": "Service entrance, switchgear, panelboards, transformers, and power distribution infrastructure.",
+    "color": "#9C755F"
+  },
+  {
+    "code": "OTH",
+    "name": "Other/Unmapped",
+    "description": "Comments that do not map cleanly to any of the nine technical categories.",
+    "color": "#BAB0AC"
+  }
+]

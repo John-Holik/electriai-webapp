@@ -484,8 +484,8 @@ Rules for your response:
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={onKeyDown}
                 rows={2}
-                placeholder={devKeyAvailable ? 'Ask the wiki…' : 'Set a dev key to enable chat'}
-                disabled={!devKeyAvailable || !embeddingsReady}
+                placeholder={apiReady ? 'Ask the wiki…' : 'Chat is not configured yet'}
+                disabled={!apiReady || !embeddingsReady}
                 className="flex-1 text-sm px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 resize-none disabled:bg-slate-50 disabled:text-slate-500"
               />
               <button

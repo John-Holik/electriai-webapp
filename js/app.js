@@ -85,6 +85,7 @@
           setStats(statsDoc);
           setThemeDict(themeDoc.themes || themeDoc);
           setWikiPages(wikiDoc.pages || wikiDoc);
+          setBottleneck(bottleneckDoc);
           setLoading(false);
         })
         .catch(err => {

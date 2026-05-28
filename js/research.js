@@ -264,6 +264,129 @@ window.AppResearch = (function() {
     );
   }
 
+  // Inject a matplotlib-generated SVG inline, bind hover/click handlers per gid.
+  // The SVG file carries id="<prefix>-N" attributes (set via Artist.set_gid in
+  // build_web_interactive_svgs.py); the sidecar JSON tells us what each gid
+  // represents. Visual is pixel-identical to the original paper figure.
+  function MplInlineChart({ svgUrl, metaUrl, fallbackSvg, fallbackAlt, onElementClick, getTooltip, gidPrefix, renderDrilldown }) {
+    const containerRef = useRef(null);
+    const [meta, setMeta]       = useState(null);
+    const [selected, setSelected] = useState(null);
+    const [tooltip, setTooltip] = useState(null);
+
+    // Fetch SVG + sidecar JSON once.
+    useEffect(() => {
+      let cancelled = false;
+      Promise.all([
+        fetch(svgUrl).then(r => r.text()),
+        fetch(metaUrl).then(r => r.json()),
+      ]).then(([svgText, metaDoc]) => {
+        if (cancelled) return;
+        // Inject SVG as real DOM (not <img>) so its inner <g id="..."> elements
+        // can receive events. Strip the XML prolog and DOCTYPE because they're
+        // illegal inside an HTML document.
+        const cleaned = svgText
+          .replace(/<\?xml[^?]*\?>/, '')
+          .replace(/<!DOCTYPE[^>]*>/, '')
+          .trim();
+        const div = containerRef.current;
+        if (!div) return;
+        div.innerHTML = cleaned;
+        // Make the SVG scale to the FigureCard width while preserving the
+        // matplotlib aspect ratio.
+        const svg = div.querySelector('svg');
+        if (svg) {
+          svg.removeAttribute('width');
+          svg.removeAttribute('height');
+          svg.setAttribute('style', 'width: 100%; height: auto; display: block;');
+        }
+        setMeta(metaDoc);
+      });
+      return () => { cancelled = true; };
+    }, [svgUrl, metaUrl]);
+
+    // Once both DOM and metadata are ready, attach event listeners per gid.
+    useEffect(() => {
+      if (!meta) return;
+      const div = containerRef.current;
+      if (!div) return;
+      const byGid = new Map(meta.elements.map(e => [e.gid, e]));
+      const handlers = [];
+      meta.elements.forEach(el => {
+        const node = div.querySelector(`#${CSS.escape(el.gid)}`);
+        if (!node) return;
+        node.style.cursor = 'pointer';
+        const onEnter = (ev) => {
+          // Subtle highlight via SVG stroke-width on the bar/tile path.
+          const path = node.querySelector('path');
+          if (path) path.setAttribute('stroke-width', '2');
+          const tip = getTooltip ? getTooltip(el) : null;
+          if (tip) setTooltip({ text: tip, x: ev.clientX, y: ev.clientY });
+        };
+        const onMove = (ev) => {
+          setTooltip(t => t ? { ...t, x: ev.clientX, y: ev.clientY } : null);
+        };
+        const onLeave = () => {
+          const path = node.querySelector('path');
+          if (path) path.setAttribute('stroke-width', '1');
+          setTooltip(null);
+        };
+        const onClick = () => {
+          setSelected(el.gid);
+          if (onElementClick) onElementClick(el);
+        };
+        node.addEventListener('mouseenter', onEnter);
+        node.addEventListener('mousemove', onMove);
+        node.addEventListener('mouseleave', onLeave);
+        node.addEventListener('click', onClick);
+        handlers.push({ node, onEnter, onMove, onLeave, onClick });
+      });
+      return () => {
+        handlers.forEach(h => {
+          h.node.removeEventListener('mouseenter', h.onEnter);
+          h.node.removeEventListener('mousemove', h.onMove);
+          h.node.removeEventListener('mouseleave', h.onLeave);
+          h.node.removeEventListener('click', h.onClick);
+        });
+      };
+    }, [meta, getTooltip, onElementClick]);
+
+    const selectedEl = selected && meta ? meta.elements.find(e => e.gid === selected) : null;
+
+    return (
+      <>
+        <div ref={containerRef} style={{ width: '100%', position: 'relative' }}>
+          {/* Fallback shown until the SVG fetch resolves; replaced on inject. */}
+          <noscript>
+            <img src={fallbackSvg} alt={fallbackAlt} style={{ width: '100%', display: 'block' }} />
+          </noscript>
+        </div>
+        {tooltip && (
+          <div
+            className="fixed pointer-events-none bg-slate-900 text-white text-xs rounded px-2 py-1 shadow-lg z-50"
+            style={{ left: tooltip.x + 12, top: tooltip.y + 12, maxWidth: '280px' }}
+          >
+            {tooltip.text}
+          </div>
+        )}
+        {selectedEl && renderDrilldown && (
+          <div className="mt-4 bg-slate-100 rounded-lg p-4 border border-slate-200">
+            <div className="flex items-baseline justify-between mb-3">
+              <div className="serif text-base font-semibold text-slate-900">
+                {renderDrilldown.title(selectedEl)}
+              </div>
+              <button
+                onClick={() => setSelected(null)}
+                className="text-xs text-slate-500 hover:text-slate-800"
+              >Clear</button>
+            </div>
+            {renderDrilldown.body(selectedEl)}
+          </div>
+        )}
+      </>
+    );
+  }
+
   function ResearchTab({ state }) {
     const stats = state.stats || {};
     const categories = state.categories || [];

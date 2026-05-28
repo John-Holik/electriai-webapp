@@ -32,7 +32,11 @@ window.AppResearch = (function() {
         marker: {
           size: cats.map(c => c.bubbleSize),
           color: cats.map(c => c.avgViews),
-          colorscale: 'Blues',
+          colorscale: [
+            [0, '#f7fbff'],
+            [0.5, '#9ecae1'],
+            [1, '#4292c6'],
+          ],
           colorbar: {
             title: { text: 'Average<br>View Count', font: { size: fontSize } },
             tickfont: { size: fontSize },

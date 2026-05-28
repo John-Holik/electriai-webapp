@@ -52,9 +52,6 @@
     const [themeDict, setThemeDict] = useState(null);
     const [wikiPages, setWikiPages] = useState(null);
     const [bottleneck, setBottleneck] = useState(null);
-    const [themeFrequency, setThemeFrequency] = useState(null);
-    const [topicTreemap, setTopicTreemap]     = useState(null);
-    const [dataPipeline, setDataPipeline]     = useState(null);
 
     // Lazy-loaded datasets, only fetched once the Ask ElectriAI tab is opened.
     const [wikiEmbeddings, setWikiEmbeddings] = useState(null);

@@ -300,7 +300,7 @@ Rules for your response:
       }
     }, [messages, pending]);
 
-    const canSend = devKeyAvailable && embeddingsReady && !pending && input.trim();
+    const canSend = apiReady && embeddingsReady && !pending && input.trim();
 
     const handleAsk = async () => {
       const question = input.trim();

@@ -264,6 +264,334 @@ window.AppResearch = (function() {
     );
   }
 
+  // Horizontal bar chart of the 76 canonical themes ranked by comment count.
+  // Click a bar to reveal sample comments tagged with that theme (filtered
+  // from the same comments.json the bottleneck chart uses).
+  function ThemeFrequencyChart({ themeFrequency, comments }) {
+    const divRef = useRef(null);
+    const [selected, setSelected] = useState(null);
+
+    useEffect(() => {
+      const themes = themeFrequency.themes;
+      // Reverse so the highest-count theme renders at the top of the bar chart.
+      const names = themes.map(t => t.name).reverse();
+      const counts = themes.map(t => t.count).reverse();
+      const fontFamily = 'Calibri';
+      const fontSize = 12;
+
+      const traces = [{
+        x: counts,
+        y: names,
+        type: 'bar',
+        orientation: 'h',
+        marker: { color: '#D3D3D3', line: { color: '#000000', width: 1 } },
+        customdata: names,
+        hovertemplate: '<b>%{y}</b><br>%{x:,} comments<extra></extra>',
+        text: counts.map(c => c > 0 ? c.toLocaleString() : ''),
+        textposition: 'outside',
+        textfont: { family: fontFamily, size: fontSize, color: '#000000' },
+        cliponaxis: false,
+      }];
+
+      const layout = {
+        autosize: true,
+        height: Math.max(600, names.length * 22),
+        font: { family: fontFamily, size: fontSize, color: '#000000' },
+        xaxis: {
+          title: { text: 'Number of Comments', font: { family: fontFamily, size: fontSize, color: '#000000' } },
+          tickfont: { family: fontFamily, size: fontSize, color: '#000000' },
+          showgrid: false, zeroline: false,
+        },
+        yaxis: {
+          automargin: true,
+          tickfont: { family: fontFamily, size: fontSize, color: '#000000' },
+        },
+        margin: { t: 20, l: 8, r: 80, b: 48 },
+        paper_bgcolor: 'white',
+        plot_bgcolor: 'white',
+        showlegend: false,
+        hovermode: 'closest',
+      };
+
+      const div = divRef.current;
+      const handler = (e) => {
+        const pt = e.points && e.points[0];
+        if (!pt) return;
+        setSelected(pt.customdata);
+      };
+
+      Plotly.newPlot(div, traces, layout, { responsive: true, displaylogo: false })
+        .then((gd) => { gd.on('plotly_click', handler); });
+
+      return () => { Plotly.purge(div); };
+    }, [themeFrequency]);
+
+    // Filter the curated comment sample by theme presence in the Themes dict.
+    const samples = useMemo(() => {
+      if (!selected || !comments) return [];
+      return comments.filter(c => c.themes && c.themes[selected] != null).slice(0, 5);
+    }, [selected, comments]);
+
+    return (
+      <>
+        <div ref={divRef} style={{ width: '100%' }} />
+        <noscript>
+          <img
+            src="figures/theme_dictionary_frequency.svg"
+            alt="Horizontal bar chart of canonical themes ranked by comment count."
+            style={{ width: '100%', display: 'block' }}
+          />
+        </noscript>
+        {selected && (
+          <div className="mt-4 bg-slate-100 rounded-lg p-4 border border-slate-200">
+            <div className="flex items-baseline justify-between mb-3">
+              <h4 className="serif text-base font-semibold text-slate-900">
+                Sample comments tagged with "{selected}"
+              </h4>
+              <button
+                onClick={() => setSelected(null)}
+                className="text-xs text-slate-500 hover:text-slate-800"
+              >Clear</button>
+            </div>
+            {samples.length === 0 ? (
+              <p className="text-sm text-slate-500 italic">
+                No comments from the 200-row curated sample carry this theme. The full corpus has more.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {samples.map((c) => (
+                  <li key={c.recordId} className="text-sm text-slate-700">
+                    <p className="leading-relaxed">"{c.commentText}"</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      <a href={c.videoUrl} target="_blank" rel="noopener" className="underline">{c.videoTitle}</a>
+                      {c.questionSummary ? ` · Q: ${c.questionSummary}` : ''}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+      </>
+    );
+  }
+
+  // Treemap of transcript-level topics, tile area = video count, color = avg views.
+  // Click a tile to list the top videos contributing to that topic.
+  function TopicTreemap({ topicTreemap }) {
+    const divRef = useRef(null);
+    const [selected, setSelected] = useState(null);
+
+    useEffect(() => {
+      const topics = topicTreemap.topics;
+      const labels = topics.map(t => t.topic);
+      const values = topics.map(t => t.videoCount);
+      const avgViews = topics.map(t => t.avgViews);
+      const parents = topics.map(() => '');
+      const fontFamily = 'Calibri';
+      const fontSize = 12;
+
+      const traces = [{
+        type: 'treemap',
+        labels,
+        parents,
+        values,
+        customdata: topics.map(t => ([
+          t.videoCount,
+          Math.round(t.avgViews).toLocaleString(),
+          t.avgWeight.toFixed(1),
+        ])),
+        text: topics.map(t => `${t.videoCount} videos<br>${Math.round(t.avgViews).toLocaleString()} avg views`),
+        textinfo: 'label+text',
+        textfont: { family: fontFamily, size: fontSize, color: '#000000' },
+        hovertemplate:
+          '<b>%{label}</b><br>' +
+          '%{customdata[0]} videos · %{customdata[1]} avg views · %{customdata[2]}% avg weight<extra></extra>',
+        marker: {
+          colors: avgViews,
+          colorscale: 'Blues',
+          showscale: true,
+          colorbar: {
+            title: { text: 'Average<br>View Count', font: { family: fontFamily, size: fontSize } },
+            tickfont: { size: fontSize },
+            thickness: 12,
+            len: 0.7,
+          },
+          line: { color: '#000000', width: 1 },
+        },
+        pathbar: { visible: false },
+      }];
+
+      const layout = {
+        autosize: true,
+        height: 480,
+        font: { family: fontFamily, size: fontSize, color: '#000000' },
+        margin: { t: 16, l: 8, r: 96, b: 8 },
+        paper_bgcolor: 'white',
+      };
+
+      const div = divRef.current;
+      const handler = (e) => {
+        const pt = e.points && e.points[0];
+        if (!pt) return;
+        setSelected(pt.label);
+      };
+
+      Plotly.newPlot(div, traces, layout, { responsive: true, displaylogo: false })
+        .then((gd) => { gd.on('plotly_click', handler); });
+
+      return () => { Plotly.purge(div); };
+    }, [topicTreemap]);
+
+    const selectedTopic = useMemo(() => {
+      if (!selected) return null;
+      return topicTreemap.topics.find(t => t.topic === selected) || null;
+    }, [selected, topicTreemap]);
+
+    return (
+      <>
+        <div ref={divRef} style={{ width: '100%' }} />
+        <noscript>
+          <img
+            src="figures/transcript_topics_treemap_views.svg"
+            alt="Treemap of transcript topics where tile size reflects cumulative video views per topic."
+            style={{ width: '100%', display: 'block' }}
+          />
+        </noscript>
+        {selectedTopic && (
+          <div className="mt-4 bg-slate-100 rounded-lg p-4 border border-slate-200">
+            <div className="flex items-baseline justify-between mb-3">
+              <h4 className="serif text-base font-semibold text-slate-900">
+                Top videos in {selectedTopic.topic} ({selectedTopic.videoCount} videos total)
+              </h4>
+              <button
+                onClick={() => setSelected(null)}
+                className="text-xs text-slate-500 hover:text-slate-800"
+              >Clear</button>
+            </div>
+            <ul className="space-y-2">
+              {selectedTopic.topVideos.map((v, i) => (
+                <li key={i} className="text-sm text-slate-700 flex items-baseline justify-between gap-3">
+                  <a href={v.url} target="_blank" rel="noopener" className="underline truncate">{v.title}</a>
+                  <span className="text-xs text-slate-500 whitespace-nowrap">
+                    {v.views.toLocaleString()} views · {v.weight}% weight
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  // Three-panel data pipeline summary: keywords (left), comment funnel (top-right),
+  // question split (bottom-right). Tooltips carry stage definitions; no click drill-down.
+  function DataPipelineChart({ dataPipeline }) {
+    const divRef = useRef(null);
+
+    useEffect(() => {
+      const fontFamily = 'Calibri';
+      const fontSize = 12;
+      const barColor = '#B8B8B8';
+      const barLine = { color: '#000000', width: 1 };
+
+      const kwData = dataPipeline.keywords;
+      const funnel = dataPipeline.funnel;
+      const qa = dataPipeline.qaBreakdown;
+
+      const traces = [
+        {
+          x: kwData.map(k => k.count),
+          y: kwData.map(k => k.keyword),
+          type: 'bar',
+          orientation: 'h',
+          marker: { color: barColor, line: barLine },
+          text: kwData.map(k => k.count.toString()),
+          textposition: 'outside',
+          textfont: { family: fontFamily, size: fontSize, color: '#000000' },
+          hovertemplate: '<b>%{y}</b><br>%{x:,} transcripts collected<extra></extra>',
+          xaxis: 'x1', yaxis: 'y1',
+          showlegend: false,
+          cliponaxis: false,
+        },
+        {
+          x: funnel.map(f => f.count),
+          y: funnel.map(f => f.shortLabel),
+          type: 'bar',
+          orientation: 'h',
+          marker: { color: barColor, line: barLine },
+          text: funnel.map(f => f.count.toLocaleString()),
+          textposition: 'outside',
+          textfont: { family: fontFamily, size: fontSize, color: '#000000' },
+          customdata: funnel.map(f => f.description),
+          hovertemplate: '<b>%{y}</b><br>%{x:,} comments<br>%{customdata}<extra></extra>',
+          xaxis: 'x2', yaxis: 'y2',
+          showlegend: false,
+          cliponaxis: false,
+        },
+        {
+          x: qa.map(q => q.count),
+          y: qa.map(q => q.label),
+          type: 'bar',
+          orientation: 'h',
+          marker: { color: barColor, line: barLine },
+          text: qa.map(q => `${q.count.toLocaleString()} (${q.percent.toFixed(1)}%)`),
+          textposition: 'outside',
+          textfont: { family: fontFamily, size: fontSize, color: '#000000' },
+          customdata: qa.map(q => q.percent.toFixed(1)),
+          hovertemplate: '<b>%{y}</b><br>%{x:,} threads (%{customdata}%)<extra></extra>',
+          xaxis: 'x3', yaxis: 'y3',
+          showlegend: false,
+          cliponaxis: false,
+        },
+      ];
+
+      const kwMax = Math.max(...kwData.map(k => k.count));
+      const funnelMax = Math.max(...funnel.map(f => f.count));
+      const qaMax = Math.max(...qa.map(q => q.count));
+
+      const layout = {
+        autosize: true,
+        height: 540,
+        font: { family: fontFamily, size: fontSize, color: '#000000' },
+        paper_bgcolor: 'white',
+        plot_bgcolor: 'white',
+        showlegend: false,
+        margin: { t: 28, l: 8, r: 8, b: 40 },
+        annotations: [
+          { x: 0, y: 1.03, xref: 'x1 domain', yref: 'y1 domain', text: 'a) Transcripts per keyword', showarrow: false, xanchor: 'left', font: { family: fontFamily, size: fontSize, color: '#000000' } },
+          { x: 0, y: 1.10, xref: 'x2 domain', yref: 'y2 domain', text: 'b) Comment filtering funnel', showarrow: false, xanchor: 'left', font: { family: fontFamily, size: fontSize, color: '#000000' } },
+          { x: 0, y: 1.10, xref: 'x3 domain', yref: 'y3 domain', text: 'c) Question vs non-question threads', showarrow: false, xanchor: 'left', font: { family: fontFamily, size: fontSize, color: '#000000' } },
+        ],
+        xaxis:  { domain: [0.00, 0.45], anchor: 'y1', range: [0, kwMax * 1.18],     tickformat: ',d', showgrid: false, zeroline: false },
+        yaxis:  { domain: [0.00, 1.00], anchor: 'x1', automargin: true },
+        xaxis2: { domain: [0.58, 1.00], anchor: 'y2', range: [0, funnelMax * 1.25], tickformat: ',d', showgrid: false, zeroline: false },
+        yaxis2: { domain: [0.55, 1.00], anchor: 'x2', automargin: true },
+        xaxis3: { domain: [0.58, 1.00], anchor: 'y3', range: [0, qaMax * 1.35],     tickformat: ',d', showgrid: false, zeroline: false },
+        yaxis3: { domain: [0.00, 0.45], anchor: 'x3', automargin: true },
+      };
+
+      const div = divRef.current;
+      Plotly.newPlot(div, traces, layout, { responsive: true, displaylogo: false });
+
+      return () => { Plotly.purge(div); };
+    }, [dataPipeline]);
+
+    return (
+      <>
+        <div ref={divRef} style={{ width: '100%' }} />
+        <noscript>
+          <img
+            src="figures/data_collection_comment_analysis.svg"
+            alt="Three-panel figure showing transcripts collected per keyword, comments harvested per video, and the question-filtering breakdown."
+            style={{ width: '100%', display: 'block' }}
+          />
+        </noscript>
+      </>
+    );
+  }
+
   function ResearchTab({ state }) {
     const stats = state.stats || {};
     const categories = state.categories || [];

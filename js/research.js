@@ -557,7 +557,7 @@ window.AppResearch = (function() {
         <FigureCard
           number={4}
           title="Data collection and comment analysis pipeline"
-          caption="Three-panel summary of how the corpus was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment harvesting yield per video. Panel C shows the question-filtering breakdown that produced the final labeled comment set. Hover any bar for its exact count."
+          caption="Three-panel summary of how the corpus was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment harvesting yield per video. Panel C shows the question-filtering breakdown that produced the final labeled comment set. Hover any bar for its exact count; click for the stage definition."
         >
           <MplInlineChart
             svgUrl="figures/data_collection_comment_analysis_interactive.svg"
@@ -572,6 +572,16 @@ window.AppResearch = (function() {
                 return `${el.label}: ${el.count.toLocaleString()} comments`;
               }
               return `${el.label}: ${el.count.toLocaleString()} transcripts`;
+            }}
+            renderDrilldown={{
+              title: (el) => {
+                if (el.panel === 'qa') return `${el.label}: ${el.count.toLocaleString()} threads (${el.percent.toFixed(1)}%)`;
+                if (el.panel === 'funnel') return `${el.label}: ${el.count.toLocaleString()} comments`;
+                return `Keyword "${el.label}": ${el.count.toLocaleString()} transcripts`;
+              },
+              body: (el) => (
+                <p className="text-sm text-slate-700 leading-relaxed">{el.description}</p>
+              ),
             }}
           />
         </FigureCard>

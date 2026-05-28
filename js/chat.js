@@ -325,7 +325,7 @@ Rules for your response:
 
       try {
         // 1. Embed the question.
-        const queryVec = await embedQuery(apiKey, question);
+        const queryVec = await embedQuery(apiKey, question, workerBase);
         if (!queryVec || !queryVec.length) {
           throw new Error('Embedding API returned no vector.');
         }

@@ -124,12 +124,9 @@
       wikiEmbeddings,
       wikiChunks,
       bottleneck,
-      themeFrequency,
-      topicTreemap,
-      dataPipeline,
       geminiDevKey: GEMINI_DEV_KEY,
       geminiWorkerBase: GEMINI_WORKER_BASE,
-    }), [comments, categories, stats, themeDict, wikiPages, wikiEmbeddings, wikiChunks, bottleneck, themeFrequency, topicTreemap, dataPipeline]);
+    }), [comments, categories, stats, themeDict, wikiPages, wikiEmbeddings, wikiChunks, bottleneck]);
 
     if (loading) {
       return (

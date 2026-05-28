@@ -348,7 +348,7 @@ Rules for your response:
             next[next.length - 1] = { ...last, text: partial };
             return next;
           });
-        });
+        }, workerBase);
 
         // 5. Mark assistant message complete and attach references. Surface a
         // friendly error if the model returned nothing.

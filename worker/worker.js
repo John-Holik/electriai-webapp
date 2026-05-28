@@ -2,8 +2,8 @@
  * Cloudflare Worker — Gemini API Proxy
  * ────────────────────────────────────────────────────────────
  * Proxies two Gemini endpoints used by the AI Assistant:
- *   POST /api/embed     → gemini-embedding-001:embedContent
- *   POST /api/generate  → gemini-2.5-flash:generateContent
+ *   POST /api/embed     → gemini-embedding-001:embedContent (buffered JSON)
+ *   POST /api/generate  → gemini-2.5-flash:streamGenerateContent (SSE stream)
  *
  * The API key lives in this Worker as a secret named GEMINI_API_KEY
  * (set with `wrangler secret put GEMINI_API_KEY` or via the dashboard).

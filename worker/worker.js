@@ -66,7 +66,8 @@ async function checkRateLimit(env, ip) {
   return { ok: true };
 }
 
-// ─── Proxy handler ────────────────────────────────────────────
+// ─── Proxy handlers ───────────────────────────────────────────
+// Buffered proxy — used for /api/embed where the response is a single JSON doc.
 async function proxyToGemini(request, env, geminiUrl, origin) {
   if (!env.GEMINI_API_KEY) {
     return jsonResponse({ error: 'GEMINI_API_KEY not configured on the Worker' }, 500, origin);
@@ -77,12 +78,33 @@ async function proxyToGemini(request, env, geminiUrl, origin) {
     headers: { 'Content-Type': 'application/json' },
     body,
   });
-  // Pass through Gemini response with CORS headers
   const respBody = await upstream.text();
   return new Response(respBody, {
     status: upstream.status,
     headers: {
       'Content-Type': 'application/json',
+      ...corsHeaders(origin),
+    },
+  });
+}
+
+// Streaming proxy — used for /api/generate so SSE events flow token-by-token
+// instead of being buffered and returned in one chunk at the end.
+async function proxyToGeminiStream(request, env, geminiUrl, origin) {
+  if (!env.GEMINI_API_KEY) {
+    return jsonResponse({ error: 'GEMINI_API_KEY not configured on the Worker' }, 500, origin);
+  }
+  const body = await request.text();
+  const upstream = await fetch(`${geminiUrl}?alt=sse&key=${env.GEMINI_API_KEY}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body,
+  });
+  return new Response(upstream.body, {
+    status: upstream.status,
+    headers: {
+      'Content-Type': upstream.headers.get('Content-Type') || 'text/event-stream',
+      'Cache-Control': 'no-cache',
       ...corsHeaders(origin),
     },
   });

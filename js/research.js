@@ -344,18 +344,7 @@ window.AppResearch = (function() {
           title="Knowledge bottleneck across the 10-class schema"
           caption="Each bubble represents a topic theme. Horizontal position encodes the share of comments that asked questions on that theme; vertical position encodes the share of comments that received useful answers. Bubble area scales with the total number of comments. Themes far below the diagonal are knowledge bottlenecks: high demand, low answer rate."
         >
-          <iframe
-            src="figures/knowledge_bottleneck_bubble_web.html"
-            title="Interactive bubble chart of knowledge bottlenecks across electrical themes"
-            style={{ width: '100%', height: '640px', border: 0, display: 'block' }}
-          />
-          <noscript>
-            <img
-              src="figures/knowledge_bottleneck_bubble.svg"
-              alt="Static fallback bubble chart showing demand and answer rate per electrical theme."
-              style={{ width: '100%', display: 'block' }}
-            />
-          </noscript>
+          <BottleneckChart bottleneck={state.bottleneck} comments={state.comments} />
         </FigureCard>
 
         <FigureCard

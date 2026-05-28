@@ -62,8 +62,13 @@ window.AppChat = (function() {
 
   // Streams a Gemini generation response, calling onDelta with each
   // accumulated text snippet. Uses the SSE variant for line-by-line parsing.
-  const streamGenerate = async (apiKey, systemText, userText, onDelta) => {
-    const res = await fetch(`${GEMINI_GENERATE_URL}?alt=sse&key=${encodeURIComponent(apiKey)}`, {
+  const streamGenerate = async (apiKey, systemText, userText, onDelta, workerBase) => {
+    // The Worker proxy handles `?alt=sse` server-side and streams the body
+    // straight through, so the browser never sees the key.
+    const url = workerBase
+      ? `${workerBase}/api/generate`
+      : `${GEMINI_GENERATE_URL}?alt=sse&key=${encodeURIComponent(apiKey)}`;
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

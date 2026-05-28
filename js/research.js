@@ -209,9 +209,12 @@ window.AppResearch = (function() {
       };
 
       // Bind on the resolved graph div so Plotly's event emitter is ready.
+      // The Plots.resize call forces an initial layout pass; without it the
+      // colorbar can clip on first paint inside a flex/responsive container.
       Plotly.newPlot(div, traces, layout, { responsive: true, displaylogo: false })
         .then((gd) => {
           gd.on('plotly_click', handler);
+          Plotly.Plots.resize(gd);
         });
 
       return () => { Plotly.purge(div); };

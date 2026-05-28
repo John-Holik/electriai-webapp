@@ -76,11 +76,8 @@
         fetchJSON('./data/theme_dictionary.json'),
         fetchJSON('./data/wiki_pages.json'),
         fetchJSON('./data/knowledge_bottleneck.json'),
-        fetchJSON('./data/theme_frequency.json'),
-        fetchJSON('./data/topic_treemap.json'),
-        fetchJSON('./data/data_pipeline.json'),
       ])
-        .then(([commentsDoc, categoriesDoc, statsDoc, themeDoc, wikiDoc, bottleneckDoc, themeFreqDoc, treemapDoc, pipelineDoc]) => {
+        .then(([commentsDoc, categoriesDoc, statsDoc, themeDoc, wikiDoc, bottleneckDoc]) => {
           // The export pipeline wraps lists in { meta, records | pages },
           // so unwrap to the array shape every tab expects.
           setComments(commentsDoc.records || commentsDoc);
@@ -89,9 +86,6 @@
           setThemeDict(themeDoc.themes || themeDoc);
           setWikiPages(wikiDoc.pages || wikiDoc);
           setBottleneck(bottleneckDoc);
-          setThemeFrequency(themeFreqDoc);
-          setTopicTreemap(treemapDoc);
-          setDataPipeline(pipelineDoc);
           setLoading(false);
         })
         .catch(err => {

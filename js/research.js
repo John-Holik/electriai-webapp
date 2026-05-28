@@ -670,8 +670,9 @@ window.AppResearch = (function() {
         <section>
           <h3 className="serif text-xl font-semibold text-slate-900 mb-2">Figures from the paper</h3>
           <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
-            Four figures lifted from the notebook-05 export pipeline. The first chart is
-            an interactive Plotly visualization; hover or click any bubble to inspect a theme.
+            Four figures lifted from the notebook-05 export pipeline, rendered as
+            interactive Plotly visualizations. Hover any element for details, or click
+            bubbles, bars, and tiles to drill into the underlying comments and videos.
           </p>
         </section>
 

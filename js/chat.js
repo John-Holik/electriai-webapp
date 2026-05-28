@@ -39,8 +39,11 @@ window.AppChat = (function() {
 
   // ─── Gemini API calls ──────────────────────────────────
   // Embeds the user query and returns the 768-d vector.
-  const embedQuery = async (apiKey, text) => {
-    const res = await fetch(`${GEMINI_EMBED_URL}?key=${encodeURIComponent(apiKey)}`, {
+  const embedQuery = async (apiKey, text, workerBase) => {
+    const url = workerBase
+      ? `${workerBase}/api/embed`
+      : `${GEMINI_EMBED_URL}?key=${encodeURIComponent(apiKey)}`;
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

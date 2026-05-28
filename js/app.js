@@ -27,7 +27,7 @@
 
   // Cloudflare Worker base URL for the production embed + generate proxy.
   // Wired up in Phase 3; harmless to leave defined here while skipped.
-  const GEMINI_WORKER_BASE = 'https://cm-electriai-proxy.chauducanh.workers.dev';
+  const GEMINI_WORKER_BASE = 'https://youtube.electriai.com';
 
   const TABS = [
     { id: 'research', label: 'Research Results' },

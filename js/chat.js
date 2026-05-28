@@ -274,6 +274,10 @@ Rules for your response:
   // ─── Tab component ─────────────────────────────────────
   function ChatTab({ state, embeddingsLoading, embeddingsReady, devKeyAvailable }) {
     const apiKey = state.geminiDevKey || '';
+    const workerBase = state.geminiWorkerBase || '';
+    // The chat is usable whenever the production Worker proxy is configured
+    // (workerBase is set) OR a local dev key was pasted into localStorage.
+    const apiReady = !!workerBase || devKeyAvailable;
 
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');

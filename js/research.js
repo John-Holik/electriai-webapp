@@ -233,7 +233,7 @@ window.AppResearch = (function() {
           />
         </noscript>
         {selected && (
-          <div className="mt-4 border-t border-slate-200 pt-4">
+          <div className="mt-4 bg-slate-100 rounded-lg p-4 border border-slate-200">
             <div className="flex items-baseline justify-between mb-3">
               <h4 className="serif text-base font-semibold text-slate-900">
                 Sample comments from {selected}

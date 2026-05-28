@@ -523,24 +523,53 @@ window.AppResearch = (function() {
         <FigureCard
           number={3}
           title="Transcript topics treemap, weighted by total video views"
-          caption="Treemap of the topics that appear in video transcripts. Tile area scales with the aggregate view count of every video that touches the topic, so larger tiles indicate where the audience is actually spending time, independent of how many videos cover the topic."
+          caption="Treemap of the topics that appear in video transcripts. Tile area scales with the aggregate view count of every video that touches the topic, so larger tiles indicate where the audience is actually spending time. Hover any tile for averages; click to list the top videos in that topic."
         >
-          <img
-            src="figures/transcript_topics_treemap_views.svg"
-            alt="Treemap of transcript topics where tile size reflects cumulative video views per topic."
-            style={{ width: '100%', display: 'block' }}
+          <MplInlineChart
+            svgUrl="figures/transcript_topics_treemap_views_interactive.svg"
+            metaUrl="data/transcript_topics_treemap_views_interactive.json"
+            fallbackSvg="figures/transcript_topics_treemap_views.svg"
+            fallbackAlt="Treemap of transcript topics where tile size reflects cumulative video views per topic."
+            getTooltip={(el) =>
+              `${el.topic}: ${el.videoCount} videos · ${Math.round(el.avgViews).toLocaleString()} average views · ${el.avgWeight.toFixed(1)}% average weight`
+            }
+            renderDrilldown={{
+              title: (el) => `Top videos in ${el.topic} (${el.videoCount} videos total)`,
+              body: (el) => (
+                <ul className="space-y-2">
+                  {el.topVideos.map((v, i) => (
+                    <li key={i} className="text-sm text-slate-700 flex items-baseline justify-between gap-3">
+                      <a href={v.url} target="_blank" rel="noopener" className="underline truncate">{v.title}</a>
+                      <span className="text-xs text-slate-500 whitespace-nowrap">
+                        {v.views.toLocaleString()} views · {v.weight}% weight
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ),
+            }}
           />
         </FigureCard>
 
         <FigureCard
           number={4}
           title="Data collection and comment analysis pipeline"
-          caption="Three-panel summary of how the corpus was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment harvesting yield per video. Panel C shows the question-filtering breakdown that produced the final labeled comment set."
+          caption="Three-panel summary of how the corpus was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment harvesting yield per video. Panel C shows the question-filtering breakdown that produced the final labeled comment set. Hover any bar for its exact count."
         >
-          <img
-            src="figures/data_collection_comment_analysis.svg"
-            alt="Three-panel figure showing transcripts collected per keyword, comments harvested per video, and the question-filtering breakdown."
-            style={{ width: '100%', display: 'block' }}
+          <MplInlineChart
+            svgUrl="figures/data_collection_comment_analysis_interactive.svg"
+            metaUrl="data/data_collection_comment_analysis_interactive.json"
+            fallbackSvg="figures/data_collection_comment_analysis.svg"
+            fallbackAlt="Three-panel figure showing transcripts collected per keyword, comments harvested per video, and the question-filtering breakdown."
+            getTooltip={(el) => {
+              if (el.panel === 'qa') {
+                return `${el.label}: ${el.count.toLocaleString()} threads (${el.percent.toFixed(1)}%)`;
+              }
+              if (el.panel === 'funnel') {
+                return `${el.label}: ${el.count.toLocaleString()} comments`;
+              }
+              return `${el.label}: ${el.count.toLocaleString()} transcripts`;
+            }}
           />
         </FigureCard>
 

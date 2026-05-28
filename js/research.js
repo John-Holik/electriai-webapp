@@ -196,7 +196,6 @@ window.AppResearch = (function() {
       };
 
       const div = divRef.current;
-      Plotly.newPlot(div, traces, layout, { responsive: true, displaylogo: false });
 
       // curveNumber 0 is the data layer; legend reference circles are >0.
       const handler = (e) => {
@@ -204,7 +203,12 @@ window.AppResearch = (function() {
         if (!pt || pt.curveNumber !== 0) return;
         setSelected(pt.customdata);
       };
-      div.on('plotly_click', handler);
+
+      // Bind on the resolved graph div so Plotly's event emitter is ready.
+      Plotly.newPlot(div, traces, layout, { responsive: true, displaylogo: false })
+        .then((gd) => {
+          gd.on('plotly_click', handler);
+        });
 
       return () => { Plotly.purge(div); };
     }, [bottleneck]);

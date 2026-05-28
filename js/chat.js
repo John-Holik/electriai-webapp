@@ -402,7 +402,7 @@ Rules for your response:
         </section>
 
         {/* Loader / dev-key banners */}
-        {!devKeyAvailable && (
+        {!apiReady && (
           <div className="mb-4 p-4 border border-amber-200 bg-amber-50 rounded-lg text-sm text-amber-900 max-w-3xl">
             <p className="font-medium mb-1">No Gemini dev key found in localStorage.</p>
             <p className="text-amber-800 leading-relaxed">

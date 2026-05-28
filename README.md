@@ -4,10 +4,10 @@ Companion website for the ElectriAI Research paper analyzing **794 YouTube video
 
 The site has four tabs:
 
-- **Overview** — Project summary, top-line stats, and the 10-class category schema (LV, HVAC, GBF, OCP, RE, DL, CRR, CISF, PDS, OTH).
-- **Findings** — Four visualizations from `notebooks/05_Visualizations.ipynb`: the knowledge-bottleneck bubble chart (interactive Plotly with an SVG fallback), theme dictionary frequency, transcript topics treemap, and a data-collection / comment-analysis panel.
-- **Comments** — Searchable, filterable browser over the 200-comment curated set (20 per category × 10, sourced from `data/processed/qualtrics_comments.csv`) with every label attached: category, themes, topic / sub-topic, Q&A excerpts and summaries, reply counts, and video metadata.
-- **Wiki Chat** — RAG chatbot grounded in `knowledge_base/wiki/**/*.md`. Uses `gemini-embedding-001` (build-time) and `gemini-2.5-flash` (generation). Local-first: calls the Gemini API directly from the browser with a dev key in `localStorage`. A Cloudflare Worker proxy is planned for public deployment (see "Deploying" below). Cites video IDs and comment IDs from the underlying corpus.
+- **Research Results** — Project summary, top-line stats, the 10-class category schema (LV, HVAC, GBF, OCP, RE, DL, CRR, CISF, PDS, OTH), and the four paper visualizations from `notebooks/05_Visualizations.ipynb`: the knowledge-bottleneck bubble chart (interactive Plotly with an SVG fallback), theme dictionary frequency, transcript topics treemap, and a data-collection / comment-analysis panel.
+- **Ask ElectriAI** — RAG chatbot grounded in `knowledge_base/wiki/**/*.md`. Uses `gemini-embedding-001` (build-time) and `gemini-2.5-flash` (generation). Local-first: calls the Gemini API directly from the browser with a dev key in `localStorage`. A Cloudflare Worker proxy is planned for public deployment (see "Deploying" below). Cites video IDs and comment IDs from the underlying corpus.
+- **Raw Data** — Searchable, filterable browser over the 200-comment curated set (20 per category × 10, sourced from `data/processed/qualtrics_comments.csv`) with every label attached: category, themes, topic / sub-topic, Q&A excerpts and summaries, reply counts, and video metadata.
+- **About** — Static page with authors, citation, code & data links, acknowledgments, and contact.
 
 ## Architecture
 
@@ -34,10 +34,10 @@ web_app/
 ├── js/
 │   ├── utils.js                  # Small shared helpers
 │   ├── components.js             # Shared UI primitives (Chip, Card, modal overlay)
-│   ├── overview.js               # Overview tab
-│   ├── findings.js               # Findings tab (5 figures)
-│   ├── comments.js               # Comments explorer
-│   ├── chat.js                   # Wiki Chat (RAG)
+│   ├── research.js               # Research Results tab (intro, stats, schema, 4 figures)
+│   ├── comments.js               # Raw Data tab (comment explorer)
+│   ├── chat.js                   # Ask ElectriAI (RAG)
+│   ├── about.js                  # About tab
 │   └── app.js                    # Root component, tab routing, data loaders
 └── worker/
     ├── worker.js                 # Cloudflare Worker: /api/embed, /api/generate, CORS, rate limit
@@ -56,9 +56,9 @@ python -m http.server 8000
 
 Or use VS Code's Live Server extension, or `npx http-server`.
 
-Three tabs (Overview, Findings, Comments) work with no extra setup. The Wiki Chat tab needs a Gemini key.
+Three tabs (Research Results, Raw Data, About) work with no extra setup. The Ask ElectriAI tab needs a Gemini key.
 
-### Gemini dev key for Wiki Chat
+### Gemini dev key for Ask ElectriAI
 
 Paste a Google AI Studio key into `localStorage` once, then reload:
 
@@ -83,9 +83,7 @@ Commit the resulting JSON. The site reads everything from static files at load t
 
 ## Deploying
 
-> **Status: deferred.** The site currently runs locally only — the Cloudflare account, custom domain, and Worker secrets aren't set up yet. The instructions below are the planned path for when those details land.
-
-The deployed site is two pieces: a static front-end (Cloudflare Pages) and a Worker that proxies Gemini calls (Cloudflare Workers).
+The site is two pieces: a static front-end (Cloudflare Pages) and a Worker that proxies Gemini calls (Cloudflare Workers).
 
 ### 1. Worker
 

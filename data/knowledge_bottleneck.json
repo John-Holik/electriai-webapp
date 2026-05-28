@@ -1,0 +1,129 @@
+{
+  "categories": [
+    {
+      "category": "Low-Voltage, Communications, and Control Systems",
+      "shortLabel": "Low-Voltage",
+      "totalQuestions": 249,
+      "answeredQuestions": 45,
+      "resolutionRate": 0.18072289156626506,
+      "totalComments": 276,
+      "avgViews": 1823014.1690140846,
+      "bubbleSize": 16.73654390934844
+    },
+    {
+      "category": "Motors, HVAC, and Specialized Power Loads",
+      "shortLabel": "Motors",
+      "totalQuestions": 312,
+      "answeredQuestions": 76,
+      "resolutionRate": 0.24358974358974358,
+      "totalComments": 340,
+      "avgViews": 1862676.64,
+      "bubbleSize": 17.371104815864022
+    },
+    {
+      "category": "Grounding, Bonding, and Fault Management",
+      "shortLabel": "Grounding",
+      "totalQuestions": 660,
+      "answeredQuestions": 280,
+      "resolutionRate": 0.42424242424242425,
+      "totalComments": 764,
+      "avgViews": 1859673.827160494,
+      "bubbleSize": 21.575070821529746
+    },
+    {
+      "category": "Overcurrent, Short-Circuit, and Protective Devices",
+      "shortLabel": "Overcurrent",
+      "totalQuestions": 729,
+      "answeredQuestions": 235,
+      "resolutionRate": 0.3223593964334705,
+      "totalComments": 804,
+      "avgViews": 1092791.9603960395,
+      "bubbleSize": 21.97167138810198
+    },
+    {
+      "category": "Renewable Energy, EV, and Energy Management Systems",
+      "shortLabel": "Renewable Energy",
+      "totalQuestions": 968,
+      "answeredQuestions": 256,
+      "resolutionRate": 0.2644628099173554,
+      "totalComments": 1040,
+      "avgViews": 1638473.7708333333,
+      "bubbleSize": 24.311614730878187
+    },
+    {
+      "category": "Devices, Lighting, and Utilization Equipment",
+      "shortLabel": "Devices",
+      "totalQuestions": 1311,
+      "answeredQuestions": 336,
+      "resolutionRate": 0.2562929061784897,
+      "totalComments": 1450,
+      "avgViews": 827966.5254237289,
+      "bubbleSize": 28.376770538243626
+    },
+    {
+      "category": "Other/Unmapped",
+      "shortLabel": "Other/Unmapped",
+      "totalQuestions": 1377,
+      "answeredQuestions": 293,
+      "resolutionRate": 0.21278140885984023,
+      "totalComments": 1682,
+      "avgViews": 1207996.6184210526,
+      "bubbleSize": 30.677053824362606
+    },
+    {
+      "category": "Code Interpretation, Safety, and Field Operations",
+      "shortLabel": "Code Interpretation",
+      "totalQuestions": 2689,
+      "answeredQuestions": 601,
+      "resolutionRate": 0.22350316102640386,
+      "totalComments": 2937,
+      "avgViews": 866813.7837837838,
+      "bubbleSize": 43.12039660056657
+    },
+    {
+      "category": "Power Distribution and Service Infrastructure",
+      "shortLabel": "Power",
+      "totalQuestions": 3020,
+      "answeredQuestions": 787,
+      "resolutionRate": 0.26059602649006625,
+      "totalComments": 3333,
+      "avgViews": 636481.0641509434,
+      "bubbleSize": 47.04674220963173
+    },
+    {
+      "category": "Conductors, Raceway, and Physical Routing",
+      "shortLabel": "Conductors",
+      "totalQuestions": 3665,
+      "answeredQuestions": 958,
+      "resolutionRate": 0.26139154160982264,
+      "totalComments": 4236,
+      "avgViews": 732984.72,
+      "bubbleSize": 56.0
+    }
+  ],
+  "referenceLines": {
+    "meanResolution": 26.49942309913881,
+    "medianQuestions": 1139.5
+  },
+  "axes": {
+    "xMax": 3665,
+    "yCap": 50
+  },
+  "bubbleLegend": {
+    "refValues": [
+      4236,
+      2500,
+      276
+    ],
+    "refSizes": [
+      56.0,
+      38.787535410764875,
+      16.73654390934844
+    ]
+  },
+  "manualBelow": [
+    "Power",
+    "Conductors",
+    "Code"
+  ]
+}

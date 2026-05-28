@@ -1,4 +1,4 @@
-/* Wiki Chat tab. Retrieves the most relevant chunks from
+/* Ask ElectriAI tab. Retrieves the most relevant chunks from
    wiki_embeddings.json + wiki_chunks.json for a user question, then
    asks Gemini to answer using only those chunks. Citations to videos
    are rendered as clickable YouTube links; comment citations are shown
@@ -377,7 +377,7 @@ Rules for your response:
       <div className="animate-fade py-8">
 
         <section className="mb-6 max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">Wiki Chat</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">Ask ElectriAI</p>
           <h2 className="serif text-3xl sm:text-4xl font-semibold text-slate-900 leading-tight">
             Ask the knowledge base
           </h2>
@@ -394,7 +394,7 @@ Rules for your response:
           <div className="mb-4 p-4 border border-amber-200 bg-amber-50 rounded-lg text-sm text-amber-900 max-w-3xl">
             <p className="font-medium mb-1">No Gemini dev key found in localStorage.</p>
             <p className="text-amber-800 leading-relaxed">
-              Wiki Chat requires a local Gemini key during development. Open your browser
+              Ask ElectriAI requires a local Gemini key during development. Open your browser
               console and run:
             </p>
             <pre className="bg-white border border-amber-200 rounded px-3 py-2 mt-2 text-[12px] font-mono text-slate-800">localStorage.setItem('GEMINI_DEV_KEY', 'your-api-key-here'); location.reload();</pre>

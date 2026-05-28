@@ -1,0 +1,146 @@
+{
+  "elements": [
+    {
+      "gid": "pipeline-kw-0",
+      "panel": "keywords",
+      "label": "Electrical load calculation",
+      "count": 6,
+      "description": "YouTube search-result yield for the keyword \"Electrical load calculation\". 6 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-1",
+      "panel": "keywords",
+      "label": "Electrical grounding techniques",
+      "count": 8,
+      "description": "YouTube search-result yield for the keyword \"Electrical grounding techniques\". 8 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-2",
+      "panel": "keywords",
+      "label": "Electrical blueprint reading",
+      "count": 11,
+      "description": "YouTube search-result yield for the keyword \"Electrical blueprint reading\". 11 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-3",
+      "panel": "keywords",
+      "label": "Electrical code compliance",
+      "count": 11,
+      "description": "YouTube search-result yield for the keyword \"Electrical code compliance\". 11 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-4",
+      "panel": "keywords",
+      "label": "Electrical panel installation",
+      "count": 12,
+      "description": "YouTube search-result yield for the keyword \"Electrical panel installation\". 12 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-5",
+      "panel": "keywords",
+      "label": "Industrial electrical construction",
+      "count": 18,
+      "description": "YouTube search-result yield for the keyword \"Industrial electrical construction\". 18 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-6",
+      "panel": "keywords",
+      "label": "Electrical conduit installation",
+      "count": 19,
+      "description": "YouTube search-result yield for the keyword \"Electrical conduit installation\". 19 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-7",
+      "panel": "keywords",
+      "label": "Electrical troubleshooting in construction",
+      "count": 25,
+      "description": "YouTube search-result yield for the keyword \"Electrical troubleshooting in construction\". 25 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-8",
+      "panel": "keywords",
+      "label": "Electrical safety in construction",
+      "count": 26,
+      "description": "YouTube search-result yield for the keyword \"Electrical safety in construction\". 26 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-9",
+      "panel": "keywords",
+      "label": "Electrical construction tools and equipment",
+      "count": 27,
+      "description": "YouTube search-result yield for the keyword \"Electrical construction tools and equipment\". 27 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-10",
+      "panel": "keywords",
+      "label": "Electrical system design",
+      "count": 29,
+      "description": "YouTube search-result yield for the keyword \"Electrical system design\". 29 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-11",
+      "panel": "keywords",
+      "label": "Electrical wiring installation",
+      "count": 76,
+      "description": "YouTube search-result yield for the keyword \"Electrical wiring installation\". 76 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-12",
+      "panel": "keywords",
+      "label": "Residential electrical construction",
+      "count": 113,
+      "description": "YouTube search-result yield for the keyword \"Residential electrical construction\". 113 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-13",
+      "panel": "keywords",
+      "label": "Commercial electrical construction",
+      "count": 163,
+      "description": "YouTube search-result yield for the keyword \"Commercial electrical construction\". 163 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-kw-14",
+      "panel": "keywords",
+      "label": "Electrical construction techniques",
+      "count": 250,
+      "description": "YouTube search-result yield for the keyword \"Electrical construction techniques\". 250 transcripts survived the dedupe + transcript-availability filter."
+    },
+    {
+      "gid": "pipeline-funnel-0",
+      "panel": "funnel",
+      "label": "Question-Containing Threads",
+      "count": 14980,
+      "description": "Parent threads where GPT-5-mini extracted at least one real question. The labeled comment set used by every downstream analysis is drawn from this slice."
+    },
+    {
+      "gid": "pipeline-funnel-1",
+      "panel": "funnel",
+      "label": "Eligible Parent Comments",
+      "count": 66899,
+      "description": "Top-level comments only. Replies are bundled into their parent thread for the question filter pass, so the funnel collapses 93k comments into 67k parents."
+    },
+    {
+      "gid": "pipeline-funnel-2",
+      "panel": "funnel",
+      "label": "Total Comments (including replies)",
+      "count": 93317,
+      "description": "Every comment harvested from the 739 source videos, including replies on threads. This is the raw YouTube harvest before any filtering."
+    },
+    {
+      "gid": "pipeline-qa-0",
+      "panel": "qa",
+      "label": "Non-Question",
+      "count": 1882,
+      "percent": 11.161190843316332,
+      "description": "Parent threads where the GPT-5-mini classifier did not identify a question. These are excluded from the question-resolution analysis."
+    },
+    {
+      "gid": "pipeline-qa-1",
+      "panel": "qa",
+      "label": "Question-Containing",
+      "count": 14980,
+      "percent": 88.83880915668367,
+      "description": "Parent threads where the GPT-5-mini classifier extracted at least one real question. These feed the resolution-rate metric and the labeled sample set."
+    }
+  ]
+}

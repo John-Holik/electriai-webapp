@@ -75,8 +75,9 @@
         fetchJSON('./data/summary_stats.json'),
         fetchJSON('./data/theme_dictionary.json'),
         fetchJSON('./data/wiki_pages.json'),
+        fetchJSON('./data/knowledge_bottleneck.json'),
       ])
-        .then(([commentsDoc, categoriesDoc, statsDoc, themeDoc, wikiDoc]) => {
+        .then(([commentsDoc, categoriesDoc, statsDoc, themeDoc, wikiDoc, bottleneckDoc]) => {
           // The export pipeline wraps lists in { meta, records | pages },
           // so unwrap to the array shape every tab expects.
           setComments(commentsDoc.records || commentsDoc);

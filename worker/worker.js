@@ -20,8 +20,9 @@
  */
 
 const ALLOWED_ORIGINS = [
-  'https://cm.electriai.com',
-  'https://cm-electriai.pages.dev',
+  'https://youtube.electriai.com',
+  // Add your Cloudflare Pages preview URL here once the project name is set,
+  // e.g. 'https://electriai-webapp.pages.dev'.
   'http://127.0.0.1:5500',     // VS Code Live Server local testing
   'http://localhost:5500',
   'http://localhost:8000',     // python -m http.server

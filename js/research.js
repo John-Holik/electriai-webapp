@@ -686,37 +686,25 @@ window.AppResearch = (function() {
         <FigureCard
           number={2}
           title="Frequency of canonical themes across the corpus"
-          caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. The long tail captures niche topics that surface in fewer than ten comments each, while the head is dominated by code, sizing, and grounding questions."
+          caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. Click any bar to surface sample comments tagged with that theme. The long tail captures niche topics that surface in fewer than ten comments each, while the head is dominated by code, sizing, and grounding questions."
         >
-          <img
-            src="figures/theme_dictionary_frequency.svg"
-            alt="Horizontal bar chart of canonical themes ranked by comment count, with code interpretation and sizing themes at the top."
-            style={{ width: '100%', display: 'block' }}
-          />
+          <ThemeFrequencyChart themeFrequency={state.themeFrequency} comments={state.comments} />
         </FigureCard>
 
         <FigureCard
           number={3}
           title="Transcript topics treemap, weighted by total video views"
-          caption="Treemap of the topics that appear in video transcripts. Tile area scales with the aggregate view count of every video that touches the topic, so larger tiles indicate where the audience is actually spending time, independent of how many videos cover the topic."
+          caption="Treemap of the topics that appear in video transcripts. Tile area scales with the number of videos in the topic; color encodes the average view count per video. Click a tile to list the top videos contributing to that topic."
         >
-          <img
-            src="figures/transcript_topics_treemap_views.svg"
-            alt="Treemap of transcript topics where tile size reflects cumulative video views per topic."
-            style={{ width: '100%', display: 'block' }}
-          />
+          <TopicTreemap topicTreemap={state.topicTreemap} />
         </FigureCard>
 
         <FigureCard
           number={4}
           title="Data collection and comment analysis pipeline"
-          caption="Three-panel summary of how the corpus was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment harvesting yield per video. Panel C shows the question-filtering breakdown that produced the final labeled comment set."
+          caption="Three-panel summary of how the corpus was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment harvesting yield per video. Panel C shows the question-filtering breakdown that produced the final labeled comment set. Hover any bar for stage definitions."
         >
-          <img
-            src="figures/data_collection_comment_analysis.svg"
-            alt="Three-panel figure showing transcripts collected per keyword, comments harvested per video, and the question-filtering breakdown."
-            style={{ width: '100%', display: 'block' }}
-          />
+          <DataPipelineChart dataPipeline={state.dataPipeline} />
         </FigureCard>
 
       </div>

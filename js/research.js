@@ -586,6 +586,135 @@ window.AppResearch = (function() {
           />
         </FigureCard>
 
+        {/* Table 1 — per-category classification metrics on consensus subset. */}
+        <figure className="bg-white border border-slate-200 rounded-lg overflow-hidden mt-8">
+          <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-2">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">
+              Table 1
+            </div>
+            <h4 className="serif text-lg font-semibold text-slate-900">
+              Per-category LLM classification metrics on consensus comments
+            </h4>
+            <p className="text-sm text-slate-700 leading-relaxed serif">
+              Per-category precision, recall, and F1 scores for LLM classification evaluated on consensus comments only (N = 69 comments where a student majority label was established independently of the LLM).
+            </p>
+          </header>
+          <div className="bg-stone-50 px-6 py-5 overflow-x-auto">
+            <table className="w-full text-sm text-slate-800 serif tabular-nums">
+              <thead>
+                <tr className="border-b border-slate-300">
+                  <th className="text-left py-2 pr-4 font-semibold">Category</th>
+                  <th className="text-right py-2 px-3 font-semibold">Precision</th>
+                  <th className="text-right py-2 px-3 font-semibold">Recall</th>
+                  <th className="text-right py-2 px-3 font-semibold">F1</th>
+                  <th className="text-right py-2 pl-3 font-semibold">Support</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Low-Voltage, Communications, and Control Systems*</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 pl-3">1.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Motors, HVAC, and Specialized Power Loads*</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 pl-3">1.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Grounding, Bonding, and Fault Management</td>
+                  <td className="text-right py-2 px-3">0.923</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.960</td>
+                  <td className="text-right py-2 pl-3">12.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Overcurrent, Short-Circuit, and Protective Devices</td>
+                  <td className="text-right py-2 px-3">0.889</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.941</td>
+                  <td className="text-right py-2 pl-3">8.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Renewable Energy, EV, and Energy Management Systems*</td>
+                  <td className="text-right py-2 px-3">0.667</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.800</td>
+                  <td className="text-right py-2 pl-3">2.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Devices, Lighting, and Utilization Equipment</td>
+                  <td className="text-right py-2 px-3">0.857</td>
+                  <td className="text-right py-2 px-3">0.857</td>
+                  <td className="text-right py-2 px-3">0.857</td>
+                  <td className="text-right py-2 pl-3">7.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Conductors, Raceway, and Physical Routing</td>
+                  <td className="text-right py-2 px-3">0.938</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.968</td>
+                  <td className="text-right py-2 pl-3">15.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Code Interpretation, Safety, and Field Operations</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.800</td>
+                  <td className="text-right py-2 px-3">0.889</td>
+                  <td className="text-right py-2 pl-3">5.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Power Distribution and Service Infrastructure</td>
+                  <td className="text-right py-2 px-3">0.636</td>
+                  <td className="text-right py-2 px-3">0.778</td>
+                  <td className="text-right py-2 px-3">0.700</td>
+                  <td className="text-right py-2 pl-3">9.000</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-4">Other/Unmapped</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.444</td>
+                  <td className="text-right py-2 px-3">0.615</td>
+                  <td className="text-right py-2 pl-3">9.000</td>
+                </tr>
+                <tr className="border-t-2 border-slate-300">
+                  <td className="py-2 pr-4 font-semibold">Macro Avg</td>
+                  <td className="text-right py-2 px-3">0.891</td>
+                  <td className="text-right py-2 px-3">0.888</td>
+                  <td className="text-right py-2 px-3">0.873</td>
+                  <td className="text-right py-2 pl-3">69.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4 font-semibold">Weighted Avg</td>
+                  <td className="text-right py-2 px-3">0.889</td>
+                  <td className="text-right py-2 px-3">0.870</td>
+                  <td className="text-right py-2 px-3">0.862</td>
+                  <td className="text-right py-2 pl-3">69.000</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-4 font-semibold">Accuracy</td>
+                  <td className="text-right py-2 px-3 text-slate-400">&middot;</td>
+                  <td className="text-right py-2 px-3 text-slate-400">&middot;</td>
+                  <td className="text-right py-2 px-3">0.870</td>
+                  <td className="text-right py-2 pl-3">69.000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <figcaption className="px-6 py-3 border-t border-slate-100 space-y-1">
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              * Insufficient data (support &lt; 3); metrics should be interpreted with caution.
+            </p>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Cohen&rsquo;s &kappa; = 0.848 (&ldquo;almost perfect&rdquo; agreement, Landis and Koch 1977).
+            </p>
+          </figcaption>
+        </figure>
+
       </div>
     );
   }

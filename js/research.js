@@ -481,12 +481,42 @@ window.AppResearch = (function() {
         <FigureCard
           number={2}
           title="Frequency of canonical themes across the corpus"
-          caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. The long tail captures niche topics that surface in fewer than ten comments each, while the head is dominated by code, sizing, and grounding questions."
+          caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. Hover any bar for its count; click to see sample comments tagged with that theme. The long tail captures niche topics that surface in fewer than ten comments each, while the head is dominated by code, sizing, and grounding questions."
         >
-          <img
-            src="figures/theme_dictionary_frequency.svg"
-            alt="Horizontal bar chart of canonical themes ranked by comment count, with code interpretation and sizing themes at the top."
-            style={{ width: '100%', display: 'block' }}
+          <MplInlineChart
+            svgUrl="figures/theme_dictionary_frequency_interactive.svg"
+            metaUrl="data/theme_dictionary_frequency_interactive.json"
+            fallbackSvg="figures/theme_dictionary_frequency.svg"
+            fallbackAlt="Horizontal bar chart of canonical themes ranked by comment count, with code interpretation and sizing themes at the top."
+            getTooltip={(el) => `${el.theme}: ${el.count.toLocaleString()} comments`}
+            renderDrilldown={{
+              title: (el) => `Sample comments tagged with "${el.theme}"`,
+              body: (el) => {
+                const samples = (state.comments || [])
+                  .filter(c => c.themes && c.themes[el.theme] != null)
+                  .slice(0, 5);
+                if (samples.length === 0) {
+                  return (
+                    <p className="text-sm text-slate-500 italic">
+                      No comments from the 200-row curated sample carry this theme. The full corpus has {el.count.toLocaleString()}.
+                    </p>
+                  );
+                }
+                return (
+                  <ul className="space-y-3">
+                    {samples.map(c => (
+                      <li key={c.recordId} className="text-sm text-slate-700">
+                        <p className="leading-relaxed">"{c.commentText}"</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          <a href={c.videoUrl} target="_blank" rel="noopener" className="underline">{c.videoTitle}</a>
+                          {c.questionSummary ? ` · Q: ${c.questionSummary}` : ''}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                );
+              },
+            }}
           />
         </FigureCard>
 

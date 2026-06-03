@@ -331,9 +331,12 @@ Rules for your response:
     const pattern = /\(V:([A-Za-z0-9_-]{11})\)|\(Q:([^)]+)\)/g;
     for (const m of messages) {
       if (m.role !== 'assistant' || !m.text) continue;
+      // Apply the same grouped-citation normalization the renderer uses,
+      // otherwise `(V:abc, Q:xyz, Q:def)` blocks are skipped entirely.
+      const normalized = splitGroupedCitations(m.text);
       pattern.lastIndex = 0;
       let match;
-      while ((match = pattern.exec(m.text)) !== null) {
+      while ((match = pattern.exec(normalized)) !== null) {
         const cid = match[2] || null;
         const vid = match[1] || (cid && commentVideoLookup.get(cid)) || null;
         if (!vid) continue;

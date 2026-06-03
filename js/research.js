@@ -491,7 +491,13 @@ window.AppResearch = (function() {
             metaUrl="data/theme_dictionary_frequency_interactive.json"
             fallbackSvg="figures/theme_dictionary_frequency.svg"
             fallbackAlt="Horizontal bar chart of canonical themes ranked by comment count, with code interpretation and sizing themes at the top."
-            getTooltip={(el) => `${el.theme}: ${el.count.toLocaleString()} comments`}
+            getTooltip={(el, meta) => {
+              const total = (meta && meta.elements)
+                ? meta.elements.reduce((s, x) => s + (x.count || 0), 0)
+                : 0;
+              const pct = total > 0 ? (el.count / total * 100).toFixed(1) : '0.0';
+              return `${el.theme}: ${el.count.toLocaleString()} comments (${pct}%)`;
+            }}
             renderDrilldown={{
               title: (el) => `Sample comments tagged with "${el.theme}"`,
               body: (el) => {

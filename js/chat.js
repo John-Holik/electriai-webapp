@@ -312,8 +312,101 @@ Rules for your response:
     return pages;
   };
 
+  // ─── Cited sources panel ───────────────────────────────
+  // Walks every assistant message, pulls (V:...) and (Q:...) markers,
+  // resolves Q: comments to their parent video via commentVideoLookup,
+  // and returns one card per unique video plus the count of distinct
+  // comments cited from that video.
+  const collectCitedSources = (messages, commentVideoLookup, rawVideos) => {
+    const videoLookup = rawVideos && rawVideos.videos
+      ? new Map(rawVideos.videos.map((v) => [v.videoId, v]))
+      : new Map();
+    const videos = new Map();
+    let order = 0;
+    const pattern = /\(V:([A-Za-z0-9_-]{11})\)|\(Q:([^)]+)\)/g;
+    for (const m of messages) {
+      if (m.role !== 'assistant' || !m.text) continue;
+      pattern.lastIndex = 0;
+      let match;
+      while ((match = pattern.exec(m.text)) !== null) {
+        const cid = match[2] || null;
+        const vid = match[1] || (cid && commentVideoLookup.get(cid)) || null;
+        if (!vid) continue;
+        if (!videos.has(vid)) {
+          const v = videoLookup.get(vid);
+          videos.set(vid, {
+            videoId: vid,
+            title: v ? v.title : null,
+            commentCount: v ? v.commentCount : 0,
+            commentIds: new Set(),
+            firstCommentId: null,
+            order: order++,
+          });
+        }
+        if (cid) {
+          const entry = videos.get(vid);
+          entry.commentIds.add(cid);
+          if (!entry.firstCommentId) entry.firstCommentId = cid;
+        }
+      }
+    }
+    return [...videos.values()].sort((a, b) => a.order - b.order);
+  };
+
+  function SourcesPanel({ sources, navigate, rawVideosLoading }) {
+    return (
+      <div className="lg:sticky lg:top-20 bg-white border border-slate-200 rounded-lg flex flex-col h-[60vh] min-h-[480px]">
+        <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+          <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500">
+            Cited sources{sources.length > 0 ? ` (${sources.length})` : ''}
+          </div>
+          {rawVideosLoading && (
+            <span className="inline-block w-3 h-3 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" />
+          )}
+        </div>
+        <div className="flex-1 overflow-y-auto p-3 scrollbar-thin">
+          {sources.length === 0 ? (
+            <div className="text-center px-3 py-12 text-slate-400">
+              <p className="serif italic text-sm">No sources yet.</p>
+              <p className="text-[11px] mt-2 leading-relaxed">
+                Videos and comments the chatbot cites will appear here. Click any card to open it in the Raw Data tab.
+              </p>
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {sources.map((s) => (
+                <li key={s.videoId}>
+                  <button
+                    onClick={() => navigate && navigate('rawdata', { videoId: s.videoId, commentId: s.firstCommentId })}
+                    className="w-full text-left bg-stone-50 hover:bg-stone-100 border border-slate-200 hover:border-slate-400 rounded-md p-3 transition-colors group"
+                    title={`Open ${s.title || s.videoId} in Raw Data`}
+                  >
+                    <div className="flex items-center justify-between gap-2 text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">
+                      <span>YouTube video</span>
+                      {s.commentIds.size > 0 && (
+                        <span className="text-slate-400 normal-case tracking-normal">
+                          {s.commentIds.size} comment{s.commentIds.size === 1 ? '' : 's'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[12.5px] text-slate-800 leading-snug font-medium line-clamp-3 serif">
+                      {s.title || s.videoId}
+                    </div>
+                    <div className="mt-2 text-[10px] text-slate-400 group-hover:text-slate-700">
+                      Open in Raw Data →
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   // ─── Tab component ─────────────────────────────────────
-  function ChatTab({ state, embeddingsLoading, embeddingsReady, devKeyAvailable }) {
+  function ChatTab({ state, embeddingsLoading, embeddingsReady, devKeyAvailable, navigate, rawVideosLoading }) {
     const apiKey = state.geminiDevKey || '';
     const workerBase = state.geminiWorkerBase || '';
     // The chat is usable whenever the production Worker proxy is configured

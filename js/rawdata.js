@@ -212,9 +212,20 @@ window.AppRawData = (function() {
           <div className="space-y-3">
             {filteredTop.map((c) => (
               <div key={c.commentId} className="space-y-2">
-                <CommentRow comment={c} isReply={false} />
+                <CommentRow
+                  comment={c}
+                  isReply={false}
+                  focused={focusCommentId === c.commentId}
+                  scrollRef={focusCommentId === c.commentId ? focusRef : null}
+                />
                 {(repliesByParent.get(c.commentId) || []).map((r) => (
-                  <CommentRow key={r.commentId} comment={r} isReply={true} />
+                  <CommentRow
+                    key={r.commentId}
+                    comment={r}
+                    isReply={true}
+                    focused={focusCommentId === r.commentId}
+                    scrollRef={focusCommentId === r.commentId ? focusRef : null}
+                  />
                 ))}
               </div>
             ))}

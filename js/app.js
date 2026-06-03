@@ -33,7 +33,8 @@
   const TABS = [
     { id: 'research', label: 'Research Results' },
     { id: 'chat',     label: 'Ask ElectriAI' },
-    { id: 'comments', label: 'Raw Data' },
+    { id: 'rawdata',  label: 'Raw Data' },
+    { id: 'comments', label: 'Test Data' },
     { id: 'about',    label: 'About' },
   ];
 

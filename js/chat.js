@@ -219,6 +219,20 @@ Rules for your response:
       /\(((?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+)(?:\s*,\s*(?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+))+)\)/g,
       (_m, body) => body.split(/\s*,\s*/).map((t) => `(${t.trim()})`).join(' ')
     );
+    // Dedup citations within a single message: every cite resolves to a
+    // target video, and seeing the same video pill repeatedly is just
+    // noise. Drop subsequent occurrences and clean up the orphan spaces /
+    // dangling punctuation they leave behind.
+    const seenTargets = new Set();
+    text = text.replace(/\(V:([A-Za-z0-9_-]{11})\)|\(Q:([^)]+)\)/g, (m, vid, cid) => {
+      const target = vid
+        || (commentVideoLookup && commentVideoLookup.get(cid))
+        || `q:${cid}`;
+      if (seenTargets.has(target)) return '';
+      seenTargets.add(target);
+      return m;
+    });
+    text = text.replace(/ {2,}/g, ' ').replace(/ +([.,!?;:])/g, '$1');
     // Combined regex with two alternates so we can match either citation type.
     const pattern = /\(V:([A-Za-z0-9_-]{11})\)|\(Q:([^)]+)\)/g;
     const nodes = [];

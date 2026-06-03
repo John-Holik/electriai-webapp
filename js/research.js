@@ -323,7 +323,7 @@ window.AppResearch = (function() {
           // Subtle highlight via SVG stroke-width on the bar/tile path.
           const path = node.querySelector('path');
           if (path) path.setAttribute('stroke-width', '2');
-          const tip = getTooltip ? getTooltip(el) : null;
+          const tip = getTooltip ? getTooltip(el, meta) : null;
           if (tip) setTooltip({ text: tip, x: ev.clientX, y: ev.clientY });
         };
         const onMove = (ev) => {

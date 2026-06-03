@@ -76,12 +76,23 @@
     })();
     const [tab, setTab] = useState(initialTab);
 
+    // Cross-tab navigation intent. Set by one tab (e.g. the chat panel
+    // wants to open a specific video in Raw Data), consumed and cleared
+    // by the destination tab. Carries { videoId, commentId } payloads.
+    const [navIntent, setNavIntent] = useState(null);
+
     function changeTab(nextTab) {
       setTab(nextTab);
       if (window.location.hash.replace(/^#/, '') !== nextTab) {
         window.history.pushState(null, '', `#${nextTab}`);
       }
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
+
+    // Helper: navigate to another tab with an optional context payload.
+    function navigate(nextTab, payload) {
+      if (payload) setNavIntent(payload);
+      changeTab(nextTab);
     }
 
     // Sync state when the user uses browser back/forward.

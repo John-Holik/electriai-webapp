@@ -666,6 +666,17 @@ Rules for your response:
               )}
             </div>
           </div>
+          </div>
+
+          {/* Right-side cited sources panel. Auto-populates as the
+              chatbot's response cites videos and comments. */}
+          <aside className="lg:w-72 xl:w-80 lg:flex-shrink-0">
+            <SourcesPanel
+              sources={citedSources}
+              navigate={navigate}
+              rawVideosLoading={rawVideosLoading}
+            />
+          </aside>
         </div>
 
         {openPage && <WikiPageModal page={openPage} onClose={() => setOpenPage(null)} />}

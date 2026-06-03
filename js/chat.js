@@ -212,6 +212,13 @@ Rules for your response:
   // and a non-link pill for comment citations.
   const renderWithCitations = (text) => {
     if (!text) return null;
+    // Gemini sometimes groups citations into a single parens — like
+    // `(V:abc, V:def, Q:xyz)` — which the per-marker regex below cannot
+    // match. Rewrite grouped parens into individual ones first.
+    text = text.replace(
+      /\(((?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+)(?:\s*,\s*(?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+))+)\)/g,
+      (_m, body) => body.split(/\s*,\s*/).map((t) => `(${t.trim()})`).join(' ')
+    );
     // Combined regex with two alternates so we can match either citation type.
     const pattern = /\(V:([A-Za-z0-9_-]{11})\)|\(Q:([^)]+)\)/g;
     const nodes = [];

@@ -120,6 +120,22 @@
         });
     }, [tab, wikiEmbeddings, embeddingsLoading]);
 
+    // Lazy raw-videos load: trigger the first time the Raw Data tab is shown.
+    useEffect(() => {
+      if (tab !== 'rawdata') return;
+      if (rawVideos || rawVideosLoading) return;
+      setRawVideosLoading(true);
+      fetchJSON('./data/raw_videos.json')
+        .then(doc => {
+          setRawVideos(doc);
+          setRawVideosLoading(false);
+        })
+        .catch(err => {
+          setError(err.message);
+          setRawVideosLoading(false);
+        });
+    }, [tab, rawVideos, rawVideosLoading]);
+
     // Single state bag passed down to every tab so they share a stable shape.
     const state = useMemo(() => ({
       comments,

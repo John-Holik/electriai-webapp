@@ -146,9 +146,10 @@
       wikiEmbeddings,
       wikiChunks,
       bottleneck,
+      rawVideos,
       geminiDevKey: GEMINI_DEV_KEY,
       geminiWorkerBase: GEMINI_WORKER_BASE,
-    }), [comments, categories, stats, themeDict, wikiPages, wikiEmbeddings, wikiChunks, bottleneck]);
+    }), [comments, categories, stats, themeDict, wikiPages, wikiEmbeddings, wikiChunks, bottleneck, rawVideos]);
 
     if (loading) {
       return (

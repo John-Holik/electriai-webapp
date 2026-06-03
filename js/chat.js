@@ -185,7 +185,7 @@ You will be given a small set of passages retrieved from the knowledge-base wiki
 
 Rules for your response:
 1. Use ONLY the retrieved passages as evidence. Do not invent facts not present in them.
-2. When you state a substantive claim, carry forward its citations exactly as they appear in the source passages — preserve the (V:VIDEOID) and (Q:COMMENTID) markers verbatim. Do not paraphrase the citation format.
+2. When you state a substantive claim, carry forward its citations exactly as they appear in the source passages — preserve the (V:VIDEOID) and (Q:COMMENTID) markers verbatim. Do not paraphrase the citation format. When citing more than one source, use a separate parenthesis for each: write (V:abc) (V:def), never (V:abc, V:def).
 3. If the retrieved passages do not actually answer the user's question, say so plainly: "I don't know — that's outside the knowledge base." Do not guess.
 4. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
 5. Be concise: 2–6 sentences for most questions, longer only if the user asks for a deep explanation.`;

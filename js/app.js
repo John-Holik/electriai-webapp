@@ -66,12 +66,33 @@
 
     const [loading, setLoading] = useState(true);
     const [error, setError]     = useState(null);
-    const [tab, setTab]         = useState('research');
+    // Tab persists in the URL hash so refresh, browser back/forward, and
+    // shared links all land on the same tab. Falls back to 'research' if
+    // the hash is empty or names an unknown tab.
+    const tabIds = TABS.map((t) => t.id);
+    const initialTab = (() => {
+      const hash = (window.location.hash || '').replace(/^#/, '');
+      return tabIds.includes(hash) ? hash : 'research';
+    })();
+    const [tab, setTab] = useState(initialTab);
 
     function changeTab(nextTab) {
       setTab(nextTab);
+      if (window.location.hash.replace(/^#/, '') !== nextTab) {
+        window.history.pushState(null, '', `#${nextTab}`);
+      }
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     }
+
+    // Sync state when the user uses browser back/forward.
+    useEffect(() => {
+      const onHashChange = () => {
+        const next = (window.location.hash || '').replace(/^#/, '');
+        if (tabIds.includes(next)) setTab(next);
+      };
+      window.addEventListener('hashchange', onHashChange);
+      return () => window.removeEventListener('hashchange', onHashChange);
+    }, []);
 
     // Eager data load: comments, categories, stats, theme dictionary, wiki page list.
     useEffect(() => {

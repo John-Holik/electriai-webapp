@@ -445,6 +445,14 @@ Rules for your response:
       return m;
     }, [state.comments, state.rawVideos]);
 
+    // Cited videos + comments aggregated across every assistant message.
+    // Powers the right-side sources panel; clicking a card hands off to
+    // the Raw Data tab via the `navigate` prop.
+    const citedSources = useMemo(
+      () => collectCitedSources(messages, commentVideoLookup, state.rawVideos),
+      [messages, commentVideoLookup, state.rawVideos]
+    );
+
     // Autoscroll to the latest message whenever the message list grows.
     useEffect(() => {
       if (scrollRef.current) {

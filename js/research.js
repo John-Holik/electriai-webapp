@@ -585,9 +585,79 @@ window.AppResearch = (function() {
                 if (el.panel === 'funnel') return `${el.label}: ${el.count.toLocaleString()} comments`;
                 return `Keyword "${el.label}": ${el.count.toLocaleString()} transcripts`;
               },
-              body: (el) => (
-                <p className="text-sm text-slate-700 leading-relaxed">{el.description}</p>
-              ),
+              body: (el) => {
+                if (el.panel === 'qa') {
+                  const samples = el.samples || [];
+                  if (samples.length === 0) {
+                    return <p className="text-sm text-slate-700 leading-relaxed">{el.description}</p>;
+                  }
+                  return (
+                    <div>
+                      <p className="text-sm text-slate-700 leading-relaxed mb-4">{el.description}</p>
+                      <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 mb-2">
+                        {samples.length} sample {samples.length === 1 ? 'thread' : 'threads'}
+                      </div>
+                      <ul className="space-y-3">
+                        {samples.map((s, i) => (
+                          <li key={s.commentId || i} className="bg-white border border-slate-200 rounded-md p-3">
+                            <a
+                              href={s.videoUrl}
+                              target="_blank"
+                              rel="noopener"
+                              className="text-xs text-slate-600 hover:text-slate-900 underline underline-offset-2 block truncate mb-2"
+                              title={s.videoTitle}
+                            >
+                              {s.videoTitle}
+                            </a>
+                            <p className="text-sm text-slate-800 leading-relaxed serif whitespace-pre-wrap">
+                              {s.commentText}
+                            </p>
+                            {s.questionExcerpt && (
+                              <p className="text-xs text-slate-600 mt-2 italic">
+                                <span className="uppercase tracking-wider text-[10px] font-semibold not-italic text-slate-500 mr-1">Q:</span>
+                                {s.questionExcerpt}
+                              </p>
+                            )}
+                            {s.answerSummary && (
+                              <p className="text-xs text-slate-600 mt-1 italic">
+                                <span className="uppercase tracking-wider text-[10px] font-semibold not-italic text-slate-500 mr-1">A:</span>
+                                {s.answerSummary}
+                              </p>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                }
+                if (el.panel === 'keywords') {
+                  return (
+                    <div>
+                      <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
+                      <a
+                        href="#fig-2"
+                        className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
+                      >
+                        See Figure 2 — theme frequency across the corpus ↓
+                      </a>
+                    </div>
+                  );
+                }
+                if (el.panel === 'funnel') {
+                  return (
+                    <div>
+                      <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
+                      <a
+                        href="#fig-3"
+                        className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
+                      >
+                        See Figure 3 — transcript topics treemap ↓
+                      </a>
+                    </div>
+                  );
+                }
+                return <p className="text-sm text-slate-700 leading-relaxed">{el.description}</p>;
+              },
             }}
           />
         </FigureCard>

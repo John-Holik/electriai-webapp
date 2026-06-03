@@ -586,7 +586,8 @@ Rules for your response:
           </div>
         )}
 
-        <div className="bg-white border border-slate-200 rounded-lg max-w-3xl flex flex-col h-[60vh] min-h-[480px]">
+        <div className="flex flex-col lg:flex-row gap-4 items-stretch">
+          <div className="flex-1 min-w-0 lg:max-w-3xl bg-white border border-slate-200 rounded-lg flex flex-col h-[60vh] min-h-[480px]">
 
           {/* Messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4 scrollbar-thin">

@@ -244,15 +244,32 @@ Rules for your response:
           </a>
         );
       } else if (match[2]) {
-        nodes.push(
-          <span
-            key={`q-${i}`}
-            className="inline-flex items-center px-1.5 py-0 rounded bg-slate-100 text-slate-600 text-[11px] font-medium align-baseline mx-0.5"
-            title={`Source comment ${match[2]}`}
-          >
-            comment
-          </span>
-        );
+        const cid = match[2];
+        const vid = commentVideoLookup ? commentVideoLookup.get(cid) : null;
+        if (vid) {
+          nodes.push(
+            <a
+              key={`q-${i}`}
+              href={`https://www.youtube.com/watch?v=${vid}&lc=${encodeURIComponent(cid)}`}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-1 px-1.5 py-0 rounded bg-slate-100 text-slate-700 hover:bg-slate-200 text-[11px] font-medium align-baseline mx-0.5"
+              title={`Open YouTube comment ${cid}`}
+            >
+              💬 comment
+            </a>
+          );
+        } else {
+          nodes.push(
+            <span
+              key={`q-${i}`}
+              className="inline-flex items-center px-1.5 py-0 rounded bg-slate-100 text-slate-600 text-[11px] font-medium align-baseline mx-0.5"
+              title={`Source comment ${cid}`}
+            >
+              comment
+            </span>
+          );
+        }
       }
       lastIndex = pattern.lastIndex;
       i++;

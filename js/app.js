@@ -14,6 +14,7 @@
   const { useState, useEffect, useMemo } = React;
   const { ResearchTab } = window.AppResearch;
   const { CommentsTab } = window.AppComments;
+  const { RawDataTab } = window.AppRawData;
   const { ChatTab } = window.AppChat;
   const { AboutTab } = window.AppAbout;
 

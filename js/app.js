@@ -141,9 +141,11 @@
         });
     }, [tab, wikiEmbeddings, embeddingsLoading]);
 
-    // Lazy raw-videos load: trigger the first time the Raw Data tab is shown.
+    // Lazy raw-videos load. Triggered when the user opens Raw Data (the
+    // primary consumer) or Ask ElectriAI (so chat (Q:...) citations can
+    // resolve to YouTube comment deep-links via the commentId→videoId map).
     useEffect(() => {
-      if (tab !== 'rawdata') return;
+      if (tab !== 'rawdata' && tab !== 'chat') return;
       if (rawVideos || rawVideosLoading) return;
       setRawVideosLoading(true);
       fetchJSON('./data/raw_videos.json')

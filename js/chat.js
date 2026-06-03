@@ -247,16 +247,19 @@ Rules for your response:
         const cid = match[2];
         const vid = commentVideoLookup ? commentVideoLookup.get(cid) : null;
         if (vid) {
+          // The comment lives on a YouTube video — render as a video pill
+          // (visually identical to V:) and deep-link with &lc= so YouTube
+          // scrolls to and highlights the specific comment thread.
           nodes.push(
             <a
               key={`q-${i}`}
               href={`https://www.youtube.com/watch?v=${vid}&lc=${encodeURIComponent(cid)}`}
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center gap-1 px-1.5 py-0 rounded bg-slate-100 text-slate-700 hover:bg-slate-200 text-[11px] font-medium align-baseline mx-0.5"
-              title={`Open YouTube comment ${cid}`}
+              className="inline-flex items-center gap-1 px-1.5 py-0 rounded bg-red-50 text-red-700 hover:bg-red-100 text-[11px] font-medium align-baseline mx-0.5"
+              title={`Open YouTube comment ${cid} on video ${vid}`}
             >
-              💬 comment
+              ▶ video
             </a>
           );
         } else {

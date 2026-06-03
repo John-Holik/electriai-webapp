@@ -1,5 +1,5 @@
 /**
- * Cloudflare Worker — Gemini API Proxy
+ * Cloudflare Worker, Gemini API Proxy
  * ────────────────────────────────────────────────────────────
  * Proxies two Gemini endpoints used by the AI Assistant:
  *   POST /api/embed     → gemini-embedding-001:embedContent (buffered JSON)
@@ -67,7 +67,7 @@ async function checkRateLimit(env, ip) {
 }
 
 // ─── Proxy handlers ───────────────────────────────────────────
-// Buffered proxy — used for /api/embed where the response is a single JSON doc.
+// Buffered proxy, used for /api/embed where the response is a single JSON doc.
 async function proxyToGemini(request, env, geminiUrl, origin) {
   if (!env.GEMINI_API_KEY) {
     return jsonResponse({ error: 'GEMINI_API_KEY not configured on the Worker' }, 500, origin);
@@ -88,7 +88,7 @@ async function proxyToGemini(request, env, geminiUrl, origin) {
   });
 }
 
-// Streaming proxy — used for /api/generate so SSE events flow token-by-token
+// Streaming proxy, used for /api/generate so SSE events flow token-by-token
 // instead of being buffered and returned in one chunk at the end.
 async function proxyToGeminiStream(request, env, geminiUrl, origin) {
   if (!env.GEMINI_API_KEY) {

@@ -2,7 +2,7 @@ name = "electriai-api"
 main = "worker.js"
 compatibility_date = "2025-05-01"
 
-# Workers.dev hostname is disabled — the Worker is only reachable through the
+# Workers.dev hostname is disabled, the Worker is only reachable through the
 # custom route below. This prevents anyone from bypassing the route policy by
 # calling the workers.dev URL directly.
 workers_dev = false

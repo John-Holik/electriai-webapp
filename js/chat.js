@@ -156,7 +156,7 @@ window.AppChat = (function() {
           if (cand?.finishReason) lastFinishReason = cand.finishReason;
           if (json?.promptFeedback) lastPromptFeedback = json.promptFeedback;
         }
-      } catch (e) { /* not JSON either — caller will see empty text */ }
+      } catch (e) { /* not JSON either, caller will see empty text */ }
     }
     return { text: full, finishReason: lastFinishReason, promptFeedback: lastPromptFeedback };
   };
@@ -180,13 +180,13 @@ window.AppChat = (function() {
   const SYSTEM_PROMPT = `You are a research assistant for ElectriAI, a project that mines YouTube videos and viewer Q&A comments to build a knowledge base about electrical construction. You answer questions for working electricians, apprentices, and contractors.
 
 You will be given a small set of passages retrieved from the knowledge-base wiki. The wiki is hand-curated from video transcripts and Q&A comments, and every claim in it carries inline citations to the underlying sources:
-  - (V:VIDEOID) — citation to a specific YouTube video (11-character ID)
-  - (Q:COMMENTID) — citation to a viewer Q&A comment
+  - (V:VIDEOID), citation to a specific YouTube video (11-character ID)
+  - (Q:COMMENTID), citation to a viewer Q&A comment
 
 Rules for your response:
 1. Use ONLY the retrieved passages as evidence. Do not invent facts not present in them.
-2. When you state a substantive claim, carry forward its citations exactly as they appear in the source passages — preserve the (V:VIDEOID) and (Q:COMMENTID) markers verbatim. Do not paraphrase the citation format. When citing more than one source, use a separate parenthesis for each: write (V:abc) (V:def), never (V:abc, V:def).
-3. If the retrieved passages do not actually answer the user's question, say so plainly: "I don't know — that's outside the knowledge base." Do not guess.
+2. When you state a substantive claim, carry forward its citations exactly as they appear in the source passages, preserve the (V:VIDEOID) and (Q:COMMENTID) markers verbatim. Do not paraphrase the citation format. When citing more than one source, use a separate parenthesis for each: write (V:abc) (V:def), never (V:abc, V:def).
+3. If the retrieved passages do not actually answer the user's question, say so plainly: "I don't know, that's outside the knowledge base." Do not guess.
 4. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
 5. Be concise: 2–6 sentences for most questions, longer only if the user asks for a deep explanation.`;
 
@@ -195,13 +195,13 @@ Rules for your response:
     const compact = topChunks.slice(FULL_K);
     const fullBlocks = full.map((c, i) => {
       const ch = c.chunk;
-      const head = ch.sectionTitle ? `# ${ch.title} — ${ch.sectionTitle}` : `# ${ch.title}`;
+      const head = ch.sectionTitle ? `# ${ch.title}, ${ch.sectionTitle}` : `# ${ch.title}`;
       return `[Passage ${i + 1}, score=${c.score.toFixed(3)}]\n${head}\n\n${ch.chunkText}`;
     }).join('\n\n---\n\n');
     const compactBlocks = compact.map((c, i) => {
       const ch = c.chunk;
       const snippet = (ch.chunkText || '').slice(0, COMPACT_CHARS).trim();
-      return `[Passage ${FULL_K + i + 1}, score=${c.score.toFixed(3)}] ${ch.title}${ch.sectionTitle ? ' — ' + ch.sectionTitle : ''}\n${snippet}${ch.chunkText.length > COMPACT_CHARS ? '…' : ''}`;
+      return `[Passage ${FULL_K + i + 1}, score=${c.score.toFixed(3)}] ${ch.title}${ch.sectionTitle ? ', ' + ch.sectionTitle : ''}\n${snippet}${ch.chunkText.length > COMPACT_CHARS ? '…' : ''}`;
     }).join('\n\n');
     return `Retrieved passages from the ElectriAI wiki:\n\n${fullBlocks}${compactBlocks ? '\n\n---\n\n' + compactBlocks : ''}\n\n---\n\nUser question: ${question}\n\nAnswer using only the passages above. Preserve any (V:...) and (Q:...) citations exactly as they appear.`;
   };
@@ -212,8 +212,8 @@ Rules for your response:
   // and a non-link pill for comment citations.
   const renderWithCitations = (text, commentVideoLookup) => {
     if (!text) return null;
-    // Gemini sometimes groups citations into a single parens — like
-    // `(V:abc, V:def, Q:xyz)` — which the per-marker regex below cannot
+    // Gemini sometimes groups citations into a single parens, like
+    // `(V:abc, V:def, Q:xyz)`, which the per-marker regex below cannot
     // match. Rewrite grouped parens into individual ones first.
     text = text.replace(
       /\(((?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+)(?:\s*,\s*(?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+))+)\)/g,
@@ -261,7 +261,7 @@ Rules for your response:
         const cid = match[2];
         const vid = commentVideoLookup ? commentVideoLookup.get(cid) : null;
         if (vid) {
-          // The comment lives on a YouTube video — render as a video pill
+          // The comment lives on a YouTube video, render as a video pill
           // (visually identical to V:) and deep-link with &lc= so YouTube
           // scrolls to and highlights the specific comment thread.
           nodes.push(
@@ -470,7 +470,7 @@ Rules for your response:
         return;
       }
       if (!embeddingsReady) {
-        setError('Embeddings still loading — try again in a moment.');
+        setError('Embeddings still loading, try again in a moment.');
         return;
       }
 

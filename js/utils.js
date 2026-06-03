@@ -55,7 +55,7 @@ window.AppUtils = (function() {
 
   // Formats a large integer with thousands separators for stat cards.
   const formatNumber = (n) => {
-    if (n === null || n === undefined || Number.isNaN(n)) return '—';
+    if (n === null || n === undefined || Number.isNaN(n)) return ',';
     return Number(n).toLocaleString('en-US');
   };
 
@@ -63,7 +63,7 @@ window.AppUtils = (function() {
   // Numbers below 1,000 are returned exactly; everything else picks the
   // largest unit (K/M/B) and keeps one decimal place, trimming trailing .0.
   const formatCompact = (n) => {
-    if (n === null || n === undefined || Number.isNaN(n)) return '—';
+    if (n === null || n === undefined || Number.isNaN(n)) return ',';
     const num = Number(n);
     const abs = Math.abs(num);
     if (abs >= 1e9) return (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';

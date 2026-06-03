@@ -1,4 +1,4 @@
-/* ElectriAI Research companion webapp — root shell.
+/* ElectriAI Research companion webapp, root shell.
 
    Responsibilities:
      - Load the five eager JSON datasets exported by src/web/export_data.py.
@@ -270,7 +270,7 @@
           <div className="max-w-6xl mx-auto px-4 sm:px-6 text-xs text-slate-500 flex flex-col sm:flex-row justify-between gap-2">
             <span>ElectriAI Research companion site · React + Tailwind, no build step</span>
             <span>
-              Data generated {stats && stats.generatedAt ? stats.generatedAt.slice(0, 10) : '—'}
+              Data generated {stats && stats.generatedAt ? stats.generatedAt.slice(0, 10) : ','}
             </span>
           </div>
         </footer>

@@ -1,13 +1,13 @@
-# ElectriAI — YouTube Q&A Knowledge for Electrical Contractors
+# ElectriAI, YouTube Q&A Knowledge for Electrical Contractors
 
 Companion website for the ElectriAI Research paper analyzing **794 YouTube videos** and **~18,000 viewer comments** about electrical-construction topics. The site exposes the dataset, the figures, and a chatbot grounded in the project's markdown knowledge base.
 
 The site has four tabs:
 
-- **Research Results** — Project summary, top-line stats, the 10-class category schema (LV, HVAC, GBF, OCP, RE, DL, CRR, CISF, PDS, OTH), and the four paper visualizations from `notebooks/05_Visualizations.ipynb`: the knowledge-bottleneck bubble chart (interactive Plotly with an SVG fallback), theme dictionary frequency, transcript topics treemap, and a data-collection / comment-analysis panel.
-- **Ask ElectriAI** — RAG chatbot grounded in `knowledge_base/wiki/**/*.md`. Uses `gemini-embedding-001` (build-time) and `gemini-2.5-flash` (generation). Local-first: calls the Gemini API directly from the browser with a dev key in `localStorage`. A Cloudflare Worker proxy is planned for public deployment (see "Deploying" below). Cites video IDs and comment IDs from the underlying corpus.
-- **Raw Data** — Searchable, filterable browser over the 200-comment curated set (20 per category × 10, sourced from `data/processed/qualtrics_comments.csv`) with every label attached: category, themes, topic / sub-topic, Q&A excerpts and summaries, reply counts, and video metadata.
-- **About** — Static page with authors, citation, code & data links, acknowledgments, and contact.
+- **Research Results**, Project summary, top-line stats, the 10-class category schema (LV, HVAC, GBF, OCP, RE, DL, CRR, CISF, PDS, OTH), and the four paper visualizations from `notebooks/05_Visualizations.ipynb`: the knowledge-bottleneck bubble chart (interactive Plotly with an SVG fallback), theme dictionary frequency, transcript topics treemap, and a data-collection / comment-analysis panel.
+- **Ask ElectriAI**, RAG chatbot grounded in `knowledge_base/wiki/**/*.md`. Uses `gemini-embedding-001` (build-time) and `gemini-2.5-flash` (generation). Local-first: calls the Gemini API directly from the browser with a dev key in `localStorage`. A Cloudflare Worker proxy is planned for public deployment (see "Deploying" below). Cites video IDs and comment IDs from the underlying corpus.
+- **Raw Data**, Searchable, filterable browser over the 200-comment curated set (20 per category × 10, sourced from `data/processed/qualtrics_comments.csv`) with every label attached: category, themes, topic / sub-topic, Q&A excerpts and summaries, reply counts, and video metadata.
+- **About**, Static page with authors, citation, code & data links, acknowledgments, and contact.
 
 ## Architecture
 
@@ -66,7 +66,7 @@ Paste a Google AI Studio key into `localStorage` once, then reload:
 localStorage.setItem('GEMINI_DEV_KEY', '<your-key>'); location.reload();
 ```
 
-The frontend will call the Gemini API directly from the browser. The key never leaves your machine. **Do not commit a key. Do not enable this path on a deployed site** — once the Cloudflare Worker is in place (see "Deploying"), the Worker holds the key as a secret and the browser stops needing one.
+The frontend will call the Gemini API directly from the browser. The key never leaves your machine. **Do not commit a key. Do not enable this path on a deployed site**, once the Cloudflare Worker is in place (see "Deploying"), the Worker holds the key as a secret and the browser stops needing one.
 
 ## Refreshing the data after notebook updates
 
@@ -116,4 +116,4 @@ If you reference this dataset or chatbot, please cite the underlying ElectriAI R
 
 ## Licence
 
-Code released under the MIT Licence. Dataset (CSV/JSON) released under CC BY 4.0 — please attribute the ElectriAI Research paper when reusing.
+Code released under the MIT Licence. Dataset (CSV/JSON) released under CC BY 4.0, please attribute the ElectriAI Research paper when reusing.

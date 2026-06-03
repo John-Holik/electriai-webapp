@@ -638,7 +638,7 @@ window.AppResearch = (function() {
                         href="#fig-2"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 2 — theme frequency across the corpus ↓
+                        See Figure 2, theme frequency across the corpus ↓
                       </a>
                     </div>
                   );
@@ -651,7 +651,7 @@ window.AppResearch = (function() {
                         href="#fig-3"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 3 — transcript topics treemap ↓
+                        See Figure 3, transcript topics treemap ↓
                       </a>
                     </div>
                   );
@@ -662,7 +662,7 @@ window.AppResearch = (function() {
           />
         </FigureCard>
 
-        {/* Table 1 — per-category classification metrics on consensus subset. */}
+        {/* Table 1, per-category classification metrics on consensus subset. */}
         <figure className="bg-white border border-slate-200 rounded-lg overflow-hidden mt-8">
           <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-2">
             <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">

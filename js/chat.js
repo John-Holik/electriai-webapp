@@ -39,8 +39,11 @@ window.AppChat = (function() {
 
   // ─── Gemini API calls ──────────────────────────────────
   // Embeds the user query and returns the 768-d vector.
-  const embedQuery = async (apiKey, text) => {
-    const res = await fetch(`${GEMINI_EMBED_URL}?key=${encodeURIComponent(apiKey)}`, {
+  const embedQuery = async (apiKey, text, workerBase) => {
+    const url = workerBase
+      ? `${workerBase}/api/embed`
+      : `${GEMINI_EMBED_URL}?key=${encodeURIComponent(apiKey)}`;
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -59,8 +62,13 @@ window.AppChat = (function() {
 
   // Streams a Gemini generation response, calling onDelta with each
   // accumulated text snippet. Uses the SSE variant for line-by-line parsing.
-  const streamGenerate = async (apiKey, systemText, userText, onDelta) => {
-    const res = await fetch(`${GEMINI_GENERATE_URL}?alt=sse&key=${encodeURIComponent(apiKey)}`, {
+  const streamGenerate = async (apiKey, systemText, userText, onDelta, workerBase) => {
+    // The Worker proxy handles `?alt=sse` server-side and streams the body
+    // straight through, so the browser never sees the key.
+    const url = workerBase
+      ? `${workerBase}/api/generate`
+      : `${GEMINI_GENERATE_URL}?alt=sse&key=${encodeURIComponent(apiKey)}`;
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -148,7 +156,7 @@ window.AppChat = (function() {
           if (cand?.finishReason) lastFinishReason = cand.finishReason;
           if (json?.promptFeedback) lastPromptFeedback = json.promptFeedback;
         }
-      } catch (e) { /* not JSON either — caller will see empty text */ }
+      } catch (e) { /* not JSON either, caller will see empty text */ }
     }
     return { text: full, finishReason: lastFinishReason, promptFeedback: lastPromptFeedback };
   };
@@ -172,13 +180,13 @@ window.AppChat = (function() {
   const SYSTEM_PROMPT = `You are a research assistant for ElectriAI, a project that mines YouTube videos and viewer Q&A comments to build a knowledge base about electrical construction. You answer questions for working electricians, apprentices, and contractors.
 
 You will be given a small set of passages retrieved from the knowledge-base wiki. The wiki is hand-curated from video transcripts and Q&A comments, and every claim in it carries inline citations to the underlying sources:
-  - (V:VIDEOID) — citation to a specific YouTube video (11-character ID)
-  - (Q:COMMENTID) — citation to a viewer Q&A comment
+  - (V:VIDEOID), citation to a specific YouTube video (11-character ID)
+  - (Q:COMMENTID), citation to a viewer Q&A comment
 
 Rules for your response:
 1. Use ONLY the retrieved passages as evidence. Do not invent facts not present in them.
-2. When you state a substantive claim, carry forward its citations exactly as they appear in the source passages — preserve the (V:VIDEOID) and (Q:COMMENTID) markers verbatim. Do not paraphrase the citation format.
-3. If the retrieved passages do not actually answer the user's question, say so plainly: "I don't know — that's outside the knowledge base." Do not guess.
+2. When you state a substantive claim, carry forward its citations exactly as they appear in the source passages, preserve the (V:VIDEOID) and (Q:COMMENTID) markers verbatim. Do not paraphrase the citation format. When citing more than one source, use a separate parenthesis for each: write (V:abc) (V:def), never (V:abc, V:def).
+3. If the retrieved passages do not actually answer the user's question, say so plainly: "I don't know, that's outside the knowledge base." Do not guess.
 4. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
 5. Be concise: 2–6 sentences for most questions, longer only if the user asks for a deep explanation.`;
 
@@ -187,13 +195,13 @@ Rules for your response:
     const compact = topChunks.slice(FULL_K);
     const fullBlocks = full.map((c, i) => {
       const ch = c.chunk;
-      const head = ch.sectionTitle ? `# ${ch.title} — ${ch.sectionTitle}` : `# ${ch.title}`;
+      const head = ch.sectionTitle ? `# ${ch.title}, ${ch.sectionTitle}` : `# ${ch.title}`;
       return `[Passage ${i + 1}, score=${c.score.toFixed(3)}]\n${head}\n\n${ch.chunkText}`;
     }).join('\n\n---\n\n');
     const compactBlocks = compact.map((c, i) => {
       const ch = c.chunk;
       const snippet = (ch.chunkText || '').slice(0, COMPACT_CHARS).trim();
-      return `[Passage ${FULL_K + i + 1}, score=${c.score.toFixed(3)}] ${ch.title}${ch.sectionTitle ? ' — ' + ch.sectionTitle : ''}\n${snippet}${ch.chunkText.length > COMPACT_CHARS ? '…' : ''}`;
+      return `[Passage ${FULL_K + i + 1}, score=${c.score.toFixed(3)}] ${ch.title}${ch.sectionTitle ? ', ' + ch.sectionTitle : ''}\n${snippet}${ch.chunkText.length > COMPACT_CHARS ? '…' : ''}`;
     }).join('\n\n');
     return `Retrieved passages from the ElectriAI wiki:\n\n${fullBlocks}${compactBlocks ? '\n\n---\n\n' + compactBlocks : ''}\n\n---\n\nUser question: ${question}\n\nAnswer using only the passages above. Preserve any (V:...) and (Q:...) citations exactly as they appear.`;
   };
@@ -202,8 +210,29 @@ Rules for your response:
   // Splits a message body around (V:...) and (Q:...) markers and returns
   // an array of React nodes with proper linkification for video citations
   // and a non-link pill for comment citations.
-  const renderWithCitations = (text) => {
+  const renderWithCitations = (text, commentVideoLookup) => {
     if (!text) return null;
+    // Gemini sometimes groups citations into a single parens, like
+    // `(V:abc, V:def, Q:xyz)`, which the per-marker regex below cannot
+    // match. Rewrite grouped parens into individual ones first.
+    text = text.replace(
+      /\(((?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+)(?:\s*,\s*(?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+))+)\)/g,
+      (_m, body) => body.split(/\s*,\s*/).map((t) => `(${t.trim()})`).join(' ')
+    );
+    // Dedup citations within a single message: every cite resolves to a
+    // target video, and seeing the same video pill repeatedly is just
+    // noise. Drop subsequent occurrences and clean up the orphan spaces /
+    // dangling punctuation they leave behind.
+    const seenTargets = new Set();
+    text = text.replace(/\(V:([A-Za-z0-9_-]{11})\)|\(Q:([^)]+)\)/g, (m, vid, cid) => {
+      const target = vid
+        || (commentVideoLookup && commentVideoLookup.get(cid))
+        || `q:${cid}`;
+      if (seenTargets.has(target)) return '';
+      seenTargets.add(target);
+      return m;
+    });
+    text = text.replace(/ {2,}/g, ' ').replace(/ +([.,!?;:])/g, '$1');
     // Combined regex with two alternates so we can match either citation type.
     const pattern = /\(V:([A-Za-z0-9_-]{11})\)|\(Q:([^)]+)\)/g;
     const nodes = [];
@@ -229,15 +258,35 @@ Rules for your response:
           </a>
         );
       } else if (match[2]) {
-        nodes.push(
-          <span
-            key={`q-${i}`}
-            className="inline-flex items-center px-1.5 py-0 rounded bg-slate-100 text-slate-600 text-[11px] font-medium align-baseline mx-0.5"
-            title={`Source comment ${match[2]}`}
-          >
-            comment
-          </span>
-        );
+        const cid = match[2];
+        const vid = commentVideoLookup ? commentVideoLookup.get(cid) : null;
+        if (vid) {
+          // The comment lives on a YouTube video, render as a video pill
+          // (visually identical to V:) and deep-link with &lc= so YouTube
+          // scrolls to and highlights the specific comment thread.
+          nodes.push(
+            <a
+              key={`q-${i}`}
+              href={`https://www.youtube.com/watch?v=${vid}&lc=${encodeURIComponent(cid)}`}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-1 px-1.5 py-0 rounded bg-red-50 text-red-700 hover:bg-red-100 text-[11px] font-medium align-baseline mx-0.5"
+              title={`Open YouTube comment ${cid} on video ${vid}`}
+            >
+              ▶ video
+            </a>
+          );
+        } else {
+          nodes.push(
+            <span
+              key={`q-${i}`}
+              className="inline-flex items-center px-1.5 py-0 rounded bg-slate-100 text-slate-600 text-[11px] font-medium align-baseline mx-0.5"
+              title={`Source comment ${cid}`}
+            >
+              comment
+            </span>
+          );
+        }
       }
       lastIndex = pattern.lastIndex;
       i++;
@@ -263,9 +312,106 @@ Rules for your response:
     return pages;
   };
 
+  // ─── Cited sources panel ───────────────────────────────
+  // Walks every assistant message, pulls (V:...) and (Q:...) markers,
+  // resolves Q: comments to their parent video via commentVideoLookup,
+  // and returns one card per unique video plus the count of distinct
+  // comments cited from that video.
+  const collectCitedSources = (messages, commentVideoLookup, rawVideos) => {
+    const videoLookup = rawVideos && rawVideos.videos
+      ? new Map(rawVideos.videos.map((v) => [v.videoId, v]))
+      : new Map();
+    const videos = new Map();
+    let order = 0;
+    const pattern = /\(V:([A-Za-z0-9_-]{11})\)|\(Q:([^)]+)\)/g;
+    for (const m of messages) {
+      if (m.role !== 'assistant' || !m.text) continue;
+      pattern.lastIndex = 0;
+      let match;
+      while ((match = pattern.exec(m.text)) !== null) {
+        const cid = match[2] || null;
+        const vid = match[1] || (cid && commentVideoLookup.get(cid)) || null;
+        if (!vid) continue;
+        if (!videos.has(vid)) {
+          const v = videoLookup.get(vid);
+          videos.set(vid, {
+            videoId: vid,
+            title: v ? v.title : null,
+            commentCount: v ? v.commentCount : 0,
+            commentIds: new Set(),
+            firstCommentId: null,
+            order: order++,
+          });
+        }
+        if (cid) {
+          const entry = videos.get(vid);
+          entry.commentIds.add(cid);
+          if (!entry.firstCommentId) entry.firstCommentId = cid;
+        }
+      }
+    }
+    return [...videos.values()].sort((a, b) => a.order - b.order);
+  };
+
+  function SourcesPanel({ sources, navigate, rawVideosLoading }) {
+    return (
+      <div className="lg:sticky lg:top-20 bg-white border border-slate-200 rounded-lg flex flex-col h-[60vh] min-h-[480px]">
+        <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+          <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500">
+            Cited sources{sources.length > 0 ? ` (${sources.length})` : ''}
+          </div>
+          {rawVideosLoading && (
+            <span className="inline-block w-3 h-3 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" />
+          )}
+        </div>
+        <div className="flex-1 overflow-y-auto p-3 scrollbar-thin">
+          {sources.length === 0 ? (
+            <div className="text-center px-3 py-12 text-slate-400">
+              <p className="serif italic text-sm">No sources yet.</p>
+              <p className="text-[11px] mt-2 leading-relaxed">
+                Videos and comments the chatbot cites will appear here. Click any card to open it in the Raw Data tab.
+              </p>
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {sources.map((s) => (
+                <li key={s.videoId}>
+                  <button
+                    onClick={() => navigate && navigate('rawdata', { videoId: s.videoId, commentId: s.firstCommentId })}
+                    className="w-full text-left bg-stone-50 hover:bg-stone-100 border border-slate-200 hover:border-slate-400 rounded-md p-3 transition-colors group"
+                    title={`Open ${s.title || s.videoId} in Raw Data`}
+                  >
+                    <div className="flex items-center justify-between gap-2 text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">
+                      <span>YouTube video</span>
+                      {s.commentIds.size > 0 && (
+                        <span className="text-slate-400 normal-case tracking-normal">
+                          {s.commentIds.size} comment{s.commentIds.size === 1 ? '' : 's'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[12.5px] text-slate-800 leading-snug font-medium line-clamp-3 serif">
+                      {s.title || s.videoId}
+                    </div>
+                    <div className="mt-2 text-[10px] text-slate-400 group-hover:text-slate-700">
+                      Open in Raw Data →
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   // ─── Tab component ─────────────────────────────────────
-  function ChatTab({ state, embeddingsLoading, embeddingsReady, devKeyAvailable }) {
+  function ChatTab({ state, embeddingsLoading, embeddingsReady, devKeyAvailable, navigate, rawVideosLoading }) {
     const apiKey = state.geminiDevKey || '';
+    const workerBase = state.geminiWorkerBase || '';
+    // The chat is usable whenever the production Worker proxy is configured
+    // (workerBase is set) OR a local dev key was pasted into localStorage.
+    const apiReady = !!workerBase || devKeyAvailable;
 
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
@@ -281,6 +427,32 @@ Rules for your response:
       return m;
     }, [state.wikiPages]);
 
+    // commentId -> videoId lookup so (Q:...) citations can become deep links
+    // to the exact YouTube comment. Sourced from the test-data subset that
+    // is always loaded, plus the full raw corpus once it has been fetched.
+    const commentVideoLookup = useMemo(() => {
+      const m = new Map();
+      for (const c of (state.comments || [])) {
+        if (c.commentId && c.videoId) m.set(c.commentId, c.videoId);
+      }
+      if (state.rawVideos && state.rawVideos.videos) {
+        for (const v of state.rawVideos.videos) {
+          for (const c of (v.comments || [])) {
+            if (c.commentId) m.set(c.commentId, v.videoId);
+          }
+        }
+      }
+      return m;
+    }, [state.comments, state.rawVideos]);
+
+    // Cited videos + comments aggregated across every assistant message.
+    // Powers the right-side sources panel; clicking a card hands off to
+    // the Raw Data tab via the `navigate` prop.
+    const citedSources = useMemo(
+      () => collectCitedSources(messages, commentVideoLookup, state.rawVideos),
+      [messages, commentVideoLookup, state.rawVideos]
+    );
+
     // Autoscroll to the latest message whenever the message list grows.
     useEffect(() => {
       if (scrollRef.current) {
@@ -288,17 +460,17 @@ Rules for your response:
       }
     }, [messages, pending]);
 
-    const canSend = devKeyAvailable && embeddingsReady && !pending && input.trim();
+    const canSend = apiReady && embeddingsReady && !pending && input.trim();
 
     const handleAsk = async () => {
       const question = input.trim();
       if (!question) return;
-      if (!devKeyAvailable) {
-        setError('No local Gemini dev key set. See instructions below the chat box.');
+      if (!apiReady) {
+        setError('Chat is not configured. Set the Worker URL in js/app.js for production, or paste a Gemini key into localStorage for local development.');
         return;
       }
       if (!embeddingsReady) {
-        setError('Embeddings still loading — try again in a moment.');
+        setError('Embeddings still loading, try again in a moment.');
         return;
       }
 
@@ -313,7 +485,7 @@ Rules for your response:
 
       try {
         // 1. Embed the question.
-        const queryVec = await embedQuery(apiKey, question);
+        const queryVec = await embedQuery(apiKey, question, workerBase);
         if (!queryVec || !queryVec.length) {
           throw new Error('Embedding API returned no vector.');
         }
@@ -336,7 +508,7 @@ Rules for your response:
             next[next.length - 1] = { ...last, text: partial };
             return next;
           });
-        });
+        }, workerBase);
 
         // 5. Mark assistant message complete and attach references. Surface a
         // friendly error if the model returned nothing.
@@ -390,7 +562,7 @@ Rules for your response:
         </section>
 
         {/* Loader / dev-key banners */}
-        {!devKeyAvailable && (
+        {!apiReady && (
           <div className="mb-4 p-4 border border-amber-200 bg-amber-50 rounded-lg text-sm text-amber-900 max-w-3xl">
             <p className="font-medium mb-1">No Gemini dev key found in localStorage.</p>
             <p className="text-amber-800 leading-relaxed">
@@ -414,7 +586,8 @@ Rules for your response:
           </div>
         )}
 
-        <div className="bg-white border border-slate-200 rounded-lg max-w-3xl flex flex-col h-[60vh] min-h-[480px]">
+        <div className="flex flex-col lg:flex-row gap-4 items-stretch">
+          <div className="flex-1 min-w-0 lg:max-w-3xl bg-white border border-slate-200 rounded-lg flex flex-col h-[60vh] min-h-[480px]">
 
           {/* Messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4 scrollbar-thin">
@@ -434,7 +607,7 @@ Rules for your response:
                   }`}
                 >
                   <div className="whitespace-pre-wrap">
-                    {m.role === 'assistant' ? renderWithCitations(m.text) : m.text}
+                    {m.role === 'assistant' ? renderWithCitations(m.text, commentVideoLookup) : m.text}
                     {m.role === 'assistant' && m.pending && (
                       <span className="inline-block w-1.5 h-3 bg-slate-400 ml-1 animate-pulse align-middle" />
                     )}
@@ -472,8 +645,8 @@ Rules for your response:
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={onKeyDown}
                 rows={2}
-                placeholder={devKeyAvailable ? 'Ask the wiki…' : 'Set a dev key to enable chat'}
-                disabled={!devKeyAvailable || !embeddingsReady}
+                placeholder={apiReady ? 'Ask the wiki…' : 'Chat is not configured yet'}
+                disabled={!apiReady || !embeddingsReady}
                 className="flex-1 text-sm px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 resize-none disabled:bg-slate-50 disabled:text-slate-500"
               />
               <button
@@ -493,6 +666,17 @@ Rules for your response:
               )}
             </div>
           </div>
+          </div>
+
+          {/* Right-side cited sources panel. Auto-populates as the
+              chatbot's response cites videos and comments. */}
+          <aside className="lg:w-72 xl:w-80 lg:flex-shrink-0">
+            <SourcesPanel
+              sources={citedSources}
+              navigate={navigate}
+              rawVideosLoading={rawVideosLoading}
+            />
+          </aside>
         </div>
 
         {openPage && <WikiPageModal page={openPage} onClose={() => setOpenPage(null)} />}

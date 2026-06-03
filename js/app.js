@@ -1,4 +1,4 @@
-/* ElectriAI Research companion webapp — root shell.
+/* ElectriAI Research companion webapp, root shell.
 
    Responsibilities:
      - Load the five eager JSON datasets exported by src/web/export_data.py.
@@ -14,6 +14,7 @@
   const { useState, useEffect, useMemo } = React;
   const { ResearchTab } = window.AppResearch;
   const { CommentsTab } = window.AppComments;
+  const { RawDataTab } = window.AppRawData;
   const { ChatTab } = window.AppChat;
   const { AboutTab } = window.AppAbout;
 
@@ -27,12 +28,13 @@
 
   // Cloudflare Worker base URL for the production embed + generate proxy.
   // Wired up in Phase 3; harmless to leave defined here while skipped.
-  const GEMINI_WORKER_BASE = 'https://cm-electriai-proxy.chauducanh.workers.dev';
+  const GEMINI_WORKER_BASE = 'https://youtube.electriai.com';
 
   const TABS = [
     { id: 'research', label: 'Research Results' },
     { id: 'chat',     label: 'Ask ElectriAI' },
-    { id: 'comments', label: 'Raw Data' },
+    { id: 'rawdata',  label: 'Raw Data' },
+    { id: 'comments', label: 'Test Data' },
     { id: 'about',    label: 'About' },
   ];
 
@@ -58,14 +60,50 @@
     const [wikiChunks, setWikiChunks]         = useState(null);
     const [embeddingsLoading, setEmbeddingsLoading] = useState(false);
 
+    // Lazy-loaded raw video corpus, only fetched once the Raw Data tab is opened.
+    const [rawVideos, setRawVideos]           = useState(null);
+    const [rawVideosLoading, setRawVideosLoading] = useState(false);
+
     const [loading, setLoading] = useState(true);
     const [error, setError]     = useState(null);
-    const [tab, setTab]         = useState('research');
+    // Tab persists in the URL hash so refresh, browser back/forward, and
+    // shared links all land on the same tab. Falls back to 'research' if
+    // the hash is empty or names an unknown tab.
+    const tabIds = TABS.map((t) => t.id);
+    const initialTab = (() => {
+      const hash = (window.location.hash || '').replace(/^#/, '');
+      return tabIds.includes(hash) ? hash : 'research';
+    })();
+    const [tab, setTab] = useState(initialTab);
+
+    // Cross-tab navigation intent. Set by one tab (e.g. the chat panel
+    // wants to open a specific video in Raw Data), consumed and cleared
+    // by the destination tab. Carries { videoId, commentId } payloads.
+    const [navIntent, setNavIntent] = useState(null);
 
     function changeTab(nextTab) {
       setTab(nextTab);
+      if (window.location.hash.replace(/^#/, '') !== nextTab) {
+        window.history.pushState(null, '', `#${nextTab}`);
+      }
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     }
+
+    // Helper: navigate to another tab with an optional context payload.
+    function navigate(nextTab, payload) {
+      if (payload) setNavIntent(payload);
+      changeTab(nextTab);
+    }
+
+    // Sync state when the user uses browser back/forward.
+    useEffect(() => {
+      const onHashChange = () => {
+        const next = (window.location.hash || '').replace(/^#/, '');
+        if (tabIds.includes(next)) setTab(next);
+      };
+      window.addEventListener('hashchange', onHashChange);
+      return () => window.removeEventListener('hashchange', onHashChange);
+    }, []);
 
     // Eager data load: comments, categories, stats, theme dictionary, wiki page list.
     useEffect(() => {
@@ -114,6 +152,24 @@
         });
     }, [tab, wikiEmbeddings, embeddingsLoading]);
 
+    // Lazy raw-videos load. Triggered when the user opens Raw Data (the
+    // primary consumer) or Ask ElectriAI (so chat (Q:...) citations can
+    // resolve to YouTube comment deep-links via the commentId→videoId map).
+    useEffect(() => {
+      if (tab !== 'rawdata' && tab !== 'chat') return;
+      if (rawVideos || rawVideosLoading) return;
+      setRawVideosLoading(true);
+      fetchJSON('./data/raw_videos.json')
+        .then(doc => {
+          setRawVideos(doc);
+          setRawVideosLoading(false);
+        })
+        .catch(err => {
+          setError(err.message);
+          setRawVideosLoading(false);
+        });
+    }, [tab, rawVideos, rawVideosLoading]);
+
     // Single state bag passed down to every tab so they share a stable shape.
     const state = useMemo(() => ({
       comments,
@@ -124,9 +180,10 @@
       wikiEmbeddings,
       wikiChunks,
       bottleneck,
+      rawVideos,
       geminiDevKey: GEMINI_DEV_KEY,
       geminiWorkerBase: GEMINI_WORKER_BASE,
-    }), [comments, categories, stats, themeDict, wikiPages, wikiEmbeddings, wikiChunks, bottleneck]);
+    }), [comments, categories, stats, themeDict, wikiPages, wikiEmbeddings, wikiChunks, bottleneck, rawVideos]);
 
     if (loading) {
       return (
@@ -187,6 +244,14 @@
 
         <main className="max-w-6xl mx-auto px-4 sm:px-6">
           {tab === 'research' && <ResearchTab state={state} />}
+          {tab === 'rawdata' && (
+            <RawDataTab
+              state={state}
+              loading={rawVideosLoading}
+              navIntent={navIntent}
+              clearNavIntent={() => setNavIntent(null)}
+            />
+          )}
           {tab === 'comments' && <CommentsTab state={state} />}
           {tab === 'chat' && (
             <ChatTab
@@ -194,6 +259,8 @@
               embeddingsLoading={embeddingsLoading}
               embeddingsReady={Boolean(wikiEmbeddings)}
               devKeyAvailable={Boolean(GEMINI_DEV_KEY)}
+              navigate={navigate}
+              rawVideosLoading={rawVideosLoading}
             />
           )}
           {tab === 'about' && <AboutTab />}
@@ -203,7 +270,7 @@
           <div className="max-w-6xl mx-auto px-4 sm:px-6 text-xs text-slate-500 flex flex-col sm:flex-row justify-between gap-2">
             <span>ElectriAI Research companion site · React + Tailwind, no build step</span>
             <span>
-              Data generated {stats && stats.generatedAt ? stats.generatedAt.slice(0, 10) : '—'}
+              Data generated {stats && stats.generatedAt ? stats.generatedAt.slice(0, 10) : ','}
             </span>
           </div>
         </footer>

@@ -1,0 +1,25 @@
+name = "electriai-api"
+main = "worker.js"
+compatibility_date = "2025-05-01"
+
+# Workers.dev hostname is disabled, the Worker is only reachable through the
+# custom route below. This prevents anyone from bypassing the route policy by
+# calling the workers.dev URL directly.
+workers_dev = false
+
+# Route the Worker on /api/* of the production domain so the frontend can use
+# same-origin requests. Requires the zone electriai.com to be on Cloudflare.
+routes = [
+  { pattern = "youtube.electriai.com/api/*", zone_name = "electriai.com" }
+]
+
+# Non-secret variables. Secrets (GEMINI_API_KEY) are set with:
+#   wrangler secret put GEMINI_API_KEY
+[vars]
+
+# Uncomment after creating a KV namespace for rate limiting:
+#   wrangler kv namespace create RATE_LIMIT_KV
+# then paste the printed id below.
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "REPLACE_WITH_KV_ID"

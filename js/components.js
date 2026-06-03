@@ -65,7 +65,7 @@ window.AppComponents = window.AppComponents || {};
         <span
           className="flex-shrink-0 inline-flex items-center justify-center min-w-[3rem] h-9 px-2 rounded-md text-xs font-semibold tracking-wide"
           style={{ backgroundColor: color, color: textColor }}
-          title={`${code} — ${name}`}
+          title={`${code}, ${name}`}
         >
           {code}
         </span>
@@ -81,7 +81,7 @@ window.AppComponents = window.AppComponents || {};
   // figure number and title; body slot holds the asset (iframe, img, etc.);
   // caption is the paper-style prose; dataSource is a small footnote.
   const FigureCard = ({ number, title, caption, dataSource, children }) => (
-    <figure className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+    <figure id={`fig-${number}`} className="bg-white border border-slate-200 rounded-lg overflow-hidden scroll-mt-20">
       <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-2">
         <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">
           Figure {number}
@@ -117,7 +117,7 @@ window.AppComponents = window.AppComponents || {};
       <span
         className={`inline-flex items-center gap-1.5 rounded-md font-semibold tracking-wide ${sizeClasses}`}
         style={{ backgroundColor: color, color: textColor }}
-        title={name ? `${code} — ${name}` : code}
+        title={name ? `${code}, ${name}` : code}
       >
         <span>{code}</span>
         {name && <span className="font-normal opacity-90 hidden sm:inline">· {name}</span>}

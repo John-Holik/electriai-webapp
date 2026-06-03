@@ -132,7 +132,79 @@
       "label": "Non-Question",
       "count": 1882,
       "percent": 11.161190843316332,
-      "description": "Parent threads where the GPT-5-mini classifier did not identify a question. These are excluded from the question-resolution analysis."
+      "description": "Parent threads where the GPT-5-mini classifier did not identify a question. These are excluded from the question-resolution analysis.",
+      "samples": [
+        {
+          "commentId": "Ugx5UDZuNerRzfTlUA14AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "Nice idea on taking pictures. My boss used to do that and always lost track of which job was which. I told him to take a shot of the mailbox # or the outside of the house before going inside. That helped quite a bit. You can also add sticky notes on the wall to identify which room or which direction the shots are. (front bedroom, north, south, etc) Just one per room or in any other confusing situation will do."
+        },
+        {
+          "commentId": "UgxTFoaE28qqlEvNnLh4AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "Unfortunately there are some inspectors in my area that will not pass a rough end if you do not have the vanity light in a box"
+        },
+        {
+          "commentId": "UgxIJZRuHBcVyk8sJ8N4AaABAg",
+          "videoId": "1D5OqJ5SF_I",
+          "videoTitle": "How To Install Rough In Electricity In A New Construction House - Beginners Guide To Electrical",
+          "videoUrl": "https://www.youtube.com/watch?v=1D5OqJ5SF_I",
+          "commentText": "Sometimes better to put your bedroom lights separate from receptacles."
+        },
+        {
+          "commentId": "UgzbiMRTIG18CuwOohR4AaABAg",
+          "videoId": "1D5OqJ5SF_I",
+          "videoTitle": "How To Install Rough In Electricity In A New Construction House - Beginners Guide To Electrical",
+          "videoUrl": "https://www.youtube.com/watch?v=1D5OqJ5SF_I",
+          "commentText": "Ok,so if your using 12/3,that means your sharing a neutral. Arc Faults will always trip when this is done."
+        },
+        {
+          "commentId": "UgxC8s7norS0ibb2l3p4AaABAg",
+          "videoId": "1D5OqJ5SF_I",
+          "videoTitle": "How To Install Rough In Electricity In A New Construction House - Beginners Guide To Electrical",
+          "videoUrl": "https://www.youtube.com/watch?v=1D5OqJ5SF_I",
+          "commentText": "One YouTube teaches that a yellow coated three wire routing cable has AWG #12 wire inside--- that is a more heavy duty wire. The video partially explain this.   Otherwise the close-ups of items is really helpful in this professionally done video."
+        },
+        {
+          "commentId": "UgwaPmoIS5BhMLVCp0F4AaABAg",
+          "videoId": "1D5OqJ5SF_I",
+          "videoTitle": "How To Install Rough In Electricity In A New Construction House - Beginners Guide To Electrical",
+          "videoUrl": "https://www.youtube.com/watch?v=1D5OqJ5SF_I",
+          "commentText": "I followed your videos after my contractor building my house bailed on me. Installed all of my own electrical and passed my inspection on the first try, from wiring my meter base to my breaker box. I\u2019m 23 and started building my house right after turning 22. You saved me thousands and taught my a great skill to have! Thanks man, will be continuing to follow you and watch your videos! Never been more proud of myself for this achievement!"
+        },
+        {
+          "commentId": "UgyPilz-Pdg-5zMRDwd4AaABAg",
+          "videoId": "1D5OqJ5SF_I",
+          "videoTitle": "How To Install Rough In Electricity In A New Construction House - Beginners Guide To Electrical",
+          "videoUrl": "https://www.youtube.com/watch?v=1D5OqJ5SF_I",
+          "commentText": "Jesus, a breaker and home run per bedroom for like 6 plugs and number 12 for lights and plugs......friggin overkill D.I.Y.\nObviously not professional."
+        },
+        {
+          "commentId": "UgxBveaNtw94ylV0S3V4AaABAg",
+          "videoId": "1D5OqJ5SF_I",
+          "videoTitle": "How To Install Rough In Electricity In A New Construction House - Beginners Guide To Electrical",
+          "videoUrl": "https://www.youtube.com/watch?v=1D5OqJ5SF_I",
+          "commentText": "I'm preparing to wire a new addition I had installed in December and this video was VERY helpful! I understood that a wall >24\" needed a receptacle and there couldn't be more than 12' between receptacles, but I didn't know that there needed to be a box within 6' of a corner. Thank you SO much for taking the time to educate us on this topic! I really appreciate it!!"
+        },
+        {
+          "commentId": "UgwRL9Khp0siGOdLzUl4AaABAg",
+          "videoId": "1D5OqJ5SF_I",
+          "videoTitle": "How To Install Rough In Electricity In A New Construction House - Beginners Guide To Electrical",
+          "videoUrl": "https://www.youtube.com/watch?v=1D5OqJ5SF_I",
+          "commentText": "In Michigan you can only use 14/2 wire for indoor lighting.    All receptacles for plug in have to be 12/2 or better wire"
+        },
+        {
+          "commentId": "UgwntJEmjQK1gu1E5fx4AaABAg",
+          "videoId": "1D5OqJ5SF_I",
+          "videoTitle": "How To Install Rough In Electricity In A New Construction House - Beginners Guide To Electrical",
+          "videoUrl": "https://www.youtube.com/watch?v=1D5OqJ5SF_I",
+          "commentText": "The problem with designing circuits this way is if you lose power in a room,  you really lose all power in that room- receptacles and lighting.  It is better to separate general use receptacles in a room between 2 different circuits, and have lighting on its own circuit as well. There's some guys that will wire one circuit power room,  I hate when I see it, seems they're really thinking only of expense vs profit and not utilization.   The NEC code is just a MINIMUM of what has to be done, you still have to take into consideration best  practices and other factors beyond NEC code compliance."
+        }
+      ]
     },
     {
       "gid": "pipeline-qa-1",
@@ -140,7 +212,99 @@
       "label": "Question-Containing",
       "count": 14980,
       "percent": 88.83880915668367,
-      "description": "Parent threads where the GPT-5-mini classifier extracted at least one real question. These feed the resolution-rate metric and the labeled sample set."
+      "description": "Parent threads where the GPT-5-mini classifier extracted at least one real question. These feed the resolution-rate metric and the labeled sample set.",
+      "samples": [
+        {
+          "commentId": "UgzGFgX8jLqATTYIxDR4AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "Why is everything wired with 12 gauge?  The range hood too?",
+          "questionExcerpt": "Why is everything wired with 12 gauge?  The range hood too?",
+          "answerSummary": "No Solution Present"
+        },
+        {
+          "commentId": "UgwzbX9N1yK4gaSgVFJ4AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "12 gauge wire on bathroom lights?  Maybe the fan has a heating element but the lights will probably be LED.",
+          "questionExcerpt": "12 gauge wire on bathroom lights?  Maybe the fan has a heating element but the lights will probably be LED.",
+          "answerSummary": "No Solution Present"
+        },
+        {
+          "commentId": "UgxC6-f54lFpmHjgcTB4AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "I haven't watched the whole video but what about UCL? Everyone wants under cabinet lighting these days. How do you rough for that? Fishing for little trick etc.",
+          "questionExcerpt": "I haven't watched the whole video but what about UCL? Everyone wants under cabinet lighting these days. How do you rough for that? Fishing for little trick etc.",
+          "answerSummary": "No Solution Present"
+        },
+        {
+          "commentId": "Ugy0IQ23AV0CMVbaCLV4AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "Thanks to you and a few other YouTubers I was able to wire my garage from scratch with 12-2 and 20 amp receptacles and outlets. Thank you very much. Before this project I was scared to even replace an outlet in my house but now I am confident. How would I go about becoming an electrician",
+          "questionExcerpt": "Thanks to you and a few other YouTubers I was able to wire my garage from scratch with 12-2 and 20 amp receptacles and outlets. Thank you very much. Before this project I was scared to even replace an outlet in my house but now I am confident. How would I go about becoming an electrician",
+          "answerSummary": "No Solution Present"
+        },
+        {
+          "commentId": "UgzOhywWimpoUHsCQWd4AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "Why are You running 12awg for lights?",
+          "questionExcerpt": "Why are You running 12awg for lights?",
+          "answerSummary": "No Solution Present"
+        },
+        {
+          "commentId": "Ugx1BXR2M8rEcCtGFvB4AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "I need help in repairing doublewide.  PLEASE.",
+          "questionExcerpt": "I need help in repairing doublewide.  PLEASE.",
+          "answerSummary": "No Solution Present"
+        },
+        {
+          "commentId": "UgzKg6n3samLf6oTxXp4AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "Haha, you're in one of those silly jurisdictions that doesn't allow 14-2 I assume?",
+          "questionExcerpt": "Haha, you're in one of those silly jurisdictions that doesn't allow 14-2 I assume?",
+          "answerSummary": "No Solution Present"
+        },
+        {
+          "commentId": "Ugw9h4VsUhSkhfFh8wZ4AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "If you have a choice for rough in, do you prefer to start after all plumbing and hvac? Do you write that into your contracts?",
+          "questionExcerpt": "If you have a choice for rough in, do you prefer to start after all plumbing and hvac? Do you write that into your contracts?",
+          "answerSummary": "No Solution Present"
+        },
+        {
+          "commentId": "UgysQ50yietv1FY7nrd4AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "On the point of leaving wire in the wall for vanity lights, whats your solution when center of your cut in box ends up right on the plumbers pipe?",
+          "questionExcerpt": "On the point of leaving wire in the wall for vanity lights, whats your solution when center of your cut in box ends up right on the plumbers pipe?",
+          "answerSummary": "Responder recommends relocating/clearing the obstruction\u2014i.e., trim or offset the fixture box or pipe so the vanity box center is usable."
+        },
+        {
+          "commentId": "Ugz8dOnYTGtk_mbpjR14AaABAg",
+          "videoId": "dgmwJWLs084",
+          "videoTitle": "5 tips for Rough-in Phase on New Construction. Electrical wiring.",
+          "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
+          "commentText": "How do I deal with changes at the trim out",
+          "questionExcerpt": "How do I deal with changes at the trim out",
+          "answerSummary": "No Solution Present"
+        }
+      ]
     }
   ]
 }

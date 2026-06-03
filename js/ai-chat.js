@@ -537,7 +537,7 @@ python compute_embeddings.py`}</pre>
                             {further.length > 0 && (
                               <details className="pt-1">
                                 <summary className="cursor-pointer text-[11px] text-slate-500 hover:text-slate-900 px-1 py-1">
-                                  Further reading ({further.length}) — related papers you may want to explore
+                                  Further reading ({further.length}), related papers you may want to explore
                                 </summary>
                                 <div className="mt-2 space-y-1">
                                   {further.map((r, i) => {

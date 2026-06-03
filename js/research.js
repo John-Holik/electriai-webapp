@@ -323,7 +323,7 @@ window.AppResearch = (function() {
           // Subtle highlight via SVG stroke-width on the bar/tile path.
           const path = node.querySelector('path');
           if (path) path.setAttribute('stroke-width', '2');
-          const tip = getTooltip ? getTooltip(el) : null;
+          const tip = getTooltip ? getTooltip(el, meta) : null;
           if (tip) setTooltip({ text: tip, x: ev.clientX, y: ev.clientY });
         };
         const onMove = (ev) => {
@@ -491,7 +491,13 @@ window.AppResearch = (function() {
             metaUrl="data/theme_dictionary_frequency_interactive.json"
             fallbackSvg="figures/theme_dictionary_frequency.svg"
             fallbackAlt="Horizontal bar chart of canonical themes ranked by comment count, with code interpretation and sizing themes at the top."
-            getTooltip={(el) => `${el.theme}: ${el.count.toLocaleString()} comments`}
+            getTooltip={(el, meta) => {
+              const total = (meta && meta.elements)
+                ? meta.elements.reduce((s, x) => s + (x.count || 0), 0)
+                : 0;
+              const pct = total > 0 ? (el.count / total * 100).toFixed(1) : '0.0';
+              return `${el.theme}: ${el.count.toLocaleString()} comments (${pct}%)`;
+            }}
             renderDrilldown={{
               title: (el) => `Sample comments tagged with "${el.theme}"`,
               body: (el) => {
@@ -579,12 +585,211 @@ window.AppResearch = (function() {
                 if (el.panel === 'funnel') return `${el.label}: ${el.count.toLocaleString()} comments`;
                 return `Keyword "${el.label}": ${el.count.toLocaleString()} transcripts`;
               },
-              body: (el) => (
-                <p className="text-sm text-slate-700 leading-relaxed">{el.description}</p>
-              ),
+              body: (el) => {
+                if (el.panel === 'qa') {
+                  const samples = el.samples || [];
+                  if (samples.length === 0) {
+                    return <p className="text-sm text-slate-700 leading-relaxed">{el.description}</p>;
+                  }
+                  return (
+                    <div>
+                      <p className="text-sm text-slate-700 leading-relaxed mb-4">{el.description}</p>
+                      <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 mb-2">
+                        {samples.length} sample {samples.length === 1 ? 'thread' : 'threads'}
+                      </div>
+                      <ul className="space-y-3">
+                        {samples.map((s, i) => (
+                          <li key={s.commentId || i} className="bg-white border border-slate-200 rounded-md p-3">
+                            <a
+                              href={s.videoUrl}
+                              target="_blank"
+                              rel="noopener"
+                              className="text-xs text-slate-600 hover:text-slate-900 underline underline-offset-2 block truncate mb-2"
+                              title={s.videoTitle}
+                            >
+                              {s.videoTitle}
+                            </a>
+                            <p className="text-sm text-slate-800 leading-relaxed serif whitespace-pre-wrap">
+                              {s.commentText}
+                            </p>
+                            {s.questionExcerpt && (
+                              <p className="text-xs text-slate-600 mt-2 italic">
+                                <span className="uppercase tracking-wider text-[10px] font-semibold not-italic text-slate-500 mr-1">Q:</span>
+                                {s.questionExcerpt}
+                              </p>
+                            )}
+                            {s.answerSummary && (
+                              <p className="text-xs text-slate-600 mt-1 italic">
+                                <span className="uppercase tracking-wider text-[10px] font-semibold not-italic text-slate-500 mr-1">A:</span>
+                                {s.answerSummary}
+                              </p>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                }
+                if (el.panel === 'keywords') {
+                  return (
+                    <div>
+                      <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
+                      <a
+                        href="#fig-2"
+                        className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
+                      >
+                        See Figure 2, theme frequency across the corpus ↓
+                      </a>
+                    </div>
+                  );
+                }
+                if (el.panel === 'funnel') {
+                  return (
+                    <div>
+                      <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
+                      <a
+                        href="#fig-3"
+                        className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
+                      >
+                        See Figure 3, transcript topics treemap ↓
+                      </a>
+                    </div>
+                  );
+                }
+                return <p className="text-sm text-slate-700 leading-relaxed">{el.description}</p>;
+              },
             }}
           />
         </FigureCard>
+
+        {/* Table 1, per-category classification metrics on consensus subset. */}
+        <figure className="bg-white border border-slate-200 rounded-lg overflow-hidden mt-8">
+          <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-2">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">
+              Table 1
+            </div>
+            <h4 className="serif text-lg font-semibold text-slate-900">
+              Per-category LLM classification metrics on consensus comments
+            </h4>
+            <p className="text-sm text-slate-700 leading-relaxed serif">
+              Per-category precision, recall, and F1 scores for LLM classification evaluated on consensus comments only (N = 69 comments where a student majority label was established independently of the LLM).
+            </p>
+          </header>
+          <div className="bg-stone-50 px-6 py-5 overflow-x-auto">
+            <table className="w-full text-sm text-slate-800 serif tabular-nums">
+              <thead>
+                <tr className="border-b border-slate-300">
+                  <th className="text-left py-2 pr-4 font-semibold">Category</th>
+                  <th className="text-right py-2 px-3 font-semibold">Precision</th>
+                  <th className="text-right py-2 px-3 font-semibold">Recall</th>
+                  <th className="text-right py-2 px-3 font-semibold">F1</th>
+                  <th className="text-right py-2 pl-3 font-semibold">Support</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Low-Voltage, Communications, and Control Systems*</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 pl-3">1.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Motors, HVAC, and Specialized Power Loads*</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 pl-3">1.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Grounding, Bonding, and Fault Management</td>
+                  <td className="text-right py-2 px-3">0.923</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.960</td>
+                  <td className="text-right py-2 pl-3">12.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Overcurrent, Short-Circuit, and Protective Devices</td>
+                  <td className="text-right py-2 px-3">0.889</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.941</td>
+                  <td className="text-right py-2 pl-3">8.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Renewable Energy, EV, and Energy Management Systems*</td>
+                  <td className="text-right py-2 px-3">0.667</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.800</td>
+                  <td className="text-right py-2 pl-3">2.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Devices, Lighting, and Utilization Equipment</td>
+                  <td className="text-right py-2 px-3">0.857</td>
+                  <td className="text-right py-2 px-3">0.857</td>
+                  <td className="text-right py-2 px-3">0.857</td>
+                  <td className="text-right py-2 pl-3">7.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Conductors, Raceway, and Physical Routing</td>
+                  <td className="text-right py-2 px-3">0.938</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.968</td>
+                  <td className="text-right py-2 pl-3">15.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Code Interpretation, Safety, and Field Operations</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.800</td>
+                  <td className="text-right py-2 px-3">0.889</td>
+                  <td className="text-right py-2 pl-3">5.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Power Distribution and Service Infrastructure</td>
+                  <td className="text-right py-2 px-3">0.636</td>
+                  <td className="text-right py-2 px-3">0.778</td>
+                  <td className="text-right py-2 px-3">0.700</td>
+                  <td className="text-right py-2 pl-3">9.000</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-4">Other/Unmapped</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.444</td>
+                  <td className="text-right py-2 px-3">0.615</td>
+                  <td className="text-right py-2 pl-3">9.000</td>
+                </tr>
+                <tr className="border-t-2 border-slate-300">
+                  <td className="py-2 pr-4 font-semibold">Macro Avg</td>
+                  <td className="text-right py-2 px-3">0.891</td>
+                  <td className="text-right py-2 px-3">0.888</td>
+                  <td className="text-right py-2 px-3">0.873</td>
+                  <td className="text-right py-2 pl-3">69.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4 font-semibold">Weighted Avg</td>
+                  <td className="text-right py-2 px-3">0.889</td>
+                  <td className="text-right py-2 px-3">0.870</td>
+                  <td className="text-right py-2 px-3">0.862</td>
+                  <td className="text-right py-2 pl-3">69.000</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-4 font-semibold">Accuracy</td>
+                  <td className="text-right py-2 px-3 text-slate-400">&middot;</td>
+                  <td className="text-right py-2 px-3 text-slate-400">&middot;</td>
+                  <td className="text-right py-2 px-3">0.870</td>
+                  <td className="text-right py-2 pl-3">69.000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <figcaption className="px-6 py-3 border-t border-slate-100 space-y-1">
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              * Insufficient data (support &lt; 3); metrics should be interpreted with caution.
+            </p>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Cohen&rsquo;s &kappa; = 0.848 (&ldquo;almost perfect&rdquo; agreement, Landis and Koch 1977).
+            </p>
+          </figcaption>
+        </figure>
 
       </div>
     );

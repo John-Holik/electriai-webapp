@@ -1,9 +1,9 @@
 /**
- * Cloudflare Worker — Gemini API Proxy
+ * Cloudflare Worker, Gemini API Proxy
  * ────────────────────────────────────────────────────────────
  * Proxies two Gemini endpoints used by the AI Assistant:
- *   POST /api/embed     → gemini-embedding-001:embedContent
- *   POST /api/generate  → gemini-2.5-flash:generateContent
+ *   POST /api/embed     → gemini-embedding-001:embedContent (buffered JSON)
+ *   POST /api/generate  → gemini-2.5-flash:streamGenerateContent (SSE stream)
  *
  * The API key lives in this Worker as a secret named GEMINI_API_KEY
  * (set with `wrangler secret put GEMINI_API_KEY` or via the dashboard).
@@ -20,8 +20,9 @@
  */
 
 const ALLOWED_ORIGINS = [
-  'https://cm.electriai.com',
-  'https://cm-electriai.pages.dev',
+  'https://youtube.electriai.com',
+  // Add your Cloudflare Pages preview URL here once the project name is set,
+  // e.g. 'https://electriai-webapp.pages.dev'.
   'http://127.0.0.1:5500',     // VS Code Live Server local testing
   'http://localhost:5500',
   'http://localhost:8000',     // python -m http.server
@@ -65,7 +66,8 @@ async function checkRateLimit(env, ip) {
   return { ok: true };
 }
 
-// ─── Proxy handler ────────────────────────────────────────────
+// ─── Proxy handlers ───────────────────────────────────────────
+// Buffered proxy, used for /api/embed where the response is a single JSON doc.
 async function proxyToGemini(request, env, geminiUrl, origin) {
   if (!env.GEMINI_API_KEY) {
     return jsonResponse({ error: 'GEMINI_API_KEY not configured on the Worker' }, 500, origin);
@@ -76,12 +78,33 @@ async function proxyToGemini(request, env, geminiUrl, origin) {
     headers: { 'Content-Type': 'application/json' },
     body,
   });
-  // Pass through Gemini response with CORS headers
   const respBody = await upstream.text();
   return new Response(respBody, {
     status: upstream.status,
     headers: {
       'Content-Type': 'application/json',
+      ...corsHeaders(origin),
+    },
+  });
+}
+
+// Streaming proxy, used for /api/generate so SSE events flow token-by-token
+// instead of being buffered and returned in one chunk at the end.
+async function proxyToGeminiStream(request, env, geminiUrl, origin) {
+  if (!env.GEMINI_API_KEY) {
+    return jsonResponse({ error: 'GEMINI_API_KEY not configured on the Worker' }, 500, origin);
+  }
+  const body = await request.text();
+  const upstream = await fetch(`${geminiUrl}?alt=sse&key=${env.GEMINI_API_KEY}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body,
+  });
+  return new Response(upstream.body, {
+    status: upstream.status,
+    headers: {
+      'Content-Type': upstream.headers.get('Content-Type') || 'text/event-stream',
+      'Cache-Control': 'no-cache',
       ...corsHeaders(origin),
     },
   });
@@ -132,9 +155,9 @@ export default {
     }
 
     if (url.pathname === '/api/generate') {
-      return proxyToGemini(
+      return proxyToGeminiStream(
         request, env,
-        `${GEMINI_BASE}/gemini-2.5-flash:generateContent`,
+        `${GEMINI_BASE}/gemini-2.5-flash:streamGenerateContent`,
         origin
       );
     }

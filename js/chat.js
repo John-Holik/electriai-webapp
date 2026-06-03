@@ -210,7 +210,7 @@ Rules for your response:
   // Splits a message body around (V:...) and (Q:...) markers and returns
   // an array of React nodes with proper linkification for video citations
   // and a non-link pill for comment citations.
-  const renderWithCitations = (text) => {
+  const renderWithCitations = (text, commentVideoLookup) => {
     if (!text) return null;
     // Gemini sometimes groups citations into a single parens — like
     // `(V:abc, V:def, Q:xyz)` — which the per-marker regex below cannot

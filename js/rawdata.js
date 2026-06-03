@@ -294,7 +294,11 @@ window.AppRawData = (function() {
     if (selectedVideo) {
       return (
         <div className="py-8">
-          <VideoDetail video={selectedVideo} onBack={() => setSelectedVideoId(null)} />
+          <VideoDetail
+            video={selectedVideo}
+            focusCommentId={focusCommentId}
+            onBack={() => { setSelectedVideoId(null); setFocusCommentId(null); }}
+          />
         </div>
       );
     }

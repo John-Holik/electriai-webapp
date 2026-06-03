@@ -317,6 +317,24 @@ Rules for your response:
       return m;
     }, [state.wikiPages]);
 
+    // commentId -> videoId lookup so (Q:...) citations can become deep links
+    // to the exact YouTube comment. Sourced from the test-data subset that
+    // is always loaded, plus the full raw corpus once it has been fetched.
+    const commentVideoLookup = useMemo(() => {
+      const m = new Map();
+      for (const c of (state.comments || [])) {
+        if (c.commentId && c.videoId) m.set(c.commentId, c.videoId);
+      }
+      if (state.rawVideos && state.rawVideos.videos) {
+        for (const v of state.rawVideos.videos) {
+          for (const c of (v.comments || [])) {
+            if (c.commentId) m.set(c.commentId, v.videoId);
+          }
+        }
+      }
+      return m;
+    }, [state.comments, state.rawVideos]);
+
     // Autoscroll to the latest message whenever the message list grows.
     useEffect(() => {
       if (scrollRef.current) {

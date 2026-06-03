@@ -67,8 +67,10 @@ window.AppRawData = (function() {
   );
 
   // Single comment row inside the drilled-in video detail view.
-  const CommentRow = ({ comment, isReply }) => {
-    const [expanded, setExpanded] = useState(false);
+  // `focused` is set when this comment is the one the chat panel asked
+  // us to scroll to; in that case it auto-expands and shows a highlight.
+  const CommentRow = ({ comment, isReply, focused, scrollRef }) => {
+    const [expanded, setExpanded] = useState(focused || false);
     const text = comment.text || '';
     const needsTruncate = text.length > COMMENT_SNIPPET_CHARS;
     const shown = expanded || !needsTruncate
@@ -77,7 +79,8 @@ window.AppRawData = (function() {
 
     return (
       <div
-        className={`bg-white border border-slate-200 rounded-md p-4 hover:border-slate-400 transition-colors cursor-pointer ${isReply ? 'ml-6 border-l-2 border-l-slate-300' : ''}`}
+        ref={scrollRef}
+        className={`bg-white border rounded-md p-4 hover:border-slate-400 transition-colors cursor-pointer ${isReply ? 'ml-6 border-l-2 border-l-slate-300' : ''} ${focused ? 'border-amber-400 ring-2 ring-amber-200 bg-amber-50' : 'border-slate-200'}`}
         onClick={() => needsTruncate && setExpanded((v) => !v)}
       >
         <div className="flex items-center justify-between gap-3 text-[11px] text-slate-500 mb-2">
@@ -277,7 +280,7 @@ window.AppRawData = (function() {
         <div className="relative mb-4">
           <input
             type="text"
-            placeholder="Search video titles, authors, or comment text…"
+            placeholder="Search video titles"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"

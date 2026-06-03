@@ -488,7 +488,7 @@ Rules for your response:
                   }`}
                 >
                   <div className="whitespace-pre-wrap">
-                    {m.role === 'assistant' ? renderWithCitations(m.text) : m.text}
+                    {m.role === 'assistant' ? renderWithCitations(m.text, commentVideoLookup) : m.text}
                     {m.role === 'assistant' && m.pending && (
                       <span className="inline-block w-1.5 h-3 bg-slate-400 ml-1 animate-pulse align-middle" />
                     )}

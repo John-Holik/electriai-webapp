@@ -121,10 +121,24 @@ window.AppRawData = (function() {
   };
 
   // Drill-in view: a single video + all its comments, threaded by parentId.
-  const VideoDetail = ({ video, onBack }) => {
+  // `focusCommentId` (optional) is the commentId the chat tab asked us to
+  // scroll to and highlight after navigating in.
+  const VideoDetail = ({ video, onBack, focusCommentId }) => {
     const { topLevel, repliesByParent } = useMemo(() => groupReplies(video.comments || []), [video]);
     const [search, setSearch] = useState('');
     const debouncedSearch = useDebouncedValue(search, 200);
+    const focusRef = useRef(null);
+
+    // Scroll the focused comment into view once it has rendered.
+    useEffect(() => {
+      if (!focusCommentId) return;
+      const id = window.requestAnimationFrame(() => {
+        if (focusRef.current) {
+          focusRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+      return () => window.cancelAnimationFrame(id);
+    }, [focusCommentId, video.videoId]);
 
     const filteredTop = useMemo(() => {
       const q = debouncedSearch.trim().toLowerCase();

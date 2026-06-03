@@ -6,7 +6,7 @@
    full text and metadata inline. */
 
 window.AppRawData = (function() {
-  const { useState, useEffect, useMemo } = React;
+  const { useState, useEffect, useMemo, useRef } = React;
   const { formatNumber } = window.AppUtils;
 
   const PAGE_SIZE = 24;

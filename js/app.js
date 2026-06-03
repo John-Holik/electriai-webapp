@@ -248,6 +248,8 @@
             <RawDataTab
               state={state}
               loading={rawVideosLoading}
+              navIntent={navIntent}
+              clearNavIntent={() => setNavIntent(null)}
             />
           )}
           {tab === 'comments' && <CommentsTab state={state} />}
@@ -257,6 +259,8 @@
               embeddingsLoading={embeddingsLoading}
               embeddingsReady={Boolean(wikiEmbeddings)}
               devKeyAvailable={Boolean(GEMINI_DEV_KEY)}
+              navigate={navigate}
+              rawVideosLoading={rawVideosLoading}
             />
           )}
           {tab === 'about' && <AboutTab />}

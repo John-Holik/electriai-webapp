@@ -210,6 +210,12 @@
 
         <main className="max-w-6xl mx-auto px-4 sm:px-6">
           {tab === 'research' && <ResearchTab state={state} />}
+          {tab === 'rawdata' && (
+            <RawDataTab
+              state={state}
+              loading={rawVideosLoading}
+            />
+          )}
           {tab === 'comments' && <CommentsTab state={state} />}
           {tab === 'chat' && (
             <ChatTab

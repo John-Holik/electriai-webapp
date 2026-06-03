@@ -81,7 +81,7 @@ window.AppComponents = window.AppComponents || {};
   // figure number and title; body slot holds the asset (iframe, img, etc.);
   // caption is the paper-style prose; dataSource is a small footnote.
   const FigureCard = ({ number, title, caption, dataSource, children }) => (
-    <figure className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+    <figure id={`fig-${number}`} className="bg-white border border-slate-200 rounded-lg overflow-hidden scroll-mt-20">
       <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-2">
         <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">
           Figure {number}

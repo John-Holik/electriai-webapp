@@ -236,7 +236,7 @@ window.AppRawData = (function() {
   };
 
   // Top-level Raw Data tab.
-  function RawDataTab({ state, loading }) {
+  function RawDataTab({ state, loading, navIntent, clearNavIntent }) {
     const doc = state.rawVideos;
     const videos = doc ? doc.videos : [];
     const meta = doc ? doc.meta : null;
@@ -245,6 +245,18 @@ window.AppRawData = (function() {
     const debouncedSearch = useDebouncedValue(search, 200);
     const [page, setPage] = useState(1);
     const [selectedVideoId, setSelectedVideoId] = useState(null);
+    const [focusCommentId, setFocusCommentId] = useState(null);
+
+    // Consume a cross-tab nav intent (e.g. the chat tab asked us to open
+    // a specific video and scroll to a specific cited comment). Waits
+    // until the raw videos corpus has actually loaded before acting.
+    useEffect(() => {
+      if (!navIntent || !navIntent.videoId) return;
+      if (!videos || videos.length === 0) return;
+      setSelectedVideoId(navIntent.videoId);
+      setFocusCommentId(navIntent.commentId || null);
+      clearNavIntent && clearNavIntent();
+    }, [navIntent, videos]);
 
     const filtered = useMemo(() => {
       const q = debouncedSearch.trim().toLowerCase();

@@ -207,18 +207,23 @@ Rules for your response:
   };
 
   // ─── Citation rendering ────────────────────────────────
+  // The wiki content (and Gemini sometimes) groups citations into a
+  // single parens, like `(V:abc, Q:xyz, Q:def)`. Rewrite those into
+  // individual `(V:abc) (Q:xyz) (Q:def)` form so the per-marker regex
+  // can pick each one up. Shared between the chat renderer and the
+  // cited-sources panel aggregator.
+  const splitGroupedCitations = (text) =>
+    text.replace(
+      /\(((?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+)(?:\s*,\s*(?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+))+)\)/g,
+      (_m, body) => body.split(/\s*,\s*/).map((t) => `(${t.trim()})`).join(' ')
+    );
+
   // Splits a message body around (V:...) and (Q:...) markers and returns
   // an array of React nodes with proper linkification for video citations
   // and a non-link pill for comment citations.
   const renderWithCitations = (text, commentVideoLookup) => {
     if (!text) return null;
-    // Gemini sometimes groups citations into a single parens, like
-    // `(V:abc, V:def, Q:xyz)`, which the per-marker regex below cannot
-    // match. Rewrite grouped parens into individual ones first.
-    text = text.replace(
-      /\(((?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+)(?:\s*,\s*(?:V:[A-Za-z0-9_-]{11}|Q:[^,)]+))+)\)/g,
-      (_m, body) => body.split(/\s*,\s*/).map((t) => `(${t.trim()})`).join(' ')
-    );
+    text = splitGroupedCitations(text);
     // Dedup citations within a single message: every cite resolves to a
     // target video, and seeing the same video pill repeatedly is just
     // noise. Drop subsequent occurrences and clean up the orphan spaces /
@@ -326,9 +331,12 @@ Rules for your response:
     const pattern = /\(V:([A-Za-z0-9_-]{11})\)|\(Q:([^)]+)\)/g;
     for (const m of messages) {
       if (m.role !== 'assistant' || !m.text) continue;
+      // Apply the same grouped-citation normalization the renderer uses,
+      // otherwise `(V:abc, Q:xyz, Q:def)` blocks are skipped entirely.
+      const normalized = splitGroupedCitations(m.text);
       pattern.lastIndex = 0;
       let match;
-      while ((match = pattern.exec(m.text)) !== null) {
+      while ((match = pattern.exec(normalized)) !== null) {
         const cid = match[2] || null;
         const vid = match[1] || (cid && commentVideoLookup.get(cid)) || null;
         if (!vid) continue;

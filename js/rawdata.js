@@ -113,9 +113,6 @@ window.AppRawData = (function() {
             {expanded ? 'show less' : 'show more'}
           </button>
         )}
-        <div className="mt-2 text-[10px] text-slate-400 break-all">
-          {comment.commentId}
-        </div>
       </div>
     );
   };

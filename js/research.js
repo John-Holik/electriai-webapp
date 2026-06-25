@@ -267,6 +267,258 @@ window.AppResearch = (function() {
     );
   }
 
+  // Obsidian-graph-style 3D theme co-occurrence network. Recreates the
+  // VOSviewer map in-browser: nodes are themes (sized by corpus weight, colored
+  // by community cluster), links are weighted co-occurrences. The graph JSON is
+  // produced by src/web/build_vos_network.py (same clustering as the 2D paper
+  // figure, so colors line up). 3d-force-graph computes the 3D layout itself, so
+  // the JSON carries no coordinates. Mounted into a ref'd div like the Plotly
+  // bubble chart above; the instance is disposed on unmount.
+  function ThemeNetworkChart() {
+    const divRef = useRef(null);
+    const graphRef = useRef(null);
+    const [error, setError] = useState(null);
+    const [selected, setSelected] = useState(null);
+    const [legend, setLegend] = useState([]);
+
+    useEffect(() => {
+      const div = divRef.current;
+      if (!div || typeof ForceGraph3D === 'undefined') {
+        if (typeof ForceGraph3D === 'undefined') {
+          setError('3D graph library failed to load.');
+        }
+        return;
+      }
+
+      let disposed = false;
+
+      fetch('./data/theme_network_graph.json')
+        .then(r => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return r.json();
+        })
+        .then(data => {
+          if (disposed || !divRef.current) return;
+
+          // Edge opacity/width scaled by co-occurrence weight.
+          const linkW = data.links.map(l => l.weight);
+          const wMin = Math.min(...linkW);
+          const wMax = Math.max(...linkW);
+          const norm = (w) => (w - wMin) / (wMax - wMin + 1e-9);
+
+          // Lookups for link coloring and the click-to-inspect panel.
+          const nodeById = new Map(data.nodes.map(n => [n.id, n]));
+          const colorById = new Map(data.nodes.map(n => [n.id, n.color]));
+          const endId = (e) => (typeof e === 'object' && e !== null ? e.id : e);
+          const neighbors = new Map();
+          data.links.forEach(l => {
+            const s = endId(l.source), t = endId(l.target);
+            if (!neighbors.has(s)) neighbors.set(s, []);
+            if (!neighbors.has(t)) neighbors.set(t, []);
+            neighbors.get(s).push({ id: t, weight: l.weight });
+            neighbors.get(t).push({ id: s, weight: l.weight });
+          });
+
+          // Legend: one row per cluster, labeled by its highest-weight theme,
+          // ordered by cluster size (total weight) so the biggest groups lead.
+          const clusters = new Map();
+          data.nodes.forEach(n => {
+            const c = clusters.get(n.cluster) ||
+              { cluster: n.cluster, color: n.color, total: 0, top: '', topW: -1 };
+            c.total += n.weight;
+            c.color = n.color;
+            if (n.weight > c.topW) { c.topW = n.weight; c.top = n.label; }
+            clusters.set(n.cluster, c);
+          });
+          setLegend(Array.from(clusters.values()).sort((a, b) => b.total - a.total));
+
+          const graph = ForceGraph3D()(divRef.current)
+            .graphData(data)
+            .backgroundColor('#E5ECF6')
+            .nodeId('id')
+            .nodeLabel(n => `<div style="color:#000000;font-family:Arial,sans-serif;font-weight:bold;">${n.label}</div>`)
+            .nodeVal('val')
+            // Color the links by their source theme's cluster color (was flat gray).
+            .linkColor(() => '#000000')
+            .linkWidth(l => 0.3 + norm(l.weight) * 2.4)
+            .linkOpacity(0.18)
+            .nodeThreeObjectExtend(false)
+            // Render each node as an UNLIT sphere (MeshBasicMaterial) so the
+            // cluster color shows at full saturation regardless of scene lighting
+            // — the lit default material kept washing the colors out. A floating
+            // label sprite sits above the larger nodes (Obsidian-style).
+            .nodeThreeObject(node => {
+              const group = new THREE.Group();
+              const radius = Math.cbrt(node.val) * 3.4;
+              const sphere = new THREE.Mesh(
+                new THREE.SphereGeometry(radius, 18, 18),
+                new THREE.MeshBasicMaterial({ color: node.color })
+              );
+              group.add(sphere);
+              if (node.val >= 4 && typeof SpriteText !== 'undefined') {
+                const sprite = new SpriteText(node.label);
+                sprite.color = '#0f172a';
+                sprite.fontFace = 'Arial, Helvetica, sans-serif';
+                sprite.fontWeight = 'bold';
+                sprite.textHeight = Math.max(4.5, node.val);
+                // Sit the text just above the top of the bubble.
+                sprite.position.set(0, radius + sprite.textHeight * 0.5 + 3, 0);
+                // Always draw on top so the node sphere can't occlude the label.
+                sprite.material.depthTest = false;
+                sprite.material.depthWrite = false;
+                sprite.renderOrder = 10;
+                group.add(sprite);
+              }
+              return group;
+            })
+            // Click a node: focus the camera on it and open the info panel.
+            .onNodeClick(node => {
+              const conns = (neighbors.get(node.id) || []).slice()
+                .sort((a, b) => b.weight - a.weight);
+              setSelected({
+                label: node.label,
+                weight: node.weight,
+                cluster: node.cluster,
+                color: node.color,
+                degree: conns.length,
+                top: conns.slice(0, 6).map(c => ({
+                  label: (nodeById.get(c.id) || {}).label || c.id,
+                  weight: c.weight,
+                })),
+              });
+              const dist = 120;
+              const hyp = Math.hypot(node.x, node.y, node.z) || 1;
+              const r = 1 + dist / hyp;
+              graph.cameraPosition(
+                { x: node.x * r, y: node.y * r, z: node.z * r },
+                node,
+                1200
+              );
+            })
+            .onBackgroundClick(() => setSelected(null));
+
+          // Spread the cloud out: stronger repulsion and longer links so the
+          // graph isn't bunched up (stronger co-occurrence still pulls closer).
+          graph.d3Force('charge').strength(-340);
+          graph.d3Force('link').distance(l => 75 - norm(l.weight) * 32);
+
+          const onResize = () => {
+            if (!divRef.current) return;
+            graph.width(divRef.current.clientWidth);
+            graph.height(divRef.current.clientHeight);
+          };
+          onResize();
+          window.addEventListener('resize', onResize);
+          graphRef.current = { graph, onResize };
+        })
+        .catch(e => {
+          if (!disposed) setError(e.message || 'Failed to load network.');
+        });
+
+      return () => {
+        disposed = true;
+        const ref = graphRef.current;
+        if (ref) {
+          window.removeEventListener('resize', ref.onResize);
+          try { ref.graph._destructor && ref.graph._destructor(); } catch (e) {}
+          graphRef.current = null;
+        }
+        if (div) div.innerHTML = '';
+      };
+    }, []);
+
+    if (error) {
+      return (
+        <div className="p-6">
+          <img
+            src="figures/theme_networkmap_recreated.svg"
+            alt="Recreated VOSviewer theme co-occurrence network: themes sized by corpus weight and colored by cluster."
+            style={{ width: '100%', display: 'block' }}
+          />
+          <p className="text-xs text-slate-400 mt-2 italic">
+            Interactive 3D view unavailable ({error}) — showing the static figure.
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '600px' }}>
+        <div ref={divRef} style={{ width: '100%', height: '100%' }} />
+        {legend.length > 0 && (
+          <div style={{
+            position: 'absolute', top: 12, left: 12, maxWidth: '230px',
+            background: 'rgba(255, 255, 255, 0.9)',
+            border: '1px solid rgba(15, 23, 42, 0.15)', borderRadius: '8px',
+            padding: '8px 10px', color: '#0f172a', fontSize: '11px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+          }}>
+            <div style={{ fontWeight: 600, marginBottom: '5px', color: '#334155' }}>
+              Theme clusters
+            </div>
+            {legend.map((c, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
+                <span style={{
+                  display: 'inline-block', width: '10px', height: '10px',
+                  borderRadius: '50%', background: c.color, flex: '0 0 auto',
+                  border: '1px solid rgba(0,0,0,0.2)',
+                }} />
+                <span style={{ lineHeight: 1.2 }}>{c.top}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        <div style={{
+          position: 'absolute', left: 12, bottom: 12, pointerEvents: 'none',
+          color: '#475569', fontSize: '11px',
+        }}>
+          Drag to rotate · scroll to zoom · click a node for details
+        </div>
+        {selected && (
+          <div style={{
+            position: 'absolute', top: 12, right: 12, width: '260px',
+            maxHeight: 'calc(100% - 24px)', overflowY: 'auto',
+            background: 'rgba(15, 23, 42, 0.92)',
+            border: `1px solid ${selected.color}`, borderRadius: '8px',
+            padding: '12px 14px', color: '#e2e8f0', fontSize: '12px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.45)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ fontWeight: 600, color: selected.color, lineHeight: 1.25 }}>
+                {selected.label}
+              </span>
+              <button
+                onClick={() => setSelected(null)}
+                style={{
+                  background: 'none', border: 'none', color: '#94a3b8',
+                  fontSize: '18px', lineHeight: 1, cursor: 'pointer', padding: 0,
+                }}
+                aria-label="Close"
+              >×</button>
+            </div>
+            <div style={{ marginTop: '8px' }}>
+              Corpus weight: <span style={{ color: '#f1f5f9' }}>{Math.round(selected.weight).toLocaleString()}</span>
+            </div>
+            <div>Cluster: <span style={{ color: '#f1f5f9' }}>{selected.cluster + 1}</span></div>
+            <div>Co-occurring themes: <span style={{ color: '#f1f5f9' }}>{selected.degree}</span></div>
+            {selected.top.length > 0 && (
+              <div style={{ marginTop: '10px' }}>
+                <div style={{ fontWeight: 600, color: '#cbd5e1' }}>Strongest co-occurrences</div>
+                <ul style={{ marginTop: '4px', paddingLeft: '16px', listStyle: 'disc' }}>
+                  {selected.top.map((c, i) => (
+                    <li key={i} style={{ marginBottom: '2px' }}>
+                      {c.label} <span style={{ color: '#94a3b8' }}>({Math.round(c.weight).toLocaleString()})</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   // Inject a matplotlib-generated SVG inline, bind hover/click handlers per gid.
   // The SVG file carries id="<prefix>-N" attributes (set via Artist.set_gid in
   // build_web_interactive_svgs.py); the sidecar JSON tells us what each gid
@@ -464,12 +716,14 @@ window.AppResearch = (function() {
           </div>
         </section>
 
-        {/* Section divider into the four paper figures. */}
+        {/* Section divider into the paper figures. */}
         <section>
           <h3 className="serif text-xl font-semibold text-slate-900 mb-2">Figures from the paper</h3>
           <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
-            Four figures lifted from the notebook-05 export pipeline. The first chart is
-            an interactive Plotly visualization; hover or click any bubble to inspect a theme.
+            Figures lifted from the notebook-05 export pipeline. The first chart is an
+            interactive Plotly visualization (hover or click any bubble to inspect a
+            theme); the second is an interactive 3D theme co-occurrence network you can
+            drag and zoom.
           </p>
         </section>
 
@@ -483,6 +737,14 @@ window.AppResearch = (function() {
 
         <FigureCard
           number={2}
+          title="Theme co-occurrence network"
+          caption="Network of how themes co-occur across the corpus. Each node is a theme, sized by how often it appears; node color groups themes that tend to occur together, and links connect themes that co-occur, weighted by how strongly. Drag to rotate and scroll to zoom; hover a node for its theme, or click it to see its cluster and strongest co-occurrences."
+        >
+          <ThemeNetworkChart />
+        </FigureCard>
+
+        <FigureCard
+          number={3}
           title="Frequency of canonical themes across the corpus"
           caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. Hover any bar for its count; click to see sample comments tagged with that theme. The long tail captures niche topics that surface in fewer than ten comments each, while the head is dominated by code, sizing, and grounding questions."
         >
@@ -530,7 +792,7 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={3}
+          number={4}
           title="Transcript topics treemap, weighted by total video views"
           caption="Treemap of the topics that appear in video transcripts. Tile area scales with the aggregate view count of every video that touches the topic, so larger tiles indicate where the audience is actually spending time. Hover any tile for averages; click to list the top videos in that topic."
         >
@@ -561,7 +823,7 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={4}
+          number={5}
           title="Data collection and comment analysis pipeline"
           caption="Three-panel summary of how the corpus was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment harvesting yield per video. Panel C shows the question-filtering breakdown that produced the final labeled comment set. Hover any bar for its exact count; click for the stage definition."
         >
@@ -635,10 +897,10 @@ window.AppResearch = (function() {
                     <div>
                       <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
                       <a
-                        href="#fig-2"
+                        href="#fig-3"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 2, theme frequency across the corpus ↓
+                        See Figure 3, theme frequency across the corpus ↓
                       </a>
                     </div>
                   );
@@ -648,10 +910,10 @@ window.AppResearch = (function() {
                     <div>
                       <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
                       <a
-                        href="#fig-3"
+                        href="#fig-4"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 3, transcript topics treemap ↓
+                        See Figure 4, transcript topics treemap ↓
                       </a>
                     </div>
                   );

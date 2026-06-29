@@ -497,10 +497,10 @@ window.AppResearch = (function() {
               >×</button>
             </div>
             <div style={{ marginTop: '8px' }}>
-              Co-occurrence strength: <span style={{ color: '#f1f5f9' }}>{Math.round(selected.weight).toLocaleString()}</span>
+              Prominence: <span style={{ color: '#f1f5f9' }}>{Math.round(selected.weight).toLocaleString()}</span>
             </div>
             <div style={{ marginTop: '2px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.3 }}>
-              Total strength of this theme's co-occurrence links with every other theme. Higher means it shows up alongside more themes, more often.
+              How much this theme appears across the whole dataset. Each time it comes up in a video or comment it gets a relevance score; this sums those scores, so it rises with both how often the theme appears and how strongly it applies. This sets the node size.
             </div>
             <div>Cluster: <span style={{ color: '#f1f5f9' }}>{selected.cluster + 1}</span></div>
             <div>Co-occurring themes: <span style={{ color: '#f1f5f9' }}>{selected.degree}</span></div>

@@ -432,7 +432,7 @@ window.AppResearch = (function() {
         <div className="p-6">
           <img
             src="figures/theme_networkmap_recreated.svg"
-            alt="Recreated VOSviewer theme co-occurrence network: themes sized by co-occurrence strength and colored by cluster."
+            alt="Recreated VOSviewer theme co-occurrence network: themes sized by prominence and colored by cluster."
             style={{ width: '100%', display: 'block' }}
           />
           <p className="text-xs text-slate-400 mt-2 italic">

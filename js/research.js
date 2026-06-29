@@ -454,7 +454,7 @@ window.AppResearch = (function() {
             boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
           }}>
             <div style={{ fontWeight: 600, marginBottom: '5px', color: '#334155' }}>
-              Theme clusters
+              Themes
             </div>
             {legend.map((c, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>

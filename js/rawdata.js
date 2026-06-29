@@ -246,7 +246,7 @@ window.AppRawData = (function() {
 
     // Consume a cross-tab nav intent (e.g. the chat tab asked us to open
     // a specific video and scroll to a specific cited comment). Waits
-    // until the raw videos corpus has actually loaded before acting.
+    // until the raw videos dataset has actually loaded before acting.
     useEffect(() => {
       if (!navIntent || !navIntent.videoId) return;
       if (!videos || videos.length === 0) return;

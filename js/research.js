@@ -903,7 +903,7 @@ window.AppResearch = (function() {
                         href="#fig-3"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 3, theme frequency across the corpus ↓
+                        See Figure 3, theme frequency across the dataset ↓
                       </a>
                     </div>
                   );

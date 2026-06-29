@@ -510,6 +510,9 @@ window.AppResearch = (function() {
             {selected.top.length > 0 && (
               <div style={{ marginTop: '10px' }}>
                 <div style={{ fontWeight: 600, color: '#cbd5e1' }}>Strongest co-occurrences</div>
+                <div style={{ marginTop: '2px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.3 }}>
+                  Themes that appear in the same video or comment most often. The number is the connection strength: higher means they show up together more.
+                </div>
                 <ul style={{ marginTop: '4px', paddingLeft: '16px', listStyle: 'disc' }}>
                   {selected.top.map((c, i) => (
                     <li key={i} style={{ marginBottom: '2px' }}>

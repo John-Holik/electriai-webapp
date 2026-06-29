@@ -741,7 +741,7 @@ window.AppResearch = (function() {
         <FigureCard
           number={2}
           title="Theme co-occurrence network"
-          caption="Network of how themes co-occur across the corpus. Each node is a theme, sized by how often it appears; node color groups themes that tend to occur together, and links connect themes that co-occur, weighted by how strongly. Drag to rotate and scroll to zoom; hover a node for its theme, or click it to see its cluster and strongest co-occurrences."
+          caption="Network of how themes co-occur across the dataset. Each node is a theme, sized by its co-occurrence strength (the total strength of its links to all other themes). Node color marks the cluster a theme belongs to: themes are grouped using VOSviewer's modularity-based clustering (the smart local moving algorithm), so themes that frequently co-occur share a color. Links connect themes that co-occur, weighted by how strongly. Drag to rotate and scroll to zoom; hover a node for its theme, or click it to see its co-occurrence strength, cluster, and strongest co-occurrences."
         >
           <ThemeNetworkChart />
         </FigureCard>

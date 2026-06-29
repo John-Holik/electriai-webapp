@@ -268,7 +268,7 @@ window.AppResearch = (function() {
   }
 
   // Obsidian-graph-style 3D theme co-occurrence network. Recreates the
-  // VOSviewer map in-browser: nodes are themes (sized by corpus weight, colored
+  // VOSviewer map in-browser: nodes are themes (sized by co-occurrence strength, colored
   // by community cluster), links are weighted co-occurrences. The graph JSON is
   // produced by src/web/build_vos_network.py (same clustering as the 2D paper
   // figure, so colors line up). 3d-force-graph computes the 3D layout itself, so

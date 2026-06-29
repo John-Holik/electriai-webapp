@@ -437,7 +437,7 @@ Rules for your response:
 
     // commentId -> videoId lookup so (Q:...) citations can become deep links
     // to the exact YouTube comment. Sourced from the test-data subset that
-    // is always loaded, plus the full raw corpus once it has been fetched.
+    // is always loaded, plus the full raw dataset once it has been fetched.
     const commentVideoLookup = useMemo(() => {
       const m = new Map();
       for (const c of (state.comments || [])) {

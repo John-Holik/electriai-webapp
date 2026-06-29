@@ -1,4 +1,4 @@
-/* Raw Data tab. Browses the YouTube corpus restricted to videos and
+/* Raw Data tab. Browses the YouTube dataset restricted to videos and
    comments that survived the GPT classification pipeline (i.e. those
    present in Final_Analysis.csv, surfaced via data/raw_videos.json).
    Default view is a grid of video cards; clicking a card drills into
@@ -246,7 +246,7 @@ window.AppRawData = (function() {
 
     // Consume a cross-tab nav intent (e.g. the chat tab asked us to open
     // a specific video and scroll to a specific cited comment). Waits
-    // until the raw videos corpus has actually loaded before acting.
+    // until the raw videos dataset has actually loaded before acting.
     useEffect(() => {
       if (!navIntent || !navIntent.videoId) return;
       if (!videos || videos.length === 0) return;
@@ -283,7 +283,7 @@ window.AppRawData = (function() {
       return (
         <div className="py-16 text-center">
           <div className="inline-block w-6 h-6 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin mb-3"></div>
-          <p className="text-sm text-slate-500">Loading raw video corpus…</p>
+          <p className="text-sm text-slate-500">Loading raw video dataset…</p>
         </div>
       );
     }

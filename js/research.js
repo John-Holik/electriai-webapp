@@ -268,7 +268,7 @@ window.AppResearch = (function() {
   }
 
   // Obsidian-graph-style 3D theme co-occurrence network. Recreates the
-  // VOSviewer map in-browser: nodes are themes (sized by corpus weight, colored
+  // VOSviewer map in-browser: nodes are themes (sized by prominence, colored
   // by community cluster), links are weighted co-occurrences. The graph JSON is
   // produced by src/web/build_vos_network.py (same clustering as the 2D paper
   // figure, so colors line up). 3d-force-graph computes the 3D layout itself, so
@@ -432,7 +432,7 @@ window.AppResearch = (function() {
         <div className="p-6">
           <img
             src="figures/theme_networkmap_recreated.svg"
-            alt="Recreated VOSviewer theme co-occurrence network: themes sized by corpus weight and colored by cluster."
+            alt="Recreated VOSviewer theme co-occurrence network: themes sized by prominence and colored by cluster."
             style={{ width: '100%', display: 'block' }}
           />
           <p className="text-xs text-slate-400 mt-2 italic">
@@ -454,7 +454,7 @@ window.AppResearch = (function() {
             boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
           }}>
             <div style={{ fontWeight: 600, marginBottom: '5px', color: '#334155' }}>
-              Theme clusters
+              Themes
             </div>
             {legend.map((c, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
@@ -497,13 +497,22 @@ window.AppResearch = (function() {
               >×</button>
             </div>
             <div style={{ marginTop: '8px' }}>
-              Corpus weight: <span style={{ color: '#f1f5f9' }}>{Math.round(selected.weight).toLocaleString()}</span>
+              Prominence: <span style={{ color: '#f1f5f9' }}>{Math.round(selected.weight).toLocaleString()}</span>
+            </div>
+            <div style={{ marginTop: '2px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.3 }}>
+              How much this theme appears across the whole dataset. Each time it comes up in a video or comment it gets a relevance score; this sums those scores, so it rises with both how often the theme appears and how strongly it applies. This sets the node size.
             </div>
             <div>Cluster: <span style={{ color: '#f1f5f9' }}>{selected.cluster + 1}</span></div>
-            <div>Co-occurring themes: <span style={{ color: '#f1f5f9' }}>{selected.degree}</span></div>
+            <div>Connections: <span style={{ color: '#f1f5f9' }}>{selected.degree}</span></div>
+            <div style={{ marginTop: '2px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.3 }}>
+              Number of other themes this one co-occurs with.
+            </div>
             {selected.top.length > 0 && (
               <div style={{ marginTop: '10px' }}>
                 <div style={{ fontWeight: 600, color: '#cbd5e1' }}>Strongest co-occurrences</div>
+                <div style={{ marginTop: '2px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.3 }}>
+                  Themes that appear in the same video or comment most often. The number is the connection strength: higher means they show up together more.
+                </div>
                 <ul style={{ marginTop: '4px', paddingLeft: '16px', listStyle: 'disc' }}>
                   {selected.top.map((c, i) => (
                     <li key={i} style={{ marginBottom: '2px' }}>
@@ -682,7 +691,7 @@ window.AppResearch = (function() {
             <p>
               This site collects the paper&apos;s figures, an explorer for the labeled
               comments, and a chatbot grounded in a hand-curated wiki of {formatNumber(stats.kbPages)}
-              {' '}knowledge-base pages distilled from the underlying corpus.
+              {' '}knowledge-base pages distilled from the underlying dataset.
             </p>
           </div>
         </section>
@@ -738,14 +747,14 @@ window.AppResearch = (function() {
         <FigureCard
           number={2}
           title="Theme co-occurrence network"
-          caption="Network of how themes co-occur across the corpus. Each node is a theme, sized by how often it appears; node color groups themes that tend to occur together, and links connect themes that co-occur, weighted by how strongly. Drag to rotate and scroll to zoom; hover a node for its theme, or click it to see its cluster and strongest co-occurrences."
+          caption="Network of how themes co-occur across the dataset. Each node is a theme, sized by its prominence: how much the theme appears across all videos and comments, weighted by how strongly it applies. Node color marks the cluster a theme belongs to: themes are grouped using VOSviewer's modularity-based clustering (the smart local moving algorithm), so themes that frequently co-occur share a color. A link joins two themes that appear together, and its thickness shows the co-occurrence strength: how often they turn up in the same video or comment. Drag to rotate and scroll to zoom; hover a node for its theme, or click it to see its prominence, connections, and strongest co-occurrences."
         >
           <ThemeNetworkChart />
         </FigureCard>
 
         <FigureCard
           number={3}
-          title="Frequency of canonical themes across the corpus"
+          title="Frequency of canonical themes across the dataset"
           caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. Hover any bar for its count; click to see sample comments tagged with that theme. The long tail captures niche topics that surface in fewer than ten comments each, while the head is dominated by code, sizing, and grounding questions."
         >
           <MplInlineChart
@@ -769,7 +778,7 @@ window.AppResearch = (function() {
                 if (samples.length === 0) {
                   return (
                     <p className="text-sm text-slate-500 italic">
-                      No comments from the 200-row curated sample carry this theme. The full corpus has {el.count.toLocaleString()}.
+                      No comments from the 200-row curated sample carry this theme. The full dataset has {el.count.toLocaleString()}.
                     </p>
                   );
                 }
@@ -825,7 +834,7 @@ window.AppResearch = (function() {
         <FigureCard
           number={5}
           title="Data collection and comment analysis pipeline"
-          caption="Three-panel summary of how the corpus was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment harvesting yield per video. Panel C shows the question-filtering breakdown that produced the final labeled comment set. Hover any bar for its exact count; click for the stage definition."
+          caption="Three-panel summary of how the dataset was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment harvesting yield per video. Panel C shows the question-filtering breakdown that produced the final labeled comment set. Hover any bar for its exact count; click for the stage definition."
         >
           <MplInlineChart
             svgUrl="figures/data_collection_comment_analysis_interactive.svg"
@@ -900,7 +909,7 @@ window.AppResearch = (function() {
                         href="#fig-3"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 3, theme frequency across the corpus ↓
+                        See Figure 3, theme frequency across the dataset ↓
                       </a>
                     </div>
                   );

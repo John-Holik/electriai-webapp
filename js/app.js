@@ -60,7 +60,7 @@
     const [wikiChunks, setWikiChunks]         = useState(null);
     const [embeddingsLoading, setEmbeddingsLoading] = useState(false);
 
-    // Lazy-loaded raw video corpus, only fetched once the Raw Data tab is opened.
+    // Lazy-loaded raw video dataset, only fetched once the Raw Data tab is opened.
     const [rawVideos, setRawVideos]           = useState(null);
     const [rawVideosLoading, setRawVideosLoading] = useState(false);
 

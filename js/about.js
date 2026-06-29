@@ -31,7 +31,7 @@ window.AppAbout = (function() {
             </p>
             <p>
               The companion chatbot (the Ask ElectriAI tab) is grounded in a hand-curated
-              markdown knowledge-base distilled from the underlying corpus. It is not a
+              markdown knowledge-base distilled from the underlying dataset. It is not a
               generic LLM wrapped around the web, every answer cites the wiki page,
               source video, or viewer comment it draws from.
             </p>

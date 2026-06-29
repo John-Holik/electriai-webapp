@@ -503,7 +503,10 @@ window.AppResearch = (function() {
               How much this theme appears across the whole dataset. Each time it comes up in a video or comment it gets a relevance score; this sums those scores, so it rises with both how often the theme appears and how strongly it applies. This sets the node size.
             </div>
             <div>Cluster: <span style={{ color: '#f1f5f9' }}>{selected.cluster + 1}</span></div>
-            <div>Co-occurring themes: <span style={{ color: '#f1f5f9' }}>{selected.degree}</span></div>
+            <div>Connections: <span style={{ color: '#f1f5f9' }}>{selected.degree}</span></div>
+            <div style={{ marginTop: '2px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.3 }}>
+              Number of other themes this one co-occurs with.
+            </div>
             {selected.top.length > 0 && (
               <div style={{ marginTop: '10px' }}>
                 <div style={{ fontWeight: 600, color: '#cbd5e1' }}>Strongest co-occurrences</div>

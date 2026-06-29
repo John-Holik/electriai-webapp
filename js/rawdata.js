@@ -283,7 +283,7 @@ window.AppRawData = (function() {
       return (
         <div className="py-16 text-center">
           <div className="inline-block w-6 h-6 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin mb-3"></div>
-          <p className="text-sm text-slate-500">Loading raw video corpus…</p>
+          <p className="text-sm text-slate-500">Loading raw video dataset…</p>
         </div>
       );
     }

@@ -1,4 +1,4 @@
-/* Raw Data tab. Browses the YouTube corpus restricted to videos and
+/* Raw Data tab. Browses the YouTube dataset restricted to videos and
    comments that survived the GPT classification pipeline (i.e. those
    present in Final_Analysis.csv, surfaced via data/raw_videos.json).
    Default view is a grid of video cards; clicking a card drills into

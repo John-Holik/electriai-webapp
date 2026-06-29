@@ -4,8 +4,7 @@
     "source": "data/processed/vosviewer_map.txt + vosviewer_network.txt",
     "n_nodes": 50,
     "n_links": 337,
-    "n_clusters": 7,
-    "clustering": "networkx greedy_modularity_communities (weighted)",
+    "n_clusters": 8,
     "palette": [
       "#4E79C8",
       "#5BA85B",
@@ -30,17 +29,17 @@
       "id": 2,
       "label": "Conductor terminations and splicing",
       "weight": 105071.0,
-      "cluster": 2,
+      "cluster": 3,
       "val": 10.589,
-      "color": "#D9534F"
+      "color": "#E8943A"
     },
     {
       "id": 3,
       "label": "Grounding systems",
       "weight": 80531.0,
-      "cluster": 1,
+      "cluster": 6,
       "val": 8.361,
-      "color": "#5BA85B"
+      "color": "#C94F9B"
     },
     {
       "id": 4,
@@ -54,9 +53,9 @@
       "id": 5,
       "label": "Panelboards and load centers",
       "weight": 77065.0,
-      "cluster": 1,
+      "cluster": 2,
       "val": 8.046,
-      "color": "#5BA85B"
+      "color": "#D9534F"
     },
     {
       "id": 6,
@@ -70,33 +69,33 @@
       "id": 7,
       "label": "Jobsite workflow, tools, and best practices",
       "weight": 61037.0,
-      "cluster": 2,
+      "cluster": 3,
       "val": 6.591,
-      "color": "#D9534F"
+      "color": "#E8943A"
     },
     {
       "id": 8,
       "label": "Electrical service equipment",
       "weight": 60273.0,
-      "cluster": 1,
+      "cluster": 7,
       "val": 6.522,
-      "color": "#5BA85B"
+      "color": "#8C8C3A"
     },
     {
       "id": 9,
       "label": "Switching devices and control",
       "weight": 58517.0,
-      "cluster": 6,
+      "cluster": 2,
       "val": 6.362,
-      "color": "#C94F9B"
+      "color": "#D9534F"
     },
     {
       "id": 10,
       "label": "Bonding systems",
       "weight": 58270.0,
-      "cluster": 1,
+      "cluster": 6,
       "val": 6.34,
-      "color": "#5BA85B"
+      "color": "#C94F9B"
     },
     {
       "id": 11,
@@ -110,65 +109,65 @@
       "id": 12,
       "label": "Battery storage systems",
       "weight": 48944.0,
-      "cluster": 3,
+      "cluster": 1,
       "val": 5.493,
-      "color": "#E8943A"
+      "color": "#5BA85B"
     },
     {
       "id": 13,
       "label": "Workmanship and installation quality",
       "weight": 45973.0,
-      "cluster": 2,
+      "cluster": 3,
       "val": 5.223,
-      "color": "#D9534F"
+      "color": "#E8943A"
     },
     {
       "id": 14,
       "label": "Overcurrent protection",
       "weight": 43985.0,
-      "cluster": 4,
+      "cluster": 2,
       "val": 5.043,
-      "color": "#9B59B6"
+      "color": "#D9534F"
     },
     {
       "id": 15,
       "label": "Inspection and testing procedures",
       "weight": 39925.0,
-      "cluster": 3,
+      "cluster": 1,
       "val": 4.674,
-      "color": "#E8943A"
+      "color": "#5BA85B"
     },
     {
       "id": 16,
       "label": "Wire gauge and conductor selection",
       "weight": 37428.0,
-      "cluster": 2,
+      "cluster": 4,
       "val": 4.448,
-      "color": "#D9534F"
+      "color": "#9B59B6"
     },
     {
       "id": 17,
       "label": "Motor circuits and motor controls",
       "weight": 34389.0,
-      "cluster": 3,
+      "cluster": 1,
       "val": 4.172,
-      "color": "#E8943A"
+      "color": "#5BA85B"
     },
     {
       "id": 18,
       "label": "Power distribution systems",
       "weight": 32761.0,
-      "cluster": 3,
+      "cluster": 1,
       "val": 4.024,
-      "color": "#E8943A"
+      "color": "#5BA85B"
     },
     {
       "id": 19,
       "label": "Code compliance and standards",
       "weight": 32449.0,
-      "cluster": 0,
+      "cluster": 5,
       "val": 3.996,
-      "color": "#4E79C8"
+      "color": "#3CB4B4"
     },
     {
       "id": 20,
@@ -198,9 +197,9 @@
       "id": 23,
       "label": "Electrical theory and fundamentals",
       "weight": 29243.0,
-      "cluster": 3,
+      "cluster": 1,
       "val": 3.704,
-      "color": "#E8943A"
+      "color": "#5BA85B"
     },
     {
       "id": 24,
@@ -214,9 +213,9 @@
       "id": 25,
       "label": "Conductor insulation types",
       "weight": 28443.0,
-      "cluster": 2,
+      "cluster": 4,
       "val": 3.632,
-      "color": "#D9534F"
+      "color": "#9B59B6"
     },
     {
       "id": 26,
@@ -238,9 +237,9 @@
       "id": 28,
       "label": "Transformers and power conversion",
       "weight": 25710.0,
-      "cluster": 3,
+      "cluster": 1,
       "val": 3.384,
-      "color": "#E8943A"
+      "color": "#5BA85B"
     },
     {
       "id": 29,
@@ -262,9 +261,9 @@
       "id": 31,
       "label": "Luminaires and lighting fixtures",
       "weight": 21850.0,
-      "cluster": 6,
+      "cluster": 0,
       "val": 3.033,
-      "color": "#C94F9B"
+      "color": "#4E79C8"
     },
     {
       "id": 32,
@@ -278,9 +277,9 @@
       "id": 33,
       "label": "Blueprint reading and electrical drafting",
       "weight": 18687.0,
-      "cluster": 6,
+      "cluster": 2,
       "val": 2.746,
-      "color": "#C94F9B"
+      "color": "#D9534F"
     },
     {
       "id": 34,
@@ -294,25 +293,25 @@
       "id": 35,
       "label": "Commissioning and troubleshooting",
       "weight": 12516.0,
-      "cluster": 3,
+      "cluster": 1,
       "val": 2.186,
-      "color": "#E8943A"
+      "color": "#5BA85B"
     },
     {
       "id": 36,
       "label": "Grounding electrode systems",
       "weight": 10680.0,
-      "cluster": 1,
+      "cluster": 6,
       "val": 2.019,
-      "color": "#5BA85B"
+      "color": "#C94F9B"
     },
     {
       "id": 37,
       "label": "Electrical safety practices",
       "weight": 10187.0,
-      "cluster": 2,
+      "cluster": 3,
       "val": 1.974,
-      "color": "#D9534F"
+      "color": "#E8943A"
     },
     {
       "id": 38,
@@ -326,33 +325,33 @@
       "id": 39,
       "label": "Low-voltage systems",
       "weight": 9417.0,
-      "cluster": 6,
+      "cluster": 2,
       "val": 1.905,
-      "color": "#C94F9B"
+      "color": "#D9534F"
     },
     {
       "id": 40,
       "label": "Variable frequency drive applications",
       "weight": 9243.0,
-      "cluster": 3,
+      "cluster": 1,
       "val": 1.889,
-      "color": "#E8943A"
+      "color": "#5BA85B"
     },
     {
       "id": 41,
       "label": "Solar PV system installation",
       "weight": 8885.0,
-      "cluster": 3,
+      "cluster": 1,
       "val": 1.856,
-      "color": "#E8943A"
+      "color": "#5BA85B"
     },
     {
       "id": 42,
       "label": "EV charging system installation",
       "weight": 8522.0,
-      "cluster": 3,
+      "cluster": 1,
       "val": 1.823,
-      "color": "#E8943A"
+      "color": "#5BA85B"
     },
     {
       "id": 43,
@@ -366,41 +365,41 @@
       "id": 44,
       "label": "Overhead service installation",
       "weight": 6672.0,
-      "cluster": 1,
+      "cluster": 7,
       "val": 1.655,
-      "color": "#5BA85B"
+      "color": "#8C8C3A"
     },
     {
       "id": 45,
       "label": "Feeder circuit design",
       "weight": 6637.0,
-      "cluster": 1,
+      "cluster": 7,
       "val": 1.652,
-      "color": "#5BA85B"
+      "color": "#8C8C3A"
     },
     {
       "id": 46,
       "label": "Building automation and controls",
       "weight": 6418.0,
-      "cluster": 3,
+      "cluster": 1,
       "val": 1.632,
-      "color": "#E8943A"
+      "color": "#5BA85B"
     },
     {
       "id": 47,
       "label": "Protection coordination and device selection",
       "weight": 6408.0,
-      "cluster": 4,
+      "cluster": 2,
       "val": 1.631,
-      "color": "#9B59B6"
+      "color": "#D9534F"
     },
     {
       "id": 48,
       "label": "Fault current paths",
       "weight": 5810.0,
-      "cluster": 1,
+      "cluster": 6,
       "val": 1.577,
-      "color": "#5BA85B"
+      "color": "#C94F9B"
     },
     {
       "id": 49,

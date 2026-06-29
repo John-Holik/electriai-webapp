@@ -772,7 +772,7 @@ window.AppResearch = (function() {
                 if (samples.length === 0) {
                   return (
                     <p className="text-sm text-slate-500 italic">
-                      No comments from the 200-row curated sample carry this theme. The full corpus has {el.count.toLocaleString()}.
+                      No comments from the 200-row curated sample carry this theme. The full dataset has {el.count.toLocaleString()}.
                     </p>
                   );
                 }

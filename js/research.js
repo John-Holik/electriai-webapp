@@ -685,7 +685,7 @@ window.AppResearch = (function() {
             <p>
               This site collects the paper&apos;s figures, an explorer for the labeled
               comments, and a chatbot grounded in a hand-curated wiki of {formatNumber(stats.kbPages)}
-              {' '}knowledge-base pages distilled from the underlying corpus.
+              {' '}knowledge-base pages distilled from the underlying dataset.
             </p>
           </div>
         </section>

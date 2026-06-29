@@ -748,7 +748,7 @@ window.AppResearch = (function() {
 
         <FigureCard
           number={3}
-          title="Frequency of canonical themes across the corpus"
+          title="Frequency of canonical themes across the dataset"
           caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. Hover any bar for its count; click to see sample comments tagged with that theme. The long tail captures niche topics that surface in fewer than ten comments each, while the head is dominated by code, sizing, and grounding questions."
         >
           <MplInlineChart

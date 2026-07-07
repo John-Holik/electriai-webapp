@@ -344,8 +344,8 @@ window.AppResearch = (function() {
             .linkOpacity(0.18)
             .nodeThreeObjectExtend(false)
             // Render each node as an UNLIT sphere (MeshBasicMaterial) so the
-            // cluster color shows at full saturation regardless of scene lighting
-            // — the lit default material kept washing the colors out. A floating
+            // cluster color shows at full saturation regardless of scene lighting.
+            // The lit default material kept washing the colors out. A floating
             // label sprite sits above the larger nodes (Obsidian-style).
             .nodeThreeObject(node => {
               const group = new THREE.Group();
@@ -436,7 +436,7 @@ window.AppResearch = (function() {
             style={{ width: '100%', display: 'block' }}
           />
           <p className="text-xs text-slate-400 mt-2 italic">
-            Interactive 3D view unavailable ({error}) — showing the static figure.
+            Interactive 3D view unavailable ({error}), showing the static figure.
           </p>
         </div>
       );
@@ -668,17 +668,11 @@ window.AppResearch = (function() {
     return (
       <div className="space-y-12 animate-fade py-8">
 
-        {/* Project intro: title, three-paragraph elevator pitch. */}
+        {/* Findings intro: section heading and overview paragraph. */}
         <section className="max-w-3xl">
-          <h1 className="serif text-3xl sm:text-5xl font-semibold text-slate-900 leading-[1.1] tracking-tight">
-            Practitioner Knowledge Base for Electrical Construction
-          </h1>
-          <h2 className="serif text-lg sm:text-xl font-semibold text-slate-700 leading-snug tracking-tight mt-3">
-            Identifying knowledge bottlenecks in electrical construction from practitioner discussion on YouTube using large language models
-          </h2>
-          <p className="text-base sm:text-lg text-slate-600 mt-4">
+          <h2 className="serif text-2xl sm:text-3xl font-semibold text-slate-900 leading-tight tracking-tight">
             Where electrical field knowledge accumulates and where it stalls
-          </p>
+          </h2>
           <div className="text-slate-700 mt-5 leading-relaxed text-base space-y-4">
             <p>
               The Electrical Field Q&amp;A Knowledge Base mines practitioner discussion on YouTube to identify knowledge bottlenecks in electrical construction, the topics where field practitioners ask the most questions but peer answers are hardest to find. Transcripts from 794 videos across the trade were collected, and every viewer question-and-answer comment thread was extracted and labeled to locate where practitioner demand outpaces peer resolution. Each comment is classified into a ten-category schema spanning the major areas of the electrical trade. GPT-5-mini performs a first-pass classification, and trained human annotators validate a balanced subset through Qualtrics surveys, which measures where the model agrees with practitioners and where it does not. This site presents the study figures, an explorer for the labeled comment threads, the annotated validation set, and an assistant grounded in a hand-curated knowledge base of 78 pages distilled from the analyzed discussion.

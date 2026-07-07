@@ -670,28 +670,18 @@ window.AppResearch = (function() {
 
         {/* Project intro: title, three-paragraph elevator pitch. */}
         <section className="max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-3">ElectriAI Research</p>
-          <h2 className="serif text-3xl sm:text-5xl font-semibold text-slate-900 leading-[1.1] tracking-tight">
-            What electrical contractors actually ask about online
+          <h1 className="serif text-3xl sm:text-5xl font-semibold text-slate-900 leading-[1.1] tracking-tight">
+            Practitioner Knowledge Base for Electrical Construction
+          </h1>
+          <h2 className="serif text-lg sm:text-xl font-semibold text-slate-700 leading-snug tracking-tight mt-3">
+            Identifying knowledge bottlenecks in electrical construction from practitioner discussion on YouTube using large language models
           </h2>
+          <p className="text-base sm:text-lg text-slate-600 mt-4">
+            Where electrical field knowledge accumulates and where it stalls
+          </p>
           <div className="text-slate-700 mt-5 leading-relaxed text-base space-y-4">
             <p>
-              ElectriAI is a research project that mines YouTube to map the practical
-              questions electrical contractors and apprentices ask every day. We pulled
-              transcripts from {formatNumber(stats.totalVideos)} videos across the trade,
-              then extracted and labeled every viewer Q&amp;A comment thread to see where
-              the real knowledge gaps live.
-            </p>
-            <p>
-              Every comment is classified into a 10-category schema covering the major
-              areas of the electrical trade. GPT does a first pass and trained human
-              annotators validate a balanced subset through Qualtrics surveys, which lets
-              us measure where the model agrees with practitioners and where it doesn&apos;t.
-            </p>
-            <p>
-              This site collects the paper&apos;s figures, an explorer for the labeled
-              comments, and a chatbot grounded in a hand-curated wiki of {formatNumber(stats.kbPages)}
-              {' '}knowledge-base pages distilled from the underlying dataset.
+              The Electrical Field Q&amp;A Knowledge Base mines practitioner discussion on YouTube to identify knowledge bottlenecks in electrical construction, the topics where field practitioners ask the most questions but peer answers are hardest to find. Transcripts from 794 videos across the trade were collected, and every viewer question-and-answer comment thread was extracted and labeled to locate where practitioner demand outpaces peer resolution. Each comment is classified into a ten-category schema spanning the major areas of the electrical trade. GPT-5-mini performs a first-pass classification, and trained human annotators validate a balanced subset through Qualtrics surveys, which measures where the model agrees with practitioners and where it does not. This site presents the study figures, an explorer for the labeled comment threads, the annotated validation set, and an assistant grounded in a hand-curated knowledge base of 78 pages distilled from the analyzed discussion.
             </p>
           </div>
         </section>

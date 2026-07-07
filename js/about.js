@@ -22,18 +22,10 @@ window.AppAbout = (function() {
           <h3 className="serif text-xl font-semibold text-slate-900 mb-3">What we built</h3>
           <div className="text-slate-700 leading-relaxed text-base space-y-4">
             <p>
-              ElectriAI is a research project that mines YouTube to map the practical
-              questions electrical contractors and apprentices ask every day. Transcripts and
-              viewer Q&amp;A comments are classified into a 10-class schema covering the major
-              areas of the electrical trade. GPT does a first pass; trained human annotators
-              validate a balanced subset through Qualtrics surveys, which lets us measure
-              where the model agrees with practitioners and where it doesn&apos;t.
+              This project mines practitioner discussion on YouTube to map the practical questions electrical contractors and apprentices ask every day. Transcripts and viewer question-and-answer comments are classified into a ten-category schema covering the major areas of the electrical trade. GPT-5-mini performs a first-pass classification, and trained human annotators validate a balanced subset through Qualtrics surveys, which measures where the model agrees with practitioners and where it does not.
             </p>
             <p>
-              The companion chatbot (the Ask ElectriAI tab) is grounded in a hand-curated
-              markdown knowledge-base distilled from the underlying dataset. It is not a
-              generic LLM wrapped around the web, every answer cites the wiki page,
-              source video, or viewer comment it draws from.
+              The companion assistant, available under the Ask the Repository tab, is grounded in a hand-curated knowledge base distilled from the underlying dataset. It is not a general-purpose language model wrapped around the open web; every answer cites the knowledge-base page, source video, or viewer comment from which it is drawn.
             </p>
           </div>
         </section>

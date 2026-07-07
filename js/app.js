@@ -31,10 +31,10 @@
   const GEMINI_WORKER_BASE = 'https://youtube.electriai.com';
 
   const TABS = [
-    { id: 'research', label: 'Research Results' },
-    { id: 'chat',     label: 'Ask ElectriAI' },
-    { id: 'rawdata',  label: 'Raw Data' },
-    { id: 'comments', label: 'Test Data' },
+    { id: 'research', label: 'Findings' },
+    { id: 'chat',     label: 'Ask the Knowledge Base' },
+    { id: 'rawdata',  label: 'Videos & Comments' },
+    { id: 'comments', label: 'Validation Set' },
     { id: 'about',    label: 'About' },
   ];
 

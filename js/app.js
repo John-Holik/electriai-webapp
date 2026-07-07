@@ -31,10 +31,10 @@
   const GEMINI_WORKER_BASE = 'https://youtube.electriai.com';
 
   const TABS = [
-    { id: 'research', label: 'Research Results' },
-    { id: 'chat',     label: 'Ask ElectriAI' },
-    { id: 'rawdata',  label: 'Raw Data' },
-    { id: 'comments', label: 'Test Data' },
+    { id: 'research', label: 'Findings' },
+    { id: 'chat',     label: 'Ask the Knowledge Base' },
+    { id: 'rawdata',  label: 'Videos & Comments' },
+    { id: 'comments', label: 'Validation Set' },
     { id: 'about',    label: 'About' },
   ];
 
@@ -215,32 +215,19 @@
     return (
       <div className="min-h-screen">
 
-        <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
-            <div className="min-w-0">
-              <h1 className="serif text-base sm:text-lg font-semibold text-slate-900 leading-tight truncate">
-                ElectriAI Research
-              </h1>
-              <p className="text-[11px] text-slate-500 truncate">
-                YouTube Q&amp;A knowledge for electrical contractors&nbsp;·&nbsp;
-                <a href="#" className="underline hover:text-slate-700">paper preprint (coming soon)</a>
-              </p>
-            </div>
-            <nav className="flex gap-1 text-sm">
-              {TABS.map(({ id, label }) => (
-                <button
-                  key={id}
-                  onClick={() => changeTab(id)}
-                  className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                    tab === id ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </nav>
-          </div>
-        </header>
+        <nav className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 flex flex-wrap gap-1 text-sm">
+          {TABS.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => changeTab(id)}
+              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                tab === id ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
 
         <main className="max-w-6xl mx-auto px-4 sm:px-6">
           {tab === 'research' && <ResearchTab state={state} />}
@@ -267,11 +254,9 @@
         </main>
 
         <footer className="border-t border-slate-200 mt-12 py-6">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 text-xs text-slate-500 flex flex-col sm:flex-row justify-between gap-2">
-            <span>ElectriAI Research companion site · React + Tailwind, no build step</span>
-            <span>
-              Data generated {stats && stats.generatedAt ? stats.generatedAt.slice(0, 10) : ','}
-            </span>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 text-xs text-slate-500 flex flex-col gap-2">
+            <span>Companion site for the study "Identifying Knowledge Bottlenecks in Electrical Construction from Practitioner Discussion on YouTube Using Large Language Models"</span>
+            <span>Manuscript under review · React and Tailwind single-page application served over a global CDN with a serverless API gateway · Data generated May 2026</span>
           </div>
         </footer>
 

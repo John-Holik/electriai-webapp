@@ -25,7 +25,7 @@ window.AppAbout = (function() {
               This project mines practitioner discussion on YouTube to map the practical questions electrical contractors and apprentices ask every day. Transcripts and viewer question-and-answer comments are classified into a ten-category schema covering the major areas of the electrical trade. GPT-5-mini performs a first-pass classification, and trained human annotators validate a balanced subset through Qualtrics surveys, which measures where the model agrees with practitioners and where it does not.
             </p>
             <p>
-              The companion assistant, available under the Ask the Repository tab, is grounded in a hand-curated knowledge base distilled from the underlying dataset. It is not a general-purpose language model wrapped around the open web; every answer cites the knowledge-base page, source video, or viewer comment from which it is drawn.
+              The companion assistant, available under the Ask the Knowledge Base tab, is grounded in a hand-curated knowledge base distilled from the underlying dataset. It is not a general-purpose language model wrapped around the open web; every answer cites the knowledge-base page, source video, or viewer comment from which it is drawn.
             </p>
           </div>
         </section>

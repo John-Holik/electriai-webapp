@@ -215,19 +215,31 @@
     return (
       <div className="min-h-screen">
 
-        <nav className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 flex flex-wrap gap-1 text-sm">
-          {TABS.map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={() => changeTab(id)}
-              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                tab === id ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
+        <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-8">
+            <div className="min-w-0 flex-1">
+              <h1 className="serif text-base sm:text-lg font-semibold text-slate-900 leading-tight whitespace-nowrap">
+                Practitioner Knowledge Base for Electrical Construction
+              </h1>
+              <p className="text-[11px] sm:text-xs text-slate-500 leading-tight mt-0.5">
+                Identifying knowledge bottlenecks in electrical construction from practitioner discussion on YouTube using large language models
+              </p>
+            </div>
+            <nav className="flex flex-wrap gap-1 text-sm shrink-0">
+              {TABS.map(({ id, label }) => (
+                <button
+                  key={id}
+                  onClick={() => changeTab(id)}
+                  className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                    tab === id ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </header>
 
         <main className="max-w-6xl mx-auto px-4 sm:px-6">
           {tab === 'research' && <ResearchTab state={state} />}

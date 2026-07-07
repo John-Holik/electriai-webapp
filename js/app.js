@@ -215,32 +215,19 @@
     return (
       <div className="min-h-screen">
 
-        <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
-            <div className="min-w-0">
-              <h1 className="serif text-base sm:text-lg font-semibold text-slate-900 leading-tight truncate">
-                ElectriAI Research
-              </h1>
-              <p className="text-[11px] text-slate-500 truncate">
-                YouTube Q&amp;A knowledge for electrical contractors&nbsp;·&nbsp;
-                <a href="#" className="underline hover:text-slate-700">paper preprint (coming soon)</a>
-              </p>
-            </div>
-            <nav className="flex gap-1 text-sm">
-              {TABS.map(({ id, label }) => (
-                <button
-                  key={id}
-                  onClick={() => changeTab(id)}
-                  className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                    tab === id ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </nav>
-          </div>
-        </header>
+        <nav className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 flex flex-wrap gap-1 text-sm">
+          {TABS.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => changeTab(id)}
+              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                tab === id ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
 
         <main className="max-w-6xl mx-auto px-4 sm:px-6">
           {tab === 'research' && <ResearchTab state={state} />}

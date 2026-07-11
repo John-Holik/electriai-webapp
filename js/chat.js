@@ -24,8 +24,6 @@ window.AppChat = (function() {
     { q: 'What is the difference between grounding and bonding?', tag: 'Bonding' },
     { q: 'How do I torque aluminum conductor terminations correctly?', tag: 'Terminations' },
     { q: 'When is AFCI protection required on branch circuits?', tag: 'Protection' },
-    { q: 'How do I bond a subpanel in a detached garage?', tag: 'Panelboards' },
-    { q: 'What causes voltage drop on a long feeder run?', tag: 'Ampacity' },
   ];
 
   const GEMINI_EMBED_URL    = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent';
@@ -375,9 +373,12 @@ Rules for your response:
     return [...videos.values()].sort((a, b) => a.order - b.order);
   };
 
-  function SourcesPanel({ sources, navigate, rawVideosLoading }) {
+  function SourcesPanel({ sources, navigate, rawVideosLoading, height }) {
     return (
-      <div className="lg:sticky lg:top-20 bg-white border border-slate-200 rounded-lg flex flex-col h-[60vh] min-h-[480px]">
+      <div
+        className="lg:sticky lg:top-20 bg-white border border-slate-200 rounded-lg flex flex-col h-[60vh] min-h-[440px] lg:min-h-0"
+        style={height ? { height } : undefined}
+      >
         <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
           <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500">
             Cited sources{sources.length > 0 ? ` (${sources.length})` : ''}
@@ -441,11 +442,11 @@ Rules for your response:
       { value: formatCompact(stats.totalViews),    label: 'Video views',  accent: 'linear-gradient(90deg,#d97706,#fbbf24)' },
     ];
     return (
-      <div className="mt-7 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {items.map((it, i) => (
           <div
             key={it.label}
-            className="kb-rise relative overflow-hidden rounded-xl border border-slate-200 bg-white/80 backdrop-blur-sm px-4 py-3.5"
+            className="kb-rise relative overflow-hidden rounded-xl border border-slate-200 bg-white/80 backdrop-blur-sm px-4 py-3"
             style={{ animationDelay: `${i * 70}ms` }}
           >
             <span className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: it.accent }} />
@@ -468,16 +469,16 @@ Rules for your response:
   function SuggestedQuestions({ onPick, disabled }) {
     return (
       <div className="max-w-xl mx-auto">
-        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-semibold mb-3">
+        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-semibold mb-2.5">
           Try asking
         </div>
-        <div className="grid sm:grid-cols-2 gap-2.5 text-left">
+        <div className="grid sm:grid-cols-2 gap-2 text-left">
           {SUGGESTED_QUESTIONS.map(({ q, tag }) => (
             <button
               key={q}
               onClick={() => onPick(q)}
               disabled={disabled}
-              className="kb-suggest group flex items-start gap-2.5 rounded-xl border border-slate-200 bg-white px-3.5 py-3 hover:border-slate-400"
+              className="kb-suggest group flex items-start gap-2.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 hover:border-slate-400"
             >
               <span className="mt-0.5 flex-shrink-0 w-6 h-6 rounded-md bg-slate-900 text-white flex items-center justify-center text-[11px] group-hover:bg-slate-700 transition-colors">
                 ↳
@@ -683,6 +684,29 @@ Rules for your response:
       }
     }, [messages, pending]);
 
+    // Fit-to-viewport: on desktop, size the chat (and sources) panel so its
+    // bottom lands just above the fold, letting the whole initial chat state
+    // show without page-scrolling. On mobile (<lg) we fall back to the CSS
+    // height and let the page scroll normally. Re-measures on resize and
+    // whenever a banner above the panel changes the row's top offset.
+    const chatRowRef = useRef(null);
+    const [panelHeight, setPanelHeight] = useState(null);
+    useEffect(() => {
+      const measure = () => {
+        if (window.innerWidth < 1024) { setPanelHeight(null); return; }
+        const el = chatRowRef.current;
+        if (!el) return;
+        const top = el.getBoundingClientRect().top;
+        setPanelHeight(Math.max(320, Math.round(window.innerHeight - top - 16)));
+      };
+      measure();
+      const raf = requestAnimationFrame(measure);
+      window.addEventListener('resize', measure);
+      return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', measure); };
+    }, [apiReady, embeddingsLoading, error]);
+
+    const hasSources = citedSources.length > 0;
+
     // `canAsk` gates the suggestion chips (no typed input required);
     // `canSend` additionally requires a non-empty composer for the button.
     const canAsk = apiReady && embeddingsReady && !pending;
@@ -775,12 +799,12 @@ Rules for your response:
     };
 
     return (
-      <div className="animate-fade py-8">
+      <div className="animate-fade py-6">
 
-        <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white mb-6">
+        <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white mb-5">
           <div className="absolute inset-0 kb-hero-glow" aria-hidden="true" />
           <div className="absolute inset-0 kb-hero-grid opacity-70" aria-hidden="true" />
-          <div className="relative px-6 sm:px-8 py-8">
+          <div className="relative px-6 sm:px-8 py-6">
             <div className="max-w-3xl">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300/70 bg-white/70 backdrop-blur-sm px-3 py-1 text-[10.5px] uppercase tracking-[0.18em] text-slate-600 font-semibold">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -789,12 +813,11 @@ Rules for your response:
               <h2 className="serif text-3xl sm:text-4xl font-semibold text-slate-900 leading-tight mt-4">
                 Ask the knowledge base
               </h2>
-              <p className="text-slate-600 mt-3 leading-relaxed">
-                Ask anything about electrical construction. The chatbot retrieves the most relevant
-                passages from the ElectriAI wiki and asks Gemini to answer using only those passages —
-                so every claim stays traceable. Citations are preserved:
-                <span className="inline-flex items-center px-1.5 rounded bg-red-50 text-red-700 text-[11px] font-medium ml-1">▶ video</span> links to the source YouTube video,
-                <span className="inline-flex items-center px-1.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium ml-1">comment</span> marks a source Q&amp;A comment.
+              <p className="text-slate-600 mt-2.5 leading-relaxed">
+                Ask anything about electrical construction. Answers come only from passages retrieved
+                from the ElectriAI wiki, so every claim stays traceable. Citations:
+                <span className="inline-flex items-center px-1.5 rounded bg-red-50 text-red-700 text-[11px] font-medium ml-1">▶ video</span> links the source YouTube video,
+                <span className="inline-flex items-center px-1.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium ml-1">comment</span> marks a Q&amp;A comment.
               </p>
             </div>
             <KbStatRibbon stats={state.stats} />
@@ -826,17 +849,28 @@ Rules for your response:
           </div>
         )}
 
-        <div className="flex flex-col lg:flex-row gap-4 items-stretch">
-          <div className="flex-1 min-w-0 lg:max-w-3xl bg-white border border-slate-200 rounded-lg flex flex-col h-[60vh] min-h-[480px]">
+        <div ref={chatRowRef} className="flex flex-col lg:flex-row gap-4 items-stretch">
+          <div
+            className={`${hasSources ? 'flex-1 min-w-0 lg:max-w-3xl' : 'w-full max-w-3xl mx-auto'} bg-slate-100 border border-slate-200 rounded-lg flex flex-col h-[60vh] min-h-[440px] lg:min-h-0`}
+            style={panelHeight ? { height: panelHeight } : undefined}
+          >
 
           {/* Messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4 scrollbar-thin">
             {messages.length === 0 && (
-              <div className="py-8">
-                <div className="text-center mb-7">
-                  <div className="mx-auto w-11 h-11 rounded-xl bg-slate-900 text-white flex items-center justify-center serif text-lg mb-3">?</div>
+              <div className="py-4">
+                <div className="text-center mb-4">
+                  <div className="mx-auto w-11 h-11 rounded-xl bg-slate-900 text-white flex items-center justify-center mb-2.5">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6" aria-hidden="true">
+                    <path d="M12 8V4H8" />
+                    <rect width="16" height="12" x="4" y="8" rx="2" />
+                    <path d="M2 14h2" />
+                    <path d="M20 14h2" />
+                    <path d="M15 13v2" />
+                    <path d="M9 13v2" />
+                  </svg>
+                </div>
                   <p className="serif italic text-slate-500 text-sm">Ask a question to get started.</p>
-                  <p className="text-[12px] text-slate-400 mt-1">Answers come only from the knowledge base, with sources you can open.</p>
                 </div>
                 <SuggestedQuestions onPick={(q) => handleAsk(q)} disabled={!canAsk} />
               </div>
@@ -912,15 +946,19 @@ Rules for your response:
           </div>
           </div>
 
-          {/* Right-side cited sources panel. Auto-populates as the
-              chatbot's response cites videos and comments. */}
-          <aside className="lg:w-72 xl:w-80 lg:flex-shrink-0">
-            <SourcesPanel
-              sources={citedSources}
-              navigate={navigate}
-              rawVideosLoading={rawVideosLoading}
-            />
-          </aside>
+          {/* Right-side cited sources panel. Hidden until the chatbot has
+              actually cited a video or comment, so the empty initial state
+              stays clean and the chat can use the full width. */}
+          {hasSources && (
+            <aside className="lg:w-72 xl:w-80 lg:flex-shrink-0">
+              <SourcesPanel
+                sources={citedSources}
+                navigate={navigate}
+                rawVideosLoading={rawVideosLoading}
+                height={panelHeight}
+              />
+            </aside>
+          )}
         </div>
 
         {/* Below-the-fold explainers: how the retrieval pipeline works and

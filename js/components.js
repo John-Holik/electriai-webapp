@@ -5,6 +5,7 @@
 window.AppComponents = window.AppComponents || {};
 
 (function() {
+  const { useState, useEffect, useRef } = React;
   const { pickContrastingTextColor } = window.AppUtils;
 
   // Generic interactive chip used by filter UIs and any place a small
@@ -43,25 +44,68 @@ window.AppComponents = window.AppComponents || {};
 
   // Large numeric stat block. `value` is rendered as already-formatted text.
   // `hint` is optional small supporting text under the label.
-  const StatCard = ({ label, value, hint }) => (
-    <div className="bg-white border border-slate-200 rounded-lg p-5">
-      <div className="serif text-3xl sm:text-4xl font-semibold text-slate-900 tabular-nums leading-none">
-        {value}
+  // Headline statistic tile. When `value` is a number, it counts up from
+  // zero the first time the card scrolls into view; `format` renders each
+  // frame. The card also lifts on hover. A non-numeric `value` renders as-is.
+  const StatCard = ({ label, value, hint, format }) => {
+    const fmt = format || ((n) => Math.round(n).toLocaleString('en-US'));
+    const target = Number(value);
+    const animatable = Number.isFinite(target);
+    const ref = useRef(null);
+    const [shown, setShown] = useState(0);
+
+    // Animate 0 -> target once, triggered when the card enters the viewport.
+    useEffect(() => {
+      if (!animatable) return;
+      const node = ref.current;
+      if (!node) return;
+      let raf = 0;
+      let start = null;
+      const duration = 1100;
+      const step = (t) => {
+        if (start === null) start = t;
+        const p = Math.min(1, (t - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        setShown(target * eased);
+        if (p < 1) raf = requestAnimationFrame(step);
+      };
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          raf = requestAnimationFrame(step);
+          observer.disconnect();
+        }
+      }, { threshold: 0.4 });
+      observer.observe(node);
+      return () => { observer.disconnect(); cancelAnimationFrame(raf); };
+    }, [target, animatable]);
+
+    return (
+      <div
+        ref={ref}
+        className="bg-white border border-slate-200 rounded-lg p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300"
+      >
+        <div className="serif text-3xl sm:text-4xl font-semibold text-slate-900 tabular-nums leading-none">
+          {animatable ? fmt(Math.round(shown)) : value}
+        </div>
+        <div className="text-[11px] uppercase tracking-wider text-slate-500 mt-2 font-medium">
+          {label}
+        </div>
+        {hint && <div className="text-[11px] text-slate-400 mt-1">{hint}</div>}
       </div>
-      <div className="text-[11px] uppercase tracking-wider text-slate-500 mt-2 font-medium">
-        {label}
-      </div>
-      {hint && <div className="text-[11px] text-slate-400 mt-1">{hint}</div>}
-    </div>
-  );
+    );
+  };
 
   // Category tile for the 10-class schema grid. Shows the short code as a
   // colored swatch on the left and the full name + description on the right.
   // The swatch text color is auto-picked for contrast against the bg color.
-  const SchemaChip = ({ code, name, description, color }) => {
+  const SchemaChip = ({ code, name, description, color, onClick, active }) => {
     const textColor = pickContrastingTextColor(color);
     return (
-      <div className="bg-white border border-slate-200 rounded-lg p-4 flex items-start gap-3">
+      <div
+        onClick={onClick}
+        className={`bg-white border rounded-lg p-4 flex items-start gap-3 transition duration-200 ${onClick ? 'cursor-pointer hover:-translate-y-0.5 hover:shadow-md' : ''} ${active ? '' : 'border-slate-200'}`}
+        style={active ? { borderColor: color, boxShadow: `0 0 0 1px ${color}` } : undefined}
+      >
         <span
           className="flex-shrink-0 inline-flex items-center justify-center min-w-[3rem] h-9 px-2 rounded-md text-xs font-semibold tracking-wide"
           style={{ backgroundColor: color, color: textColor }}

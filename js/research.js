@@ -227,6 +227,11 @@ window.AppResearch = (function() {
 
     return (
       <>
+        {!selected && (
+          <p className="text-xs text-slate-500 italic mb-2">
+            Tip: click any bubble to see sample comments from that theme.
+          </p>
+        )}
         <div ref={divRef} style={{ width: '100%', height: '640px' }} />
         <noscript>
           <img
@@ -655,14 +660,21 @@ window.AppResearch = (function() {
     const stats = state.stats || {};
     const categories = state.categories || [];
 
-    // Stat card definitions. Each entry pulls a raw value from
-    // summary_stats.json and formats it with the appropriate helper.
+    // Clicking a schema chip reveals sample comments from that category.
+    const [selectedCat, setSelectedCat] = useState(null);
+    const schemaSamples = useMemo(() => {
+      if (!selectedCat || !state.comments) return [];
+      return state.comments.filter(c => c.category === selectedCat).slice(0, 5);
+    }, [selectedCat, state.comments]);
+
+    // Stat card definitions. Each entry carries the raw value plus the
+    // formatter used to render it, so the card can animate a count-up.
     const statCards = [
-      { label: 'Videos analyzed',      value: formatNumber(stats.totalVideos),   hint: `${formatNumber(stats.videosWithQa)} with Q&A comments` },
-      { label: 'Comments processed',   value: formatNumber(stats.totalComments) },
-      { label: 'Unique themes',        value: formatNumber(stats.uniqueThemes) },
-      { label: 'Knowledge-base pages', value: formatNumber(stats.kbPages),       hint: `${formatNumber(stats.kbThemePages)} themes + ${formatNumber(stats.kbConceptPages)} concepts` },
-      { label: 'Total video views',    value: formatCompact(stats.totalViews) },
+      { label: 'Videos analyzed',      value: stats.totalVideos,   format: formatNumber,  hint: `${formatNumber(stats.videosWithQa)} with Q&A comments` },
+      { label: 'Comments processed',   value: stats.totalComments, format: formatNumber },
+      { label: 'Unique themes',        value: stats.uniqueThemes,  format: formatNumber },
+      { label: 'Knowledge-base pages', value: stats.kbPages,       format: formatNumber,  hint: `${formatNumber(stats.kbThemePages)} themes + ${formatNumber(stats.kbConceptPages)} concepts` },
+      { label: 'Total video views',    value: stats.totalViews,    format: formatCompact },
     ];
 
     return (
@@ -685,7 +697,7 @@ window.AppResearch = (function() {
           <h3 className="serif text-xl font-semibold text-slate-900 mb-4">By the numbers</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {statCards.map((s) => (
-              <StatCard key={s.label} label={s.label} value={s.value} hint={s.hint} />
+              <StatCard key={s.label} label={s.label} value={s.value} hint={s.hint} format={s.format} />
             ))}
           </div>
         </section>
@@ -694,7 +706,7 @@ window.AppResearch = (function() {
         <section>
           <div className="flex items-baseline justify-between mb-4">
             <h3 className="serif text-xl font-semibold text-slate-900">The 10-class schema</h3>
-            <p className="text-xs text-slate-400 italic">Used to label every comment and every wiki page</p>
+            <p className="text-xs text-slate-400 italic">Click a class to see sample comments</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {categories.map((cat) => (
@@ -704,9 +716,39 @@ window.AppResearch = (function() {
                 name={cat.name}
                 description={cat.description}
                 color={cat.color}
+                active={selectedCat === cat.name}
+                onClick={() => setSelectedCat(selectedCat === cat.name ? null : cat.name)}
               />
             ))}
           </div>
+          {selectedCat && (
+            <div className="mt-4 bg-slate-100 rounded-lg p-4 border border-slate-200">
+              <div className="flex items-baseline justify-between mb-3">
+                <h4 className="serif text-base font-semibold text-slate-900">
+                  Sample comments from {selectedCat}
+                </h4>
+                <button
+                  onClick={() => setSelectedCat(null)}
+                  className="text-xs text-slate-500 hover:text-slate-800"
+                >Clear</button>
+              </div>
+              {schemaSamples.length === 0 ? (
+                <p className="text-sm text-slate-500 italic">No curated samples for this class.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {schemaSamples.map((c) => (
+                    <li key={c.recordId} className="text-sm text-slate-700">
+                      <p className="leading-relaxed">"{c.commentText}"</p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        <a href={c.videoUrl} target="_blank" rel="noopener" className="underline">{c.videoTitle}</a>
+                        {c.questionSummary ? ` · Q: ${c.questionSummary}` : ''}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </section>
 
         {/* Section divider into the paper figures. */}

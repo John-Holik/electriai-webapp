@@ -36,6 +36,29 @@
     .backdrop-blur-modal { backdrop-filter: blur(4px); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade { animation: fadeIn 200ms ease-out; }
+
+    /* ─── Ask-the-Knowledge-Base page enrichments ─────────────────────────
+       Custom decoration for the chat tab (js/chat.js): a soft gradient hero,
+       staggered card rises, animated bar fills, and hover-lift step cards.
+       Kept here so the Tailwind CDN build stays config-free. */
+    .kb-hero-grid {
+      background-image: radial-gradient(circle at 1px 1px, rgba(15,23,42,0.05) 1px, transparent 0);
+      background-size: 22px 22px;
+    }
+    .kb-hero-glow {
+      background:
+        radial-gradient(120% 130% at 100% 0%, rgba(245,158,11,0.10), transparent 55%),
+        radial-gradient(120% 130% at 0% 100%, rgba(56,189,248,0.10), transparent 55%);
+    }
+    @keyframes kbRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .kb-rise { animation: kbRise 500ms cubic-bezier(.22,1,.36,1) both; }
+    @keyframes kbGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    .kb-bar-fill { transform-origin: left center; animation: kbGrow 900ms cubic-bezier(.22,1,.36,1) both; }
+    .kb-step-card { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+    .kb-step-card:hover { transform: translateY(-3px); box-shadow: 0 14px 32px -16px rgba(15,23,42,0.35); border-color: #cbd5e1; }
+    .kb-suggest { transition: transform .15s ease, border-color .15s ease, background-color .15s ease, box-shadow .15s ease; }
+    .kb-suggest:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 24px -14px rgba(15,23,42,0.4); }
+    .kb-suggest:disabled { opacity: .5; cursor: not-allowed; }
   </style>
 </head>
 <body class="bg-stone-50 text-slate-900 antialiased">

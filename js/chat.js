@@ -13,6 +13,20 @@
 window.AppChat = (function() {
   const { useState, useEffect, useMemo, useRef } = React;
   const { WikiPageModal } = window.AppComponents;
+  const { formatNumber, formatCompact } = window.AppUtils;
+
+  // Starter prompts shown in the empty chat. Each maps onto a heavily
+  // represented theme in the corpus (grounding, bonding, terminations,
+  // ampacity, AFCI, voltage drop) so the retriever has real passages to
+  // ground an answer in. Clicking one fires the same pipeline as typing.
+  const SUGGESTED_QUESTIONS = [
+    { q: 'What size ground wire do I need for a 200 A service?', tag: 'Grounding' },
+    { q: 'What is the difference between grounding and bonding?', tag: 'Bonding' },
+    { q: 'How do I torque aluminum conductor terminations correctly?', tag: 'Terminations' },
+    { q: 'When is AFCI protection required on branch circuits?', tag: 'Protection' },
+    { q: 'How do I bond a subpanel in a detached garage?', tag: 'Panelboards' },
+    { q: 'What causes voltage drop on a long feeder run?', tag: 'Ampacity' },
+  ];
 
   const GEMINI_EMBED_URL    = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent';
   const GEMINI_GENERATE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent';
@@ -413,6 +427,207 @@ Rules for your response:
     );
   }
 
+  // ─── Hero stat ribbon ──────────────────────────────────
+  // Compact "what's inside the knowledge base" counters drawn straight
+  // from summary_stats.json. Each tile gets a thin gradient accent bar and
+  // a staggered rise so the hero doesn't read as a wall of numbers.
+  function KbStatRibbon({ stats }) {
+    if (!stats) return null;
+    const items = [
+      { value: formatNumber(stats.kbPages),        label: 'Wiki pages',   accent: 'linear-gradient(90deg,#0f172a,#334155)' },
+      { value: formatNumber(stats.totalVideos),    label: 'YouTube videos', accent: 'linear-gradient(90deg,#dc2626,#f87171)' },
+      { value: formatCompact(stats.totalComments), label: 'Q&A comments', accent: 'linear-gradient(90deg,#0891b2,#22d3ee)' },
+      { value: formatNumber(stats.uniqueThemes),   label: 'Themes',       accent: 'linear-gradient(90deg,#059669,#34d399)' },
+      { value: formatCompact(stats.totalViews),    label: 'Video views',  accent: 'linear-gradient(90deg,#d97706,#fbbf24)' },
+    ];
+    return (
+      <div className="mt-7 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {items.map((it, i) => (
+          <div
+            key={it.label}
+            className="kb-rise relative overflow-hidden rounded-xl border border-slate-200 bg-white/80 backdrop-blur-sm px-4 py-3.5"
+            style={{ animationDelay: `${i * 70}ms` }}
+          >
+            <span className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: it.accent }} />
+            <div className="serif text-2xl sm:text-[27px] font-semibold text-slate-900 tabular-nums leading-none">
+              {it.value}
+            </div>
+            <div className="text-[10.5px] uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
+              {it.label}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // ─── Suggested-question chips ──────────────────────────
+  // Rendered inside the empty chat state. `onPick` fires the real ask
+  // pipeline; `disabled` mirrors the composer's readiness so a click can
+  // never race the embeddings load.
+  function SuggestedQuestions({ onPick, disabled }) {
+    return (
+      <div className="max-w-xl mx-auto">
+        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-semibold mb-3">
+          Try asking
+        </div>
+        <div className="grid sm:grid-cols-2 gap-2.5 text-left">
+          {SUGGESTED_QUESTIONS.map(({ q, tag }) => (
+            <button
+              key={q}
+              onClick={() => onPick(q)}
+              disabled={disabled}
+              className="kb-suggest group flex items-start gap-2.5 rounded-xl border border-slate-200 bg-white px-3.5 py-3 hover:border-slate-400"
+            >
+              <span className="mt-0.5 flex-shrink-0 w-6 h-6 rounded-md bg-slate-900 text-white flex items-center justify-center text-[11px] group-hover:bg-slate-700 transition-colors">
+                ↳
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[13px] text-slate-800 leading-snug font-medium">{q}</span>
+                <span className="block text-[10px] uppercase tracking-wider text-slate-400 mt-1">{tag}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ─── "How it works" pipeline figure ────────────────────
+  // Five-stage retrieval-augmented-generation flow, mirrored from the code
+  // in this file (embed → cosine retrieve top-K → grounded generation).
+  // Steps connect with a chevron that flips vertical on narrow screens.
+  function HowItWorksFigure() {
+    const steps = [
+      { n: 1, title: 'Your question', detail: 'Asked in plain English',                        ring: 'linear-gradient(135deg,#334155,#0f172a)' },
+      { n: 2, title: 'Embed',         detail: 'Gemini maps it to a 768-dimension vector',       ring: 'linear-gradient(135deg,#38bdf8,#0369a1)' },
+      { n: 3, title: 'Retrieve',      detail: 'Cosine similarity ranks the wiki; top 6 win',    ring: 'linear-gradient(135deg,#34d399,#047857)' },
+      { n: 4, title: 'Generate',      detail: 'Gemini 2.5 Flash answers from those passages only', ring: 'linear-gradient(135deg,#a78bfa,#6d28d9)' },
+      { n: 5, title: 'Cited answer',  detail: 'Every claim keeps its ▶ video / comment source', ring: 'linear-gradient(135deg,#fbbf24,#d97706)' },
+    ];
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+        <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-1.5">
+          <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Under the hood</div>
+          <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">How Ask ElectriAI answers</h3>
+          <p className="text-sm text-slate-600 serif">
+            Retrieval-augmented generation keeps every answer tethered to the source corpus, never the model's imagination.
+          </p>
+        </header>
+        <div className="p-6 bg-stone-50">
+          <div className="flex flex-col lg:flex-row lg:items-stretch gap-2">
+            {steps.map((s, i) => (
+              <React.Fragment key={s.n}>
+                <div className="kb-step-card flex-1 rounded-xl border border-slate-200 bg-white p-4">
+                  <div
+                    className="w-9 h-9 rounded-lg text-white flex items-center justify-center serif text-base font-semibold shadow-sm"
+                    style={{ background: s.ring }}
+                  >
+                    {s.n}
+                  </div>
+                  <div className="text-sm font-semibold text-slate-900 mt-3">{s.title}</div>
+                  <div className="text-[12px] text-slate-600 leading-relaxed mt-1">{s.detail}</div>
+                </div>
+                {i < steps.length - 1 && (
+                  <div className="flex items-center justify-center text-slate-300 lg:px-0.5">
+                    <span className="lg:hidden text-lg leading-none">↓</span>
+                    <span className="hidden lg:inline text-lg leading-none">→</span>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Knowledge-base coverage figure ────────────────────
+  // Left: a conic-gradient donut splitting the 78 wiki pages into
+  // curated theme pages vs. concept pages. Right: the deepest pages by
+  // source-record count, as animated bars colored by page type.
+  function CoverageFigure({ wikiPages, stats }) {
+    if (!wikiPages || !wikiPages.length) return null;
+    const themePages = (stats && stats.kbThemePages) || wikiPages.filter((p) => p.type === 'theme').length;
+    const conceptPages = (stats && stats.kbConceptPages) || wikiPages.filter((p) => p.type === 'concept').length;
+    const total = themePages + conceptPages || 1;
+    const themePct = Math.round((themePages / total) * 100);
+    const top = [...wikiPages]
+      .filter((p) => p.sourceCount)
+      .sort((a, b) => b.sourceCount - a.sourceCount)
+      .slice(0, 8);
+    const max = top.length ? top[0].sourceCount : 1;
+
+    const THEME_COLOR = '#0f172a';
+    const CONCEPT_COLOR = '#f59e0b';
+
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+        <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-1.5">
+          <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Coverage</div>
+          <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">What the knowledge base covers</h3>
+          <p className="text-sm text-slate-600 serif">
+            {total} hand-curated wiki pages distilled from the corpus. The deepest pages draw on the most underlying video and comment records.
+          </p>
+        </header>
+        <div className="p-6 grid md:grid-cols-[minmax(0,220px)_1fr] gap-8 items-center">
+          {/* Donut: theme vs concept split */}
+          <div className="flex flex-col items-center">
+            <div className="relative w-44 h-44">
+              <div
+                className="w-full h-full rounded-full"
+                style={{ background: `conic-gradient(${THEME_COLOR} 0 ${themePct}%, ${CONCEPT_COLOR} ${themePct}% 100%)` }}
+              />
+              <div className="absolute inset-[15px] rounded-full bg-white flex flex-col items-center justify-center">
+                <span className="serif text-4xl font-semibold text-slate-900 leading-none tabular-nums">{total}</span>
+                <span className="text-[10px] uppercase tracking-wider text-slate-500 mt-1">wiki pages</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 mt-4 text-[12px]">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-sm" style={{ background: THEME_COLOR }} />
+                <span className="text-slate-700 font-medium">{themePages}</span>
+                <span className="text-slate-500">theme</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-sm" style={{ background: CONCEPT_COLOR }} />
+                <span className="text-slate-700 font-medium">{conceptPages}</span>
+                <span className="text-slate-500">concept</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Deepest pages by source-record count */}
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-3">
+              Deepest pages · source records
+            </div>
+            <ul className="space-y-2.5">
+              {top.map((p, i) => {
+                const pct = Math.max(6, Math.round((p.sourceCount / max) * 100));
+                const color = p.type === 'concept' ? CONCEPT_COLOR : THEME_COLOR;
+                return (
+                  <li key={p.slug}>
+                    <div className="flex items-baseline justify-between gap-3 mb-1">
+                      <span className="text-[12.5px] text-slate-800 font-medium truncate" title={p.title}>{p.title}</span>
+                      <span className="text-[11px] text-slate-500 tabular-nums flex-shrink-0">{formatNumber(p.sourceCount)}</span>
+                    </div>
+                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="kb-bar-fill h-full rounded-full"
+                        style={{ width: `${pct}%`, background: color, animationDelay: `${i * 80}ms` }}
+                      />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ─── Tab component ─────────────────────────────────────
   function ChatTab({ state, embeddingsLoading, embeddingsReady, devKeyAvailable, navigate, rawVideosLoading }) {
     const apiKey = state.geminiDevKey || '';
@@ -468,11 +683,17 @@ Rules for your response:
       }
     }, [messages, pending]);
 
-    const canSend = apiReady && embeddingsReady && !pending && input.trim();
+    // `canAsk` gates the suggestion chips (no typed input required);
+    // `canSend` additionally requires a non-empty composer for the button.
+    const canAsk = apiReady && embeddingsReady && !pending;
+    const canSend = canAsk && input.trim();
 
-    const handleAsk = async () => {
-      const question = input.trim();
+    // Accepts an optional forced question (from a suggestion chip); falls
+    // back to the composer's current value when called from the button.
+    const handleAsk = async (forced) => {
+      const question = (typeof forced === 'string' ? forced : input).trim();
       if (!question) return;
+      if (pending) return;
       if (!apiReady) {
         setError('Chat is not configured. Set the Worker URL in js/app.js for production, or paste a Gemini key into localStorage for local development.');
         return;
@@ -556,17 +777,28 @@ Rules for your response:
     return (
       <div className="animate-fade py-8">
 
-        <section className="mb-6 max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">Ask ElectriAI</p>
-          <h2 className="serif text-3xl sm:text-4xl font-semibold text-slate-900 leading-tight">
-            Ask the knowledge base
-          </h2>
-          <p className="text-slate-600 mt-3 leading-relaxed">
-            Type a question about electrical construction. The chatbot retrieves passages
-            from the ElectriAI wiki and asks Gemini to answer using only those passages.
-            Citations are preserved: <span className="inline-flex items-center px-1.5 rounded bg-red-50 text-red-700 text-[11px] font-medium">▶ video</span> links to the source YouTube video,
-            <span className="inline-flex items-center px-1.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium ml-1">comment</span> marks a source Q&amp;A comment.
-          </p>
+        <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white mb-6">
+          <div className="absolute inset-0 kb-hero-glow" aria-hidden="true" />
+          <div className="absolute inset-0 kb-hero-grid opacity-70" aria-hidden="true" />
+          <div className="relative px-6 sm:px-8 py-8">
+            <div className="max-w-3xl">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300/70 bg-white/70 backdrop-blur-sm px-3 py-1 text-[10.5px] uppercase tracking-[0.18em] text-slate-600 font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Retrieval-augmented · grounded in the corpus
+              </span>
+              <h2 className="serif text-3xl sm:text-4xl font-semibold text-slate-900 leading-tight mt-4">
+                Ask the knowledge base
+              </h2>
+              <p className="text-slate-600 mt-3 leading-relaxed">
+                Ask anything about electrical construction. The chatbot retrieves the most relevant
+                passages from the ElectriAI wiki and asks Gemini to answer using only those passages —
+                so every claim stays traceable. Citations are preserved:
+                <span className="inline-flex items-center px-1.5 rounded bg-red-50 text-red-700 text-[11px] font-medium ml-1">▶ video</span> links to the source YouTube video,
+                <span className="inline-flex items-center px-1.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium ml-1">comment</span> marks a source Q&amp;A comment.
+              </p>
+            </div>
+            <KbStatRibbon stats={state.stats} />
+          </div>
         </section>
 
         {/* Loader / dev-key banners */}
@@ -600,9 +832,13 @@ Rules for your response:
           {/* Messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4 scrollbar-thin">
             {messages.length === 0 && (
-              <div className="text-center text-slate-400 text-sm py-12">
-                <p className="serif italic">No questions yet.</p>
-                <p className="mt-1 text-[12px]">Try “What size ground wire do I need for a 200 A service?”</p>
+              <div className="py-8">
+                <div className="text-center mb-7">
+                  <div className="mx-auto w-11 h-11 rounded-xl bg-slate-900 text-white flex items-center justify-center serif text-lg mb-3">?</div>
+                  <p className="serif italic text-slate-500 text-sm">Ask a question to get started.</p>
+                  <p className="text-[12px] text-slate-400 mt-1">Answers come only from the knowledge base, with sources you can open.</p>
+                </div>
+                <SuggestedQuestions onPick={(q) => handleAsk(q)} disabled={!canAsk} />
               </div>
             )}
             {messages.map((m, i) => (
@@ -658,7 +894,7 @@ Rules for your response:
                 className="flex-1 text-sm px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 resize-none disabled:bg-slate-50 disabled:text-slate-500"
               />
               <button
-                onClick={handleAsk}
+                onClick={() => handleAsk()}
                 disabled={!canSend}
                 className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-md hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed self-stretch"
               >
@@ -686,6 +922,14 @@ Rules for your response:
             />
           </aside>
         </div>
+
+        {/* Below-the-fold explainers: how the retrieval pipeline works and
+            what the knowledge base actually contains. Both draw only on the
+            eagerly-loaded datasets, so they render instantly with the tab. */}
+        <section className="mt-10 space-y-6">
+          <HowItWorksFigure />
+          <CoverageFigure wikiPages={state.wikiPages} stats={state.stats} />
+        </section>
 
         {openPage && <WikiPageModal page={openPage} onClose={() => setOpenPage(null)} />}
       </div>

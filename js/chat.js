@@ -696,8 +696,14 @@ Rules for your response:
         if (window.innerWidth < 1024) { setPanelHeight(null); return; }
         const el = chatRowRef.current;
         if (!el) return;
-        const top = el.getBoundingClientRect().top;
-        setPanelHeight(Math.max(320, Math.round(window.innerHeight - top - 16)));
+        // Use the row's offset from the top of the DOCUMENT, not the
+        // viewport. getBoundingClientRect().top is viewport-relative, so if
+        // this runs before the tab switch finishes scrolling back to the top
+        // (e.g. arriving from a scrolled Findings page) it reads small/negative
+        // and the panel stretches down the screen. Adding scrollY makes the
+        // measurement scroll-independent: it's the height as if unscrolled.
+        const docTop = el.getBoundingClientRect().top + window.scrollY;
+        setPanelHeight(Math.max(320, Math.round(window.innerHeight - docTop - 16)));
       };
       measure();
       const raf = requestAnimationFrame(measure);

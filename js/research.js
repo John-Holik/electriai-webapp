@@ -227,6 +227,11 @@ window.AppResearch = (function() {
 
     return (
       <>
+        {!selected && (
+          <p className="text-xs text-slate-500 italic mb-2">
+            Tip: click any bubble to see sample comments from that theme.
+          </p>
+        )}
         <div ref={divRef} style={{ width: '100%', height: '640px' }} />
         <noscript>
           <img

@@ -228,7 +228,7 @@ window.AppResearch = (function() {
     return (
       <>
         {!selected && (
-          <p className="text-xs text-slate-500 italic mb-2">
+          <p className="text-xs text-slate-500 italic mb-2 pl-6">
             Tip: click any bubble to see sample comments from that theme.
           </p>
         )}

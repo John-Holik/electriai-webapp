@@ -778,12 +778,11 @@ window.AppResearch = (function() {
         <section>
           <h3 className="serif text-xl font-semibold text-slate-900 mb-2">Figures from the paper</h3>
           <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
-            Figures lifted from the notebook-05 export pipeline. The first chart is an
-            interactive Plotly visualization (hover or click any bubble to inspect a
-            theme); the second is an interactive 3D knowledge-demand terrain you can
-            drag and zoom.
+            The first chart is an interactive Plotly visualization (hover or click any
+            bubble to inspect a theme); the second is an interactive 3D knowledge-demand
+            terrain you can drag and zoom.
           </p>
-        </section>
+        </div>
 
         <FigureCard
           number={1}

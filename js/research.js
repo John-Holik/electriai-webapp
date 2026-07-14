@@ -214,6 +214,21 @@ window.AppResearch = (function() {
       Plotly.newPlot(div, traces, layout, { responsive: true, displaylogo: false })
         .then((gd) => {
           gd.on('plotly_click', handler);
+          // Pointer cursor over clickable bubbles (data trace only) so users
+          // know they can click. Plotly sets the drag-layer cursor via a class
+          // with !important, so override it inline with the same priority.
+          const dragEl = () => gd.querySelector('.nsewdrag');
+          gd.on('plotly_hover', (e) => {
+            const pt = e.points && e.points[0];
+            const el = dragEl();
+            if (el && pt && pt.curveNumber === 0) {
+              el.style.setProperty('cursor', 'pointer', 'important');
+            }
+          });
+          gd.on('plotly_unhover', () => {
+            const el = dragEl();
+            if (el) el.style.removeProperty('cursor');
+          });
           Plotly.Plots.resize(gd);
         });
 
@@ -400,7 +415,11 @@ window.AppResearch = (function() {
                 1200
               );
             })
-            .onBackgroundClick(() => setSelected(null));
+            .onBackgroundClick(() => setSelected(null))
+            // Pointer cursor while hovering a node so its clickability is clear.
+            .onNodeHover(node => {
+              if (divRef.current) divRef.current.style.cursor = node ? 'pointer' : null;
+            });
 
           // Spread the cloud out: stronger repulsion and longer links so the
           // graph isn't bunched up (stronger co-occurrence still pulls closer).
@@ -483,45 +502,49 @@ window.AppResearch = (function() {
           <div style={{
             position: 'absolute', top: 12, right: 12, width: '260px',
             maxHeight: 'calc(100% - 24px)', overflowY: 'auto',
-            background: 'rgba(15, 23, 42, 0.92)',
-            border: `1px solid ${selected.color}`, borderRadius: '8px',
-            padding: '12px 14px', color: '#e2e8f0', fontSize: '12px',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.45)',
+            background: '#ffffff',
+            border: '1px solid #C9CDD3', borderRadius: '8px',
+            padding: '11px 13px', color: '#1A1C1F', fontSize: '12px',
+            fontFamily: "Calibri, 'Segoe UI', sans-serif", lineHeight: 1.42,
+            boxShadow: '0 2px 12px rgba(0,0,0,0.14)',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-              <span style={{ fontWeight: 600, color: selected.color, lineHeight: 1.25 }}>
+              <span style={{ fontWeight: 700, fontSize: '12.5px', color: '#1A1C1F', lineHeight: 1.25 }}>
+                <span style={{ display: 'inline-block', width: '9px', height: '9px', borderRadius: '50%', background: selected.color, marginRight: '6px', verticalAlign: 'middle' }} />
                 {selected.label}
               </span>
-              <button
+              <span
                 onClick={() => setSelected(null)}
                 style={{
-                  background: 'none', border: 'none', color: '#94a3b8',
-                  fontSize: '18px', lineHeight: 1, cursor: 'pointer', padding: 0,
+                  cursor: 'pointer', color: '#8A8F96',
+                  fontSize: '15px', lineHeight: 1, fontWeight: 700,
                 }}
+                role="button"
                 aria-label="Close"
-              >×</button>
+              >×</span>
             </div>
-            <div style={{ marginTop: '8px' }}>
-              Prominence: <span style={{ color: '#f1f5f9' }}>{Math.round(selected.weight).toLocaleString()}</span>
+            <div style={{ marginTop: '7px', color: '#44494F' }}>
+              Prominence: <b style={{ color: '#1A1C1F' }}>{Math.round(selected.weight).toLocaleString()}</b>
             </div>
-            <div style={{ marginTop: '2px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.3 }}>
+            <div style={{ marginTop: '2px', fontSize: '11px', color: '#8A8F96', lineHeight: 1.3 }}>
               How much this theme appears across the whole dataset. Each time it comes up in a video or comment it gets a relevance score; this sums those scores, so it rises with both how often the theme appears and how strongly it applies. This sets the node size.
             </div>
-            <div>Cluster: <span style={{ color: '#f1f5f9' }}>{selected.cluster + 1}</span></div>
-            <div>Connections: <span style={{ color: '#f1f5f9' }}>{selected.degree}</span></div>
-            <div style={{ marginTop: '2px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.3 }}>
+            <div style={{ marginTop: '4px', color: '#44494F' }}>Cluster: <b style={{ color: '#1A1C1F' }}>{selected.cluster + 1}</b></div>
+            <div style={{ marginTop: '2px', color: '#44494F' }}>Connections: <b style={{ color: '#1A1C1F' }}>{selected.degree}</b></div>
+            <div style={{ marginTop: '2px', fontSize: '11px', color: '#8A8F96', lineHeight: 1.3 }}>
               Number of other themes this one co-occurs with.
             </div>
             {selected.top.length > 0 && (
               <div style={{ marginTop: '10px' }}>
-                <div style={{ fontWeight: 600, color: '#cbd5e1' }}>Strongest co-occurrences</div>
-                <div style={{ marginTop: '2px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.3 }}>
+                <hr style={{ border: 'none', borderTop: '1px solid #ECEEF1', margin: '8px 0' }} />
+                <div style={{ fontWeight: 700, color: '#1A1C1F' }}>Strongest co-occurrences</div>
+                <div style={{ marginTop: '2px', fontSize: '11px', color: '#8A8F96', lineHeight: 1.3 }}>
                   Themes that appear in the same video or comment most often. The number is the connection strength: higher means they show up together more.
                 </div>
-                <ul style={{ marginTop: '4px', paddingLeft: '16px', listStyle: 'disc' }}>
+                <ul style={{ marginTop: '4px', paddingLeft: '16px', listStyle: 'disc', color: '#44494F' }}>
                   {selected.top.map((c, i) => (
                     <li key={i} style={{ marginBottom: '2px' }}>
-                      {c.label} <span style={{ color: '#94a3b8' }}>({Math.round(c.weight).toLocaleString()})</span>
+                      {c.label} <span style={{ color: '#8A8F96' }}>({Math.round(c.weight).toLocaleString()})</span>
                     </li>
                   ))}
                 </ul>
@@ -757,7 +780,7 @@ window.AppResearch = (function() {
           <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
             Figures lifted from the notebook-05 export pipeline. The first chart is an
             interactive Plotly visualization (hover or click any bubble to inspect a
-            theme); the second is an interactive 3D theme co-occurrence network you can
+            theme); the second is an interactive 3D knowledge-demand terrain you can
             drag and zoom.
           </p>
         </section>
@@ -772,6 +795,19 @@ window.AppResearch = (function() {
 
         <FigureCard
           number={2}
+          title="Knowledge-demand terrain across the theme map"
+          caption="A three-dimensional landscape built over the same theme co-occurrence map as Figure 3. Each theme raises a peak whose height scales with how often electricians ask about it, and the surface is colored by how often those questions actually get answered: warm terrain marks the knowledge bottleneck (high demand, few answers) while cool terrain marks well-covered themes. The tall, isolated warm peak is battery storage: heavily asked, rarely answered, and semantically distant from everything else. Drag to orbit, scroll to zoom, and hover any summit for its theme, question volume, and answer rate."
+        >
+          <iframe
+            src="figures/theme_terrain_3d_interactive.html"
+            title="Interactive 3D knowledge-demand terrain"
+            loading="lazy"
+            style={{ width: '100%', height: '560px', border: '0', display: 'block' }}
+          />
+        </FigureCard>
+
+        <FigureCard
+          number={3}
           title="Theme co-occurrence network"
           caption="Network of how themes co-occur across the dataset. Each node is a theme, sized by its prominence: how much the theme appears across all videos and comments, weighted by how strongly it applies. Node color marks the cluster a theme belongs to: themes are grouped using VOSviewer's modularity-based clustering (the smart local moving algorithm), so themes that frequently co-occur share a color. A link joins two themes that appear together, and its thickness shows the co-occurrence strength: how often they turn up in the same video or comment. Drag to rotate and scroll to zoom; hover a node for its theme, or click it to see its prominence, connections, and strongest co-occurrences."
         >
@@ -779,7 +815,20 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={3}
+          number={4}
+          title="Per-video question demand, reach, and engagement"
+          caption="One bubble per video in the labeled corpus. Horizontal position is the video's reach (total views, log scale) and vertical position is its question demand (number of question comments, log scale), so videos drift up and to the right as they draw more viewers and more questions. Bubble size scales with likes on the video, and color shows the share of that video's questions that were answered on the same warm-to-cool bottleneck scale used elsewhere: warm bubbles are high-demand, low-answer hotspots, cool bubbles are well-covered, and videos with fewer than five questions stay gray because their answered share is too noisy to trust. Hover any bubble for its views, question count, and answered rate; click any bubble to open the video on YouTube and read a few of the actual questions viewers asked on it."
+        >
+          <iframe
+            src="figures/video_demand_map_interactive.html"
+            title="Interactive per-video question-demand map"
+            loading="lazy"
+            style={{ width: '100%', height: '560px', border: '0', display: 'block' }}
+          />
+        </FigureCard>
+
+        <FigureCard
+          number={5}
           title="Frequency of canonical themes across the dataset"
           caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. Hover any bar for its count; click to see sample comments tagged with that theme. The long tail captures niche topics that surface in fewer than ten comments each, while the head is dominated by code, sizing, and grounding questions."
         >
@@ -827,7 +876,7 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={4}
+          number={6}
           title="Transcript topics treemap, weighted by total video views"
           caption="Treemap of the topics that appear in video transcripts. Tile area scales with the aggregate view count of every video that touches the topic, so larger tiles indicate where the audience is actually spending time. Hover any tile for averages; click to list the top videos in that topic."
         >
@@ -858,9 +907,9 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={5}
+          number={7}
           title="Data collection and comment analysis pipeline"
-          caption="Three-panel summary of how the dataset was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment harvesting yield per video. Panel C shows the question-filtering breakdown that produced the final labeled comment set. Hover any bar for its exact count; click for the stage definition."
+          caption="Three-panel summary of how the dataset was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment funnel from collected parent threads through filtering to the LLM-labeled question set. Panel C shows the question versus non-question breakdown of the labeled comment set. Hover any bar for its exact count; click for the stage definition."
         >
           <MplInlineChart
             svgUrl="figures/data_collection_comment_analysis_interactive.svg"
@@ -932,10 +981,10 @@ window.AppResearch = (function() {
                     <div>
                       <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
                       <a
-                        href="#fig-3"
+                        href="#fig-5"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 3, theme frequency across the dataset ↓
+                        See Figure 5, theme frequency across the dataset ↑
                       </a>
                     </div>
                   );
@@ -945,10 +994,10 @@ window.AppResearch = (function() {
                     <div>
                       <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
                       <a
-                        href="#fig-4"
+                        href="#fig-6"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 4, transcript topics treemap ↓
+                        See Figure 6, transcript topics treemap ↑
                       </a>
                     </div>
                   );
@@ -969,7 +1018,7 @@ window.AppResearch = (function() {
               Per-category LLM classification metrics on consensus comments
             </h4>
             <p className="text-sm text-slate-700 leading-relaxed serif">
-              Per-category precision, recall, and F1 scores for LLM classification evaluated on consensus comments only (N = 69 comments where a student majority label was established independently of the LLM).
+              Per-category precision, recall, and F1 scores for LLM classification evaluated on consensus comments only (N = 67 comments where a student majority label was established independently of the LLM).
             </p>
           </header>
           <div className="bg-stone-50 px-6 py-5 overflow-x-auto">
@@ -985,95 +1034,95 @@ window.AppResearch = (function() {
               </thead>
               <tbody>
                 <tr className="border-b border-slate-100">
-                  <td className="py-2 pr-4">Low-Voltage, Communications, and Control Systems*</td>
-                  <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 pl-3">1.000</td>
-                </tr>
-                <tr className="border-b border-slate-100">
-                  <td className="py-2 pr-4">Motors, HVAC, and Specialized Power Loads*</td>
-                  <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 pl-3">1.000</td>
-                </tr>
-                <tr className="border-b border-slate-100">
-                  <td className="py-2 pr-4">Grounding, Bonding, and Fault Management</td>
-                  <td className="text-right py-2 px-3">0.923</td>
-                  <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 px-3">0.960</td>
-                  <td className="text-right py-2 pl-3">12.000</td>
-                </tr>
-                <tr className="border-b border-slate-100">
-                  <td className="py-2 pr-4">Overcurrent, Short-Circuit, and Protective Devices</td>
+                  <td className="py-2 pr-4">Low-Voltage, Communications, and Control Systems</td>
                   <td className="text-right py-2 px-3">0.889</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">0.941</td>
                   <td className="text-right py-2 pl-3">8.000</td>
                 </tr>
                 <tr className="border-b border-slate-100">
-                  <td className="py-2 pr-4">Renewable Energy, EV, and Energy Management Systems*</td>
-                  <td className="text-right py-2 px-3">0.667</td>
+                  <td className="py-2 pr-4">Motors, HVAC, and Specialized Power Loads*</td>
+                  <td className="text-right py-2 px-3">0.250</td>
                   <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 px-3">0.800</td>
-                  <td className="text-right py-2 pl-3">2.000</td>
+                  <td className="text-right py-2 px-3">0.400</td>
+                  <td className="text-right py-2 pl-3">1.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Grounding, Bonding, and Fault Management</td>
+                  <td className="text-right py-2 px-3">0.900</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.947</td>
+                  <td className="text-right py-2 pl-3">9.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Overcurrent, Short-Circuit, and Protective Devices</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 pl-3">9.000</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="py-2 pr-4">Renewable Energy, EV, and Energy Management Systems*</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 pl-3">1.000</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Devices, Lighting, and Utilization Equipment</td>
-                  <td className="text-right py-2 px-3">0.857</td>
-                  <td className="text-right py-2 px-3">0.857</td>
-                  <td className="text-right py-2 px-3">0.857</td>
-                  <td className="text-right py-2 pl-3">7.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.909</td>
+                  <td className="text-right py-2 px-3">0.952</td>
+                  <td className="text-right py-2 pl-3">11.000</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Conductors, Raceway, and Physical Routing</td>
-                  <td className="text-right py-2 px-3">0.938</td>
+                  <td className="text-right py-2 px-3">0.889</td>
                   <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 px-3">0.968</td>
-                  <td className="text-right py-2 pl-3">15.000</td>
+                  <td className="text-right py-2 px-3">0.941</td>
+                  <td className="text-right py-2 pl-3">8.000</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Code Interpretation, Safety, and Field Operations</td>
-                  <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 px-3">0.800</td>
-                  <td className="text-right py-2 px-3">0.889</td>
-                  <td className="text-right py-2 pl-3">5.000</td>
+                  <td className="text-right py-2 px-3">0.900</td>
+                  <td className="text-right py-2 px-3">0.900</td>
+                  <td className="text-right py-2 px-3">0.900</td>
+                  <td className="text-right py-2 pl-3">10.000</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Power Distribution and Service Infrastructure</td>
-                  <td className="text-right py-2 px-3">0.636</td>
-                  <td className="text-right py-2 px-3">0.778</td>
-                  <td className="text-right py-2 px-3">0.700</td>
-                  <td className="text-right py-2 pl-3">9.000</td>
+                  <td className="text-right py-2 px-3">1.000</td>
+                  <td className="text-right py-2 px-3">0.500</td>
+                  <td className="text-right py-2 px-3">0.667</td>
+                  <td className="text-right py-2 pl-3">4.000</td>
                 </tr>
                 <tr>
                   <td className="py-2 pr-4">Other/Unmapped</td>
-                  <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 px-3">0.444</td>
-                  <td className="text-right py-2 px-3">0.615</td>
-                  <td className="text-right py-2 pl-3">9.000</td>
+                  <td className="text-right py-2 px-3">0.333</td>
+                  <td className="text-right py-2 px-3">0.167</td>
+                  <td className="text-right py-2 px-3">0.222</td>
+                  <td className="text-right py-2 pl-3">6.000</td>
                 </tr>
                 <tr className="border-t-2 border-slate-300">
                   <td className="py-2 pr-4 font-semibold">Macro Avg</td>
-                  <td className="text-right py-2 px-3">0.891</td>
-                  <td className="text-right py-2 px-3">0.888</td>
-                  <td className="text-right py-2 px-3">0.873</td>
-                  <td className="text-right py-2 pl-3">69.000</td>
+                  <td className="text-right py-2 px-3">0.816</td>
+                  <td className="text-right py-2 px-3">0.848</td>
+                  <td className="text-right py-2 px-3">0.797</td>
+                  <td className="text-right py-2 pl-3">67.000</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4 font-semibold">Weighted Avg</td>
-                  <td className="text-right py-2 px-3">0.889</td>
-                  <td className="text-right py-2 px-3">0.870</td>
-                  <td className="text-right py-2 px-3">0.862</td>
-                  <td className="text-right py-2 pl-3">69.000</td>
+                  <td className="text-right py-2 px-3">0.874</td>
+                  <td className="text-right py-2 px-3">0.866</td>
+                  <td className="text-right py-2 px-3">0.858</td>
+                  <td className="text-right py-2 pl-3">67.000</td>
                 </tr>
                 <tr>
                   <td className="py-2 pr-4 font-semibold">Accuracy</td>
                   <td className="text-right py-2 px-3 text-slate-400">&middot;</td>
                   <td className="text-right py-2 px-3 text-slate-400">&middot;</td>
-                  <td className="text-right py-2 px-3">0.870</td>
-                  <td className="text-right py-2 pl-3">69.000</td>
+                  <td className="text-right py-2 px-3">0.866</td>
+                  <td className="text-right py-2 pl-3">67.000</td>
                 </tr>
               </tbody>
             </table>
@@ -1083,7 +1132,7 @@ window.AppResearch = (function() {
               * Insufficient data (support &lt; 3); metrics should be interpreted with caution.
             </p>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Cohen&rsquo;s &kappa; = 0.848 (&ldquo;almost perfect&rdquo; agreement, Landis and Koch 1977).
+              Cohen&rsquo;s &kappa; = 0.847 (&ldquo;almost perfect&rdquo; agreement, Landis and Koch 1977).
             </p>
           </figcaption>
         </figure>

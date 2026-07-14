@@ -12,7 +12,7 @@
 
 window.AppChat = (function() {
   const { useState, useEffect, useMemo, useRef } = React;
-  const { WikiPageModal } = window.AppComponents;
+  const { WikiPageModal, StatCard } = window.AppComponents;
   const { formatNumber, formatCompact } = window.AppUtils;
 
   // Starter prompts shown in the empty chat. Each maps onto a heavily
@@ -429,34 +429,23 @@ Rules for your response:
   }
 
   // ─── Hero stat ribbon ──────────────────────────────────
-  // Compact "what's inside the knowledge base" counters drawn straight
-  // from summary_stats.json. Each tile gets a thin gradient accent bar and
-  // a staggered rise so the hero doesn't read as a wall of numbers.
+  // "What's inside the knowledge base" counters drawn straight from
+  // summary_stats.json. Renders the shared StatCard so these tiles look
+  // and behave exactly like the Findings (home) headline stats: white
+  // cards that count up from zero on scroll-in and lift on hover.
   function KbStatRibbon({ stats }) {
     if (!stats) return null;
     const items = [
-      { value: formatNumber(stats.kbPages),        label: 'Wiki pages',   accent: 'linear-gradient(90deg,#0f172a,#334155)' },
-      { value: formatNumber(stats.totalVideos),    label: 'YouTube videos', accent: 'linear-gradient(90deg,#dc2626,#f87171)' },
-      { value: formatCompact(stats.totalComments), label: 'Q&A comments', accent: 'linear-gradient(90deg,#0891b2,#22d3ee)' },
-      { value: formatNumber(stats.uniqueThemes),   label: 'Themes',       accent: 'linear-gradient(90deg,#059669,#34d399)' },
-      { value: formatCompact(stats.totalViews),    label: 'Video views',  accent: 'linear-gradient(90deg,#d97706,#fbbf24)' },
+      { value: stats.kbPages,       label: 'Wiki pages',     format: formatNumber },
+      { value: stats.totalVideos,   label: 'YouTube videos', format: formatNumber },
+      { value: stats.totalComments, label: 'Q&A comments',   format: formatNumber },
+      { value: stats.uniqueThemes,  label: 'Themes',         format: formatNumber },
+      { value: stats.totalViews,    label: 'Video views',    format: formatCompact },
     ];
     return (
-      <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        {items.map((it, i) => (
-          <div
-            key={it.label}
-            className="kb-rise relative overflow-hidden rounded-xl border border-slate-200 bg-white/80 backdrop-blur-sm px-4 py-3"
-            style={{ animationDelay: `${i * 70}ms` }}
-          >
-            <span className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: it.accent }} />
-            <div className="serif text-2xl sm:text-[27px] font-semibold text-slate-900 tabular-nums leading-none">
-              {it.value}
-            </div>
-            <div className="text-[10.5px] uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
-              {it.label}
-            </div>
-          </div>
+      <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+        {items.map((it) => (
+          <StatCard key={it.label} label={it.label} value={it.value} format={it.format} />
         ))}
       </div>
     );

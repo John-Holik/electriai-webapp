@@ -63,22 +63,22 @@
   ],
   "funnel": [
     {
-      "label": "Total Comments (including replies)",
-      "shortLabel": "Total Comments",
-      "count": 93317,
-      "description": "Every comment harvested from the 739 source videos, including replies on threads."
-    },
-    {
-      "label": "Eligible Parent Comments",
-      "shortLabel": "Eligible Parents",
+      "label": "Parent Comments Collected",
+      "shortLabel": "Comments Collected",
       "count": 66899,
-      "description": "Top-level comments only \u2014 replies are bundled into their parent thread for the question filter pass."
+      "description": "Top-level parent comment threads collected from the 739 source videos; replies are bundled into their parent thread."
     },
     {
-      "label": "Question-Containing Threads",
-      "shortLabel": "Question Threads",
+      "label": "Comments After Filtering",
+      "shortLabel": "After Filtering",
+      "count": 16862,
+      "description": "Parent threads retained after filtering and processed through the LLM comment-analysis stage."
+    },
+    {
+      "label": "LLM-Labeled Question Threads",
+      "shortLabel": "LLM Labeled",
       "count": 14980,
-      "description": "Parent threads where GPT-5-mini extracted at least one real question."
+      "description": "Parent threads where GPT-5-mini labeling extracted at least one real question."
     }
   ],
   "qaBreakdown": [

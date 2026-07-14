@@ -108,23 +108,23 @@
     {
       "gid": "pipeline-funnel-0",
       "panel": "funnel",
-      "label": "Question-Containing Threads",
+      "label": "LLM-Labeled Question Threads",
       "count": 14980,
-      "description": "Parent threads where GPT-5-mini extracted at least one real question. The labeled comment set used by every downstream analysis is drawn from this slice."
+      "description": "Parent threads where GPT-5-mini labeling extracted at least one real question. The labeled comment set used by every downstream analysis is drawn from this slice."
     },
     {
       "gid": "pipeline-funnel-1",
       "panel": "funnel",
-      "label": "Eligible Parent Comments",
-      "count": 66899,
-      "description": "Top-level comments only. Replies are bundled into their parent thread for the question filter pass, so the funnel collapses 93k comments into 67k parents."
+      "label": "After Filtering",
+      "count": 16862,
+      "description": "Parent threads retained after filtering and processed through the LLM comment-analysis stage."
     },
     {
       "gid": "pipeline-funnel-2",
       "panel": "funnel",
-      "label": "Total Comments (including replies)",
-      "count": 93317,
-      "description": "Every comment harvested from the 739 source videos, including replies on threads. This is the raw YouTube harvest before any filtering."
+      "label": "Parent Comments Collected",
+      "count": 66899,
+      "description": "Top-level parent comment threads collected from the 739 source videos; replies are bundled into their parent thread."
     },
     {
       "gid": "pipeline-qa-0",

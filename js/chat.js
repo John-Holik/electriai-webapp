@@ -16,7 +16,7 @@ window.AppChat = (function() {
   const { formatNumber, formatCompact } = window.AppUtils;
 
   // Starter prompts shown in the empty chat. Each maps onto a heavily
-  // represented theme in the corpus (grounding, bonding, terminations,
+  // represented theme in the knowledge base (grounding, bonding, terminations,
   // ampacity, AFCI, voltage drop) so the retriever has real passages to
   // ground an answer in. Clicking one fires the same pipeline as typing.
   const SUGGESTED_QUESTIONS = [
@@ -512,7 +512,7 @@ Rules for your response:
           <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Under the hood</div>
           <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">How Ask ElectriAI answers</h3>
           <p className="text-sm text-slate-600 serif">
-            Retrieval-augmented generation keeps every answer tethered to the source corpus, never the model's imagination.
+            Retrieval-augmented generation keeps every answer tethered to the source knowledge base, never the model's imagination.
           </p>
         </header>
         <div className="p-6 bg-stone-50">
@@ -568,7 +568,7 @@ Rules for your response:
           <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Coverage</div>
           <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">What the knowledge base covers</h3>
           <p className="text-sm text-slate-600 serif">
-            {total} hand-curated wiki pages distilled from the corpus. The deepest pages draw on the most underlying video and comment records.
+            {total} hand-curated wiki pages distilled from the underlying dataset. The deepest pages draw on the most underlying video and comment records.
           </p>
         </header>
         <div className="p-6 grid md:grid-cols-[minmax(0,220px)_1fr] gap-8 items-center">
@@ -814,7 +814,7 @@ Rules for your response:
             <div className="max-w-3xl">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300/70 bg-white/70 backdrop-blur-sm px-3 py-1 text-[10.5px] uppercase tracking-[0.18em] text-slate-600 font-semibold">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Retrieval-augmented · grounded in the corpus
+                Retrieval-augmented · grounded in the knowledge base
               </span>
               <h2 className="serif text-3xl sm:text-4xl font-semibold text-slate-900 leading-tight mt-4">
                 Ask the knowledge base

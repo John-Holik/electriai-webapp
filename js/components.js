@@ -51,14 +51,18 @@ window.AppComponents = window.AppComponents || {};
     const fmt = format || ((n) => Math.round(n).toLocaleString('en-US'));
     const target = Number(value);
     const animatable = Number.isFinite(target);
-    const ref = useRef(null);
-    const [shown, setShown] = useState(0);
+    const cardRef = useRef(null);
+    const numRef = useRef(null);
 
     // Animate 0 -> target once, triggered when the card enters the viewport.
+    // The frame values are written straight to the number node instead of
+    // through React state, so the count-up stays fluid even while the rest of
+    // the page is busy rendering the heavy figures below it.
     useEffect(() => {
       if (!animatable) return;
-      const node = ref.current;
-      if (!node) return;
+      const card = cardRef.current;
+      const num = numRef.current;
+      if (!card || !num) return;
       let raf = 0;
       let start = null;
       const duration = 1100;
@@ -66,7 +70,7 @@ window.AppComponents = window.AppComponents || {};
         if (start === null) start = t;
         const p = Math.min(1, (t - start) / duration);
         const eased = 1 - Math.pow(1 - p, 3);
-        setShown(target * eased);
+        num.textContent = fmt(Math.round(target * eased));
         if (p < 1) raf = requestAnimationFrame(step);
       };
       const observer = new IntersectionObserver((entries) => {
@@ -75,17 +79,17 @@ window.AppComponents = window.AppComponents || {};
           observer.disconnect();
         }
       }, { threshold: 0.4 });
-      observer.observe(node);
+      observer.observe(card);
       return () => { observer.disconnect(); cancelAnimationFrame(raf); };
     }, [target, animatable]);
 
     return (
       <div
-        ref={ref}
+        ref={cardRef}
         className="bg-white border border-slate-200 rounded-lg p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300"
       >
-        <div className="serif text-3xl sm:text-4xl font-semibold text-slate-900 tabular-nums leading-none">
-          {animatable ? fmt(Math.round(shown)) : value}
+        <div ref={numRef} className="serif text-3xl sm:text-4xl font-semibold text-slate-900 tabular-nums leading-none">
+          {animatable ? fmt(0) : value}
         </div>
         <div className="text-[11px] uppercase tracking-wider text-slate-500 mt-2 font-medium">
           {label}

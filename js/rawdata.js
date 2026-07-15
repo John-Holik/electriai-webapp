@@ -38,7 +38,9 @@ window.AppRawData = (function() {
   };
 
   // Tile in the default video grid.
-  const VideoCard = ({ video, onClick }) => (
+  const VideoCard = ({ video, onClick }) => {
+    const [transcriptOpen, setTranscriptOpen] = useState(false);
+    return (
     <article
       onClick={onClick}
       className="bg-white border border-slate-200 rounded-lg p-5 hover:border-slate-400 hover:shadow-sm transition-all cursor-pointer animate-fade flex flex-col"

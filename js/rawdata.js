@@ -53,9 +53,25 @@ window.AppRawData = (function() {
           {formatNumber(video.commentCount)} {video.commentCount === 1 ? 'comment' : 'comments'}
         </span>
       </div>
-      <h3 className="serif text-base font-semibold text-slate-900 leading-snug line-clamp-3 mb-3 flex-1">
+      <h3 className="serif text-base font-semibold text-slate-900 leading-snug line-clamp-3 mb-3">
         {video.title || video.videoId}
       </h3>
+      {video.transcript && (
+        <div className="mb-3" onClick={(e) => e.stopPropagation()}>
+          <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 mb-1">
+            Transcript
+          </div>
+          <p className={`text-xs text-slate-600 leading-relaxed whitespace-pre-wrap ${transcriptOpen ? 'max-h-64 overflow-y-auto pr-1' : 'line-clamp-4'}`}>
+            {video.transcript}
+          </p>
+          <button
+            onClick={() => setTranscriptOpen((v) => !v)}
+            className="mt-1 text-[11px] text-slate-500 underline hover:text-slate-900"
+          >
+            {transcriptOpen ? 'Show less' : 'Show more'}
+          </button>
+        </div>
+      )}
       <a
         href={video.url}
         target="_blank"

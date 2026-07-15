@@ -82,7 +82,8 @@ window.AppRawData = (function() {
         Open on YouTube ↗
       </a>
     </article>
-  );
+    );
+  };
 
   // Single comment row inside the drilled-in video detail view.
   // `focused` is set when this comment is the one the chat panel asked

@@ -51,14 +51,18 @@ window.AppComponents = window.AppComponents || {};
     const fmt = format || ((n) => Math.round(n).toLocaleString('en-US'));
     const target = Number(value);
     const animatable = Number.isFinite(target);
-    const ref = useRef(null);
-    const [shown, setShown] = useState(0);
+    const cardRef = useRef(null);
+    const numRef = useRef(null);
 
     // Animate 0 -> target once, triggered when the card enters the viewport.
+    // The frame values are written straight to the number node instead of
+    // through React state, so the count-up stays fluid even while the rest of
+    // the page is busy rendering the heavy figures below it.
     useEffect(() => {
       if (!animatable) return;
-      const node = ref.current;
-      if (!node) return;
+      const card = cardRef.current;
+      const num = numRef.current;
+      if (!card || !num) return;
       let raf = 0;
       let start = null;
       const duration = 1100;
@@ -66,7 +70,7 @@ window.AppComponents = window.AppComponents || {};
         if (start === null) start = t;
         const p = Math.min(1, (t - start) / duration);
         const eased = 1 - Math.pow(1 - p, 3);
-        setShown(target * eased);
+        num.textContent = fmt(Math.round(target * eased));
         if (p < 1) raf = requestAnimationFrame(step);
       };
       const observer = new IntersectionObserver((entries) => {
@@ -75,17 +79,17 @@ window.AppComponents = window.AppComponents || {};
           observer.disconnect();
         }
       }, { threshold: 0.4 });
-      observer.observe(node);
+      observer.observe(card);
       return () => { observer.disconnect(); cancelAnimationFrame(raf); };
     }, [target, animatable]);
 
     return (
       <div
-        ref={ref}
+        ref={cardRef}
         className="bg-white border border-slate-200 rounded-lg p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300"
       >
-        <div className="serif text-3xl sm:text-4xl font-semibold text-slate-900 tabular-nums leading-none">
-          {animatable ? fmt(Math.round(shown)) : value}
+        <div ref={numRef} className="serif text-3xl sm:text-4xl font-semibold text-slate-900 tabular-nums leading-none">
+          {animatable ? fmt(0) : value}
         </div>
         <div className="text-[11px] uppercase tracking-wider text-slate-500 mt-2 font-medium">
           {label}
@@ -124,30 +128,58 @@ window.AppComponents = window.AppComponents || {};
   // Full-bleed figure card used by the Findings tab. Header shows the
   // figure number and title; body slot holds the asset (iframe, img, etc.);
   // caption is the paper-style prose; dataSource is a small footnote.
-  const FigureCard = ({ number, title, caption, dataSource, children }) => (
-    <figure id={`fig-${number}`} className="bg-white border border-slate-200 rounded-lg overflow-hidden scroll-mt-20">
-      <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-2">
-        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">
-          Figure {number}
+  const FigureCard = ({ number, title, caption, dataSource, children, minHeight = 360 }) => {
+    // Defer the heavy figure body (Plotly, 3D graph, iframe, injected SVG)
+    // until the card scrolls near the viewport. This keeps the initial page
+    // mount light so the "By the numbers" count-up stays fluid, and spreads
+    // the figure-rendering cost out as the reader scrolls down. The header and
+    // the figure's anchor id always render, so in-page "See Figure N" links
+    // still resolve. A reserved-height placeholder holds layout until reveal.
+    const bodyRef = useRef(null);
+    const [revealed, setRevealed] = useState(false);
+    useEffect(() => {
+      if (revealed) return;
+      const node = bodyRef.current;
+      if (!node) return;
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setRevealed(true);
+          observer.disconnect();
+        }
+      }, { rootMargin: '300px 0px' });
+      observer.observe(node);
+      return () => observer.disconnect();
+    }, [revealed]);
+
+    return (
+      <figure id={`fig-${number}`} className="bg-white border border-slate-200 rounded-lg overflow-hidden scroll-mt-20">
+        <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-2">
+          <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">
+            Figure {number}
+          </div>
+          <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">{title}</h3>
+          {caption && (
+            <p className="text-sm text-slate-700 leading-relaxed serif">{caption}</p>
+          )}
+        </header>
+        <div ref={bodyRef} className="bg-stone-50">
+          {revealed ? children : (
+            <div style={{ minHeight }} className="flex items-center justify-center text-[11px] text-slate-400">
+              Loading figure…
+            </div>
+          )}
         </div>
-        <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">{title}</h3>
-        {caption && (
-          <p className="text-sm text-slate-700 leading-relaxed serif">{caption}</p>
+        {dataSource && (
+          <figcaption className="px-6 py-3 border-t border-slate-100">
+            <p className="text-[11px] text-slate-500">
+              <span className="uppercase tracking-wider font-semibold">Data source: </span>
+              <span>{dataSource}</span>
+            </p>
+          </figcaption>
         )}
-      </header>
-      <div className="bg-stone-50">
-        {children}
-      </div>
-      {dataSource && (
-        <figcaption className="px-6 py-3 border-t border-slate-100">
-          <p className="text-[11px] text-slate-500">
-            <span className="uppercase tracking-wider font-semibold">Data source: </span>
-            <span>{dataSource}</span>
-          </p>
-        </figcaption>
-      )}
-    </figure>
-  );
+      </figure>
+    );
+  };
 
   // Small colored pill that displays a category code (and optionally its
   // full name). Background is the canonical category color from

@@ -128,30 +128,58 @@ window.AppComponents = window.AppComponents || {};
   // Full-bleed figure card used by the Findings tab. Header shows the
   // figure number and title; body slot holds the asset (iframe, img, etc.);
   // caption is the paper-style prose; dataSource is a small footnote.
-  const FigureCard = ({ number, title, caption, dataSource, children }) => (
-    <figure id={`fig-${number}`} className="bg-white border border-slate-200 rounded-lg overflow-hidden scroll-mt-20">
-      <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-2">
-        <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">
-          Figure {number}
+  const FigureCard = ({ number, title, caption, dataSource, children, minHeight = 360 }) => {
+    // Defer the heavy figure body (Plotly, 3D graph, iframe, injected SVG)
+    // until the card scrolls near the viewport. This keeps the initial page
+    // mount light so the "By the numbers" count-up stays fluid, and spreads
+    // the figure-rendering cost out as the reader scrolls down. The header and
+    // the figure's anchor id always render, so in-page "See Figure N" links
+    // still resolve. A reserved-height placeholder holds layout until reveal.
+    const bodyRef = useRef(null);
+    const [revealed, setRevealed] = useState(false);
+    useEffect(() => {
+      if (revealed) return;
+      const node = bodyRef.current;
+      if (!node) return;
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setRevealed(true);
+          observer.disconnect();
+        }
+      }, { rootMargin: '300px 0px' });
+      observer.observe(node);
+      return () => observer.disconnect();
+    }, [revealed]);
+
+    return (
+      <figure id={`fig-${number}`} className="bg-white border border-slate-200 rounded-lg overflow-hidden scroll-mt-20">
+        <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-2">
+          <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">
+            Figure {number}
+          </div>
+          <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">{title}</h3>
+          {caption && (
+            <p className="text-sm text-slate-700 leading-relaxed serif">{caption}</p>
+          )}
+        </header>
+        <div ref={bodyRef} className="bg-stone-50">
+          {revealed ? children : (
+            <div style={{ minHeight }} className="flex items-center justify-center text-[11px] text-slate-400">
+              Loading figure…
+            </div>
+          )}
         </div>
-        <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">{title}</h3>
-        {caption && (
-          <p className="text-sm text-slate-700 leading-relaxed serif">{caption}</p>
+        {dataSource && (
+          <figcaption className="px-6 py-3 border-t border-slate-100">
+            <p className="text-[11px] text-slate-500">
+              <span className="uppercase tracking-wider font-semibold">Data source: </span>
+              <span>{dataSource}</span>
+            </p>
+          </figcaption>
         )}
-      </header>
-      <div className="bg-stone-50">
-        {children}
-      </div>
-      {dataSource && (
-        <figcaption className="px-6 py-3 border-t border-slate-100">
-          <p className="text-[11px] text-slate-500">
-            <span className="uppercase tracking-wider font-semibold">Data source: </span>
-            <span>{dataSource}</span>
-          </p>
-        </figcaption>
-      )}
-    </figure>
-  );
+      </figure>
+    );
+  };
 
   // Small colored pill that displays a category code (and optionally its
   // full name). Background is the canonical category color from

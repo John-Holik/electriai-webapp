@@ -359,10 +359,11 @@ window.AppRawData = (function() {
     }, [topLevel, repliesByParent, debouncedSearch, sort]);
 
     const metrics = [
+      { value: compact(video.views), label: 'views' },
+      { value: compact(video.likes), label: 'likes' },
       { value: formatNumber(video.commentCount), label: 'comments' },
       { value: formatNumber(stats.threads), label: 'threads' },
       { value: formatNumber(stats.replies), label: 'replies' },
-      { value: formatCompact(stats.likes), label: 'likes' },
       { value: formatDateRange(stats.first, stats.last) || '—', label: 'active' },
     ];
 

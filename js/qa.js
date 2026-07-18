@@ -807,6 +807,7 @@ window.AppQA = (function() {
                       <li key={p.id} className="space-y-1">
                         <div className="flex items-baseline gap-2">
                           <CategoryBadge code={p.type} color={qColor(p.type)} />
+                          <span className="text-[10px] text-slate-400 tabular-nums">{formatNumber(p.count)} questions</span>
                           <span className="tabular-nums font-semibold text-slate-600 ml-auto">{p.neverRepliedShare}% never replied</span>
                         </div>
                         <p className="leading-snug text-slate-700">{p.text}</p>

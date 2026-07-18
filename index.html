@@ -59,6 +59,20 @@
     .kb-suggest { transition: transform .15s ease, border-color .15s ease, background-color .15s ease, box-shadow .15s ease; }
     .kb-suggest:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 24px -14px rgba(15,23,42,0.4); }
     .kb-suggest:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ─── Videos & Comments page enrichments ─────────────────────────────
+       Card hover-lift, thumbnail zoom, and the soft header glow used by the
+       Videos & Comments tab (js/rawdata.js). Kept here so the Tailwind CDN
+       build stays config-free. */
+    .rd-card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+    .rd-card:hover { transform: translateY(-3px); box-shadow: 0 16px 34px -18px rgba(15,23,42,0.4); }
+    .rd-thumb { transition: transform .3s ease; }
+    .rd-card:hover .rd-thumb { transform: scale(1.04); }
+    .rd-hero-glow {
+      background:
+        radial-gradient(120% 130% at 100% 0%, rgba(56,189,248,0.10), transparent 55%),
+        radial-gradient(120% 130% at 0% 100%, rgba(245,158,11,0.10), transparent 55%);
+    }
   </style>
 </head>
 <body class="bg-stone-50 text-slate-900 antialiased">

@@ -213,6 +213,8 @@
       stats,
       themeDict,
       wikiPages,
+      kbMeta,
+      taxonomyFigures,
       wikiEmbeddings,
       wikiChunks,
       bottleneck,
@@ -221,7 +223,7 @@
       qaRecords,
       geminiDevKey: GEMINI_DEV_KEY,
       geminiWorkerBase: GEMINI_WORKER_BASE,
-    }), [comments, categories, stats, themeDict, wikiPages, wikiEmbeddings, wikiChunks, bottleneck, rawVideos, qaTaxonomy, qaRecords]);
+    }), [comments, categories, stats, themeDict, wikiPages, kbMeta, taxonomyFigures, wikiEmbeddings, wikiChunks, bottleneck, rawVideos, qaTaxonomy, qaRecords]);
 
     if (loading) {
       return (

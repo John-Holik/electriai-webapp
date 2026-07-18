@@ -804,8 +804,8 @@ Rules for your response:
           throw new Error('Embedding API returned no vector.');
         }
 
-        // 2. Retrieve top-K chunks by cosine similarity.
-        const topChunks = retrieveTopChunks(queryVec, state.wikiEmbeddings, state.wikiChunks.chunks, TOP_K);
+        // 2. Retrieve top-K chunks: cosine plus keyword and intent boosts.
+        const topChunks = retrieveTopChunks(question, queryVec, state.wikiEmbeddings, state.wikiChunks.chunks, TOP_K);
         if (topChunks.length === 0) {
           throw new Error('No retrievable chunks (embedding shape mismatch?).');
         }

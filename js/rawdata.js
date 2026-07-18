@@ -86,6 +86,7 @@ window.AppRawData = (function() {
     calendar: <path d="M7 3v3M17 3v3M4 8h16M5 5h14v14H5z" />,
     clock: <React.Fragment><circle cx="12" cy="12" r="8" /><path d="M12 8v4l3 2" /></React.Fragment>,
     video: <path d="M3 6h12v12H3zM15 10l6-3v10l-6-3" />,
+    eye: <React.Fragment><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" /><circle cx="12" cy="12" r="3" /></React.Fragment>,
   };
   const Ico = ({ name, cls = 'w-3.5 h-3.5' }) => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"

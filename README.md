@@ -5,7 +5,7 @@ Companion website for the ElectriAI Research paper analyzing **794 YouTube video
 The site has four tabs:
 
 - **Research Results**, Project summary, top-line stats, the 10-class category schema (LV, HVAC, GBF, OCP, RE, DL, CRR, CISF, PDS, OTH), and the four paper visualizations from `notebooks/05_Visualizations.ipynb`: the knowledge-bottleneck bubble chart (interactive Plotly with an SVG fallback), theme dictionary frequency, transcript topics treemap, and a data-collection / comment-analysis panel.
-- **Ask ElectriAI**, RAG chatbot grounded in `knowledge_base/wiki/**/*.md`. Uses `gemini-embedding-001` (build-time) and `gemini-2.5-flash` (generation). Local-first: calls the Gemini API directly from the browser with a dev key in `localStorage`. A Cloudflare Worker proxy is planned for public deployment (see "Deploying" below). Cites video IDs and comment IDs from the underlying corpus.
+- **Ask ElectriAI**, RAG chatbot grounded in the question-taxonomy knowledge base (`data/kb_pages.json`, built by `src/web/build_kb_wiki.py` from the gpt-5-mini comment corpus and the taxonomy consolidation). Uses `gemini-embedding-001` (build-time) and `gemini-3.5-flash` (generation). Retrieval is hybrid: cosine similarity plus keyword and intent boosts, running fully in the browser. Production routes through the Cloudflare Worker proxy; on localhost a dev key in `localStorage` calls the Gemini API directly. Cites video IDs and comment IDs from the underlying corpus.
 - **Raw Data**, Searchable, filterable browser over the 200-comment curated set (20 per category × 10, sourced from `data/processed/qualtrics_comments.csv`) with every label attached: category, themes, topic / sub-topic, Q&A excerpts and summaries, reply counts, and video metadata.
 - **About**, Static page with authors, citation, code & data links, acknowledgments, and contact.
 
@@ -22,9 +22,10 @@ web_app/
 │   ├── categories.json
 │   ├── summary_stats.json
 │   ├── theme_dictionary.json
-│   ├── wiki_pages.json
-│   ├── wiki_embeddings.json
-│   └── wiki_chunks.json
+│   ├── kb_pages.json             # taxonomy knowledge base (src/web/build_kb_wiki.py)
+│   ├── kb_embeddings.json        # (src/web/compute_kb_embeddings.py)
+│   ├── kb_chunks.json
+│   └── taxonomy_figures.json     # Findings Figures 8-10 (src/web/build_web_taxonomy_figures.py)
 ├── figures/                      # PNG/SVG/HTML figure artifacts copied from notebooks
 │   ├── knowledge_bottleneck_bubble.html
 │   ├── knowledge_bottleneck_bubble.svg
@@ -74,10 +75,12 @@ All JSON under `web_app/data/` is generated from the upstream notebook outputs. 
 
 ```powershell
 python -m src.web.export_data
-python -m src.web.compute_wiki_embeddings   # requires GEMINI_API_KEY in .env
+python -m src.web.build_kb_wiki             # taxonomy knowledge base -> kb_pages.json
+python -m src.web.compute_kb_embeddings     # GEMINI_API_KEY in .env, or falls back to the Worker proxy
+python -m src.web.build_web_taxonomy_figures
 ```
 
-The first script writes every JSON in `web_app/data/` and copies the five figure assets into `web_app/figures/`. The second computes one Gemini embedding per wiki page (chunked at H2 boundaries) and writes `wiki_embeddings.json` + `wiki_chunks.json`.
+`export_data` writes the legacy JSON in `web_app/data/` and copies figure assets into `web_app/figures/`. `build_kb_wiki` compiles the taxonomy knowledge base from `taxonomy/` and `Final_Analysis.csv`. `compute_kb_embeddings` computes one Gemini embedding per page chunk (H2 boundaries) and writes `kb_embeddings.json` + `kb_chunks.json`. `build_web_taxonomy_figures` exports the Findings tab taxonomy figures.
 
 Commit the resulting JSON. The site reads everything from static files at load time, so no rebuild is needed beyond a redeploy.
 

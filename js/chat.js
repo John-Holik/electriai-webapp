@@ -599,23 +599,34 @@ Rules for your response:
   }
 
   // ─── Knowledge-base coverage figure ────────────────────
-  // Left: a conic-gradient donut splitting the 78 wiki pages into
-  // curated theme pages vs. concept pages. Right: the deepest pages by
-  // source-record count, as animated bars colored by page type.
-  function CoverageFigure({ wikiPages, stats }) {
+  // Left: a conic-gradient donut splitting the knowledge-base pages by
+  // page kind (question families, question types, answer types, corpus
+  // analytics). Right: the largest question families by member questions,
+  // as animated bars.
+  function CoverageFigure({ wikiPages, meta }) {
     if (!wikiPages || !wikiPages.length) return null;
-    const themePages = (stats && stats.kbThemePages) || wikiPages.filter((p) => p.type === 'theme').length;
-    const conceptPages = (stats && stats.kbConceptPages) || wikiPages.filter((p) => p.type === 'concept').length;
-    const total = themePages + conceptPages || 1;
-    const themePct = Math.round((themePages / total) * 100);
-    const top = [...wikiPages]
-      .filter((p) => p.sourceCount)
+    const KINDS = [
+      { type: 'family',        label: 'question families', color: '#0f172a' },
+      { type: 'question-type', label: 'question types',    color: '#0ea5e9' },
+      { type: 'answer-type',   label: 'answer types',      color: '#f59e0b' },
+      { type: 'analytics',     label: 'analytics',         color: '#8b5cf6' },
+      { type: 'overview',      label: 'overview',          color: '#94a3b8' },
+    ];
+    const counts = KINDS.map((k) => ({ ...k, count: wikiPages.filter((p) => p.type === k.type).length }))
+      .filter((k) => k.count > 0);
+    const total = counts.reduce((s, k) => s + k.count, 0) || 1;
+    let acc = 0;
+    const gradientStops = counts.map((k) => {
+      const from = (acc / total) * 100;
+      acc += k.count;
+      const to = (acc / total) * 100;
+      return `${k.color} ${from}% ${to}%`;
+    }).join(', ');
+    const top = wikiPages
+      .filter((p) => p.type === 'family' && p.sourceCount)
       .sort((a, b) => b.sourceCount - a.sourceCount)
       .slice(0, 8);
     const max = top.length ? top[0].sourceCount : 1;
-
-    const THEME_COLOR = '#0f172a';
-    const CONCEPT_COLOR = '#f59e0b';
 
     return (
       <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
@@ -623,45 +634,41 @@ Rules for your response:
           <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Coverage</div>
           <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">What the knowledge base covers</h3>
           <p className="text-sm text-slate-600 serif">
-            {total} hand-curated wiki pages distilled from the underlying dataset. The deepest pages draw on the most underlying video and comment records.
+            {total} pages compiled from the question taxonomy{meta ? `: ${formatNumber(meta.questions)} classified practitioner questions across ${formatNumber(meta.videos)} videos, with per-family statistics, real question and answer pairs, yearly activity, and corpus analytics for knowledge gaps, trends, and answering behavior` : ''}.
           </p>
         </header>
         <div className="p-6 grid md:grid-cols-[minmax(0,220px)_1fr] gap-8 items-center">
-          {/* Donut: theme vs concept split */}
+          {/* Donut: page composition by kind */}
           <div className="flex flex-col items-center">
             <div className="relative w-44 h-44">
               <div
                 className="w-full h-full rounded-full"
-                style={{ background: `conic-gradient(${THEME_COLOR} 0 ${themePct}%, ${CONCEPT_COLOR} ${themePct}% 100%)` }}
+                style={{ background: `conic-gradient(${gradientStops})` }}
               />
               <div className="absolute inset-[15px] rounded-full bg-white flex flex-col items-center justify-center">
                 <span className="serif text-4xl font-semibold text-slate-900 leading-none tabular-nums">{total}</span>
-                <span className="text-[10px] uppercase tracking-wider text-slate-500 mt-1">wiki pages</span>
+                <span className="text-[10px] uppercase tracking-wider text-slate-500 mt-1">pages</span>
               </div>
             </div>
-            <div className="flex items-center gap-4 mt-4 text-[12px]">
-              <span className="inline-flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm" style={{ background: THEME_COLOR }} />
-                <span className="text-slate-700 font-medium">{themePages}</span>
-                <span className="text-slate-500">theme</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm" style={{ background: CONCEPT_COLOR }} />
-                <span className="text-slate-700 font-medium">{conceptPages}</span>
-                <span className="text-slate-500">concept</span>
-              </span>
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 mt-4 text-[12px]">
+              {counts.map((k) => (
+                <span key={k.type} className="inline-flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-sm" style={{ background: k.color }} />
+                  <span className="text-slate-700 font-medium">{k.count}</span>
+                  <span className="text-slate-500">{k.label}</span>
+                </span>
+              ))}
             </div>
           </div>
 
-          {/* Deepest pages by source-record count */}
+          {/* Largest question families by member questions */}
           <div>
             <div className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-3">
-              Deepest pages · source records
+              Largest question families · member questions
             </div>
             <ul className="space-y-2.5">
               {top.map((p, i) => {
                 const pct = Math.max(6, Math.round((p.sourceCount / max) * 100));
-                const color = p.type === 'concept' ? CONCEPT_COLOR : THEME_COLOR;
                 return (
                   <li key={p.slug}>
                     <div className="flex items-baseline justify-between gap-3 mb-1">
@@ -671,7 +678,7 @@ Rules for your response:
                     <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className="kb-bar-fill h-full rounded-full"
-                        style={{ width: `${pct}%`, background: color, animationDelay: `${i * 80}ms` }}
+                        style={{ width: `${pct}%`, background: '#0f172a', animationDelay: `${i * 80}ms` }}
                       />
                     </div>
                   </li>

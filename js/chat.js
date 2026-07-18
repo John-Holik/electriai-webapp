@@ -16,24 +16,25 @@ window.AppChat = (function() {
   const { WikiPageModal, StatCard } = window.AppComponents;
   const { formatNumber, formatCompact } = window.AppUtils;
 
-  // Starter prompts shown in the empty chat. Each maps onto a heavily
-  // represented theme in the knowledge base (grounding, bonding, terminations,
-  // ampacity, AFCI, voltage drop) so the retriever has real passages to
-  // ground an answer in. Clicking one fires the same pipeline as typing.
+  // Starter prompts shown in the empty chat. One per capability of the
+  // taxonomy knowledge base: knowledge gaps, trends over time, answering
+  // behavior, and grounded technical content. Clicking one fires the same
+  // pipeline as typing.
   const SUGGESTED_QUESTIONS = [
-    { q: 'What size ground wire do I need for a 200 A service?', tag: 'Grounding' },
-    { q: 'What is the difference between grounding and bonding?', tag: 'Bonding' },
-    { q: 'How do I torque aluminum conductor terminations correctly?', tag: 'Terminations' },
-    { q: 'When is AFCI protection required on branch circuits?', tag: 'Protection' },
+    { q: 'What are the biggest knowledge gaps in electrical construction?', tag: 'Knowledge gaps' },
+    { q: 'How have practitioner questions changed over the years?', tag: 'Trends' },
+    { q: 'How do questions about grounding and bonding usually get answered?', tag: 'Answering behavior' },
+    { q: 'Can I bond neutral and ground in a subpanel?', tag: 'Code compliance' },
   ];
 
   const GEMINI_EMBED_URL    = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent';
-  const GEMINI_GENERATE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent';
+  const GEMINI_GENERATE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:streamGenerateContent';
 
-  const TOP_K        = 6;   // total chunks retrieved
-  const FULL_K       = 3;   // top chunks rendered in full into the prompt
-  const COMPACT_CHARS = 320; // size of "compact" chunks (the next 3)
-  const FURTHER_K    = 3;   // wiki pages surfaced in the "Further reading" footer
+  const TOP_K        = 8;   // total chunks retrieved
+  const FULL_K       = 4;   // top chunks rendered in full into the prompt
+  const COMPACT_CHARS = 320; // size of "compact" chunks (the rest)
+  const FURTHER_K    = 3;   // knowledge-base pages surfaced in the "Further reading" footer
+  const PER_PAGE_CAP = 2;   // max retrieved chunks from any single page, for diversity
 
   // ─── Vector math ────────────────────────────────────────
   // Standard cosine similarity for two equal-length numeric arrays.

@@ -908,7 +908,7 @@ Rules for your response:
         {embeddingsLoading && (
           <div className="mb-4 p-3 border border-slate-200 bg-white rounded-lg text-sm text-slate-600 flex items-center gap-3 max-w-3xl">
             <span className="inline-block w-4 h-4 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" />
-            Loading wiki embeddings (≈3 MB)…
+            Loading knowledge-base embeddings (≈3 MB)…
           </div>
         )}
 

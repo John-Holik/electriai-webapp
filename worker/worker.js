@@ -3,7 +3,7 @@
  * ────────────────────────────────────────────────────────────
  * Proxies two Gemini endpoints used by the AI Assistant:
  *   POST /api/embed     → gemini-embedding-001:embedContent (buffered JSON)
- *   POST /api/generate  → gemini-2.5-flash:streamGenerateContent (SSE stream)
+ *   POST /api/generate  → gemini-3.5-flash:streamGenerateContent (SSE stream)
  *
  * The API key lives in this Worker as a secret named GEMINI_API_KEY
  * (set with `wrangler secret put GEMINI_API_KEY` or via the dashboard).
@@ -157,7 +157,7 @@ export default {
     if (url.pathname === '/api/generate') {
       return proxyToGeminiStream(
         request, env,
-        `${GEMINI_BASE}/gemini-2.5-flash:streamGenerateContent`,
+        `${GEMINI_BASE}/gemini-3.5-flash:streamGenerateContent`,
         origin
       );
     }

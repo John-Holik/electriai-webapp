@@ -679,8 +679,157 @@ window.AppResearch = (function() {
     );
   }
 
+  // ─── Question taxonomy figures (data: taxonomy_figures.json) ─────────
+
+  // Figure 8: stacked area of question type volume per year. Absolute
+  // counts show both the volume surge and the mix; hover carries the
+  // within-year share of each type.
+  function TaxonomyTrendChart({ data }) {
+    const divRef = useRef(null);
+    useEffect(() => {
+      if (!data || !divRef.current) return;
+      const el = divRef.current;
+      const traces = data.types.map((t) => ({
+        x: data.years,
+        y: t.counts,
+        name: t.name,
+        type: 'scatter',
+        mode: 'lines',
+        stackgroup: 'one',
+        line: { width: 0.5, color: t.color },
+        fillcolor: t.color + '99',
+        customdata: t.counts.map((c, i) => (data.totals[i] ? (100 * c / data.totals[i]).toFixed(1) : '0.0')),
+        hovertemplate: '%{y:,} questions (%{customdata}% of that year)<extra>' + t.name + '</extra>',
+      }));
+      Plotly.newPlot(el, traces, {
+        margin: { l: 56, r: 8, t: 8, b: 40 },
+        font: { family: 'Inter, system-ui, sans-serif', size: 11, color: '#334155' },
+        xaxis: { tickmode: 'array', tickvals: data.years, fixedrange: true },
+        yaxis: { title: { text: 'Classified questions per year', font: { size: 11 } }, fixedrange: true },
+        hovermode: 'x unified',
+        hoverlabel: { font: { size: 11 } },
+        legend: { orientation: 'h', y: -0.12, font: { size: 10.5 } },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+      }, { responsive: true, displayModeBar: false });
+      return () => Plotly.purge(el);
+    }, [data]);
+    if (!data) return null;
+    return <div ref={divRef} style={{ width: '100%', height: 460 }} />;
+  }
+
+  // Figure 9: knowledge-gap quadrant. One bubble per question family
+  // (20 or more member questions): x answer rate among replied, y share
+  // never replied, bubble area member count, color question type. Dashed
+  // lines mark the corpus averages, so the upper-left region is the
+  // bottleneck: heavily ignored and poorly resolved.
+  function GapQuadrantChart({ data, meta }) {
+    const divRef = useRef(null);
+    useEffect(() => {
+      if (!data || !data.length || !divRef.current) return;
+      const el = divRef.current;
+      const maxMembers = Math.max(...data.map((f) => f.members));
+      const byType = new Map();
+      for (const f of data) {
+        if (!byType.has(f.code)) byType.set(f.code, { name: f.typeName, color: f.color, items: [] });
+        byType.get(f.code).items.push(f);
+      }
+      const traces = [...byType.values()].map((g) => ({
+        x: g.items.map((f) => f.answerRate),
+        y: g.items.map((f) => f.neverShare),
+        name: g.name,
+        mode: 'markers',
+        marker: {
+          size: g.items.map((f) => f.members),
+          sizemode: 'area',
+          sizeref: (2 * maxMembers) / (38 * 38),
+          sizemin: 4,
+          color: g.color,
+          opacity: 0.75,
+          line: { width: 1, color: '#ffffff' },
+        },
+        customdata: g.items.map((f) => [f.label, f.members, f.answered]),
+        hovertemplate: '<b>%{customdata[0]}</b><br>%{customdata[1]:,} questions, %{customdata[2]:,} answered'
+          + '<br>answer rate among replied: %{x}%<br>never replied: %{y}%<extra>' + g.name + '</extra>',
+      }));
+      const vline = meta ? meta.corpusAnswerRate : 70;
+      const hline = meta ? meta.corpusNeverShare : 60;
+      Plotly.newPlot(el, traces, {
+        margin: { l: 56, r: 8, t: 8, b: 44 },
+        font: { family: 'Inter, system-ui, sans-serif', size: 11, color: '#334155' },
+        xaxis: { title: { text: 'Answer rate among replied questions (%)', font: { size: 11 } }, fixedrange: true },
+        yaxis: { title: { text: 'Share of questions never replied to (%)', font: { size: 11 } }, fixedrange: true },
+        shapes: [
+          { type: 'line', x0: vline, x1: vline, yref: 'paper', y0: 0, y1: 1,
+            line: { color: '#94a3b8', width: 1, dash: 'dot' } },
+          { type: 'line', y0: hline, y1: hline, xref: 'paper', x0: 0, x1: 1,
+            line: { color: '#94a3b8', width: 1, dash: 'dot' } },
+        ],
+        annotations: [
+          { xref: 'paper', yref: 'paper', x: 0.01, y: 0.99, text: 'Ignored and unresolved',
+            showarrow: false, font: { size: 10, color: '#b91c1c' } },
+          { xref: 'paper', yref: 'paper', x: 0.99, y: 0.01, text: 'Well covered',
+            showarrow: false, font: { size: 10, color: '#047857' }, xanchor: 'right' },
+        ],
+        hoverlabel: { font: { size: 11 } },
+        legend: { orientation: 'h', y: -0.16, font: { size: 10.5 } },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+      }, { responsive: true, displayModeBar: false });
+      return () => Plotly.purge(el);
+    }, [data, meta]);
+    if (!data || !data.length) return null;
+    return <div ref={divRef} style={{ width: '100%', height: 520 }} />;
+  }
+
+  // Figure 10: Sankey from question type to what its questions received:
+  // one of the ten answer mechanisms, an untyped reply, or no reply at
+  // all. Flow width is the number of questions; the answer mechanism is
+  // the primary (first-listed) type on each question's replies.
+  function QAFlowChart({ data }) {
+    const divRef = useRef(null);
+    useEffect(() => {
+      if (!data || !divRef.current) return;
+      const el = divRef.current;
+      const qIndex = new Map(data.qTypes.map((t, i) => [t.code, i]));
+      const aIndex = new Map(data.aTypes.map((t, i) => [t.code, data.qTypes.length + i]));
+      const links = data.links.filter((l) => qIndex.has(l.q) && aIndex.has(l.a));
+      const colorOf = new Map(data.qTypes.map((t) => [t.code, t.color]));
+      Plotly.newPlot(el, [{
+        type: 'sankey',
+        orientation: 'h',
+        arrangement: 'snap',
+        node: {
+          label: [...data.qTypes.map((t) => t.name), ...data.aTypes.map((t) => t.name)],
+          color: [...data.qTypes.map((t) => t.color), ...data.aTypes.map((t) => t.color)],
+          pad: 12,
+          thickness: 14,
+          line: { width: 0 },
+          hovertemplate: '%{label}: %{value:,} questions<extra></extra>',
+        },
+        link: {
+          source: links.map((l) => qIndex.get(l.q)),
+          target: links.map((l) => aIndex.get(l.a)),
+          value: links.map((l) => l.count),
+          color: links.map((l) => colorOf.get(l.q) + '33'),
+          hovertemplate: '%{source.label} → %{target.label}: %{value:,} questions<extra></extra>',
+        },
+      }], {
+        margin: { l: 8, r: 8, t: 8, b: 8 },
+        font: { family: 'Inter, system-ui, sans-serif', size: 11, color: '#334155' },
+        hoverlabel: { font: { size: 11 } },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+      }, { responsive: true, displayModeBar: false });
+      return () => Plotly.purge(el);
+    }, [data]);
+    if (!data) return null;
+    return <div ref={divRef} style={{ width: '100%', height: 560 }} />;
+  }
+
   function ResearchTab({ state }) {
     const stats = state.stats || {};
+    const kbMeta = state.kbMeta || {};
+    const taxFigs = state.taxonomyFigures || {};
     const categories = state.categories || [];
 
     // Clicking a schema chip reveals sample comments from that category.
@@ -696,7 +845,7 @@ window.AppResearch = (function() {
       { label: 'Videos analyzed',      value: stats.totalVideos,   format: formatNumber,  hint: `${formatNumber(stats.videosWithQa)} with Q&A comments` },
       { label: 'Comments processed',   value: stats.totalComments, format: formatNumber },
       { label: 'Unique themes',        value: stats.uniqueThemes,  format: formatNumber },
-      { label: 'Knowledge-base pages', value: stats.kbPages,       format: formatNumber,  hint: `${formatNumber(stats.kbThemePages)} themes + ${formatNumber(stats.kbConceptPages)} concepts` },
+      { label: 'Questions classified', value: kbMeta.questions,    format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} question families` },
       { label: 'Total video views',    value: stats.totalViews,    format: formatCompact },
     ];
 
@@ -710,7 +859,7 @@ window.AppResearch = (function() {
           </h2>
           <div className="text-slate-700 mt-5 leading-relaxed text-base space-y-4">
             <p>
-              The Electrical Field Q&amp;A Knowledge Base mines practitioner discussion on YouTube to identify knowledge bottlenecks in electrical construction, the topics where field practitioners ask the most questions but peer answers are hardest to find. Transcripts from 794 videos across the trade were collected, and every viewer question-and-answer comment thread was extracted and labeled to locate where practitioner demand outpaces peer resolution. Each comment is classified into a ten-category schema spanning the major areas of the electrical trade. GPT-5-mini performs a first-pass classification, and trained human annotators validate a balanced subset through Qualtrics surveys, which measures where the model agrees with practitioners and where it does not. This site presents the study figures, an explorer for the labeled comment threads, the annotated validation set, and an assistant grounded in a hand-curated knowledge base of 78 pages distilled from the analyzed discussion.
+              The Electrical Field Q&amp;A Knowledge Base mines practitioner discussion on YouTube to identify knowledge bottlenecks in electrical construction, the topics where field practitioners ask the most questions but peer answers are hardest to find. Transcripts from 794 videos across the trade were collected, and every viewer question-and-answer comment thread was extracted and labeled to locate where practitioner demand outpaces peer resolution. Each comment is classified into a ten-category schema spanning the major areas of the electrical trade. GPT-5-mini performs a first-pass classification, and trained human annotators validate a balanced subset through Qualtrics surveys, which measures where the model agrees with practitioners and where it does not. On top of the subject labels, every extracted practitioner question is classified into an eleven-type question taxonomy and consolidated into 263 recurring question families, and every reply is typed by how it delivers (or fails to deliver) a solution. This site presents the study figures, an explorer for the labeled comment threads, the annotated validation set, and an assistant grounded in a knowledge base compiled from that question taxonomy.
             </p>
           </div>
         </section>
@@ -1008,6 +1157,46 @@ window.AppResearch = (function() {
               },
             }}
           />
+        </FigureCard>
+
+        {/* Question taxonomy section: what gets asked, how the mix shifted,
+            and how questions get resolved. Data: taxonomy_figures.json. */}
+        <div className="space-y-4">
+          <section>
+            <h3 className="serif text-xl font-semibold text-slate-900 mb-2">The question taxonomy</h3>
+            <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
+              Every extracted practitioner question ({kbMeta.questions ? formatNumber(kbMeta.questions) : '14,980'} in
+              total) was classified into an eleven-type question taxonomy and consolidated
+              into {kbMeta.questionFamilies || 263} recurring question families; the replies each question received
+              carry a ten-type answer taxonomy. The three figures below summarize what practitioners ask, how the
+              mix has shifted over the years, and how (or whether) their questions get resolved. Labels come from a
+              single-model pilot (GPT-5.6 Luna, taxonomy v0) and are provisional.
+            </p>
+          </section>
+
+          <FigureCard
+            number={8}
+            title="Question type mix by year"
+            caption="Stacked question volume per year, split by primary question type. Dates are the publication dates of the question comments; the scrape cutoff is October 2025, so 2025 is a partial year. Hover any year for each type's count and its share of that year's questions. Resource identification and sourcing, conceptual, and permissibility questions dominate throughout, while the overall volume tracks the corpus comment surge into 2023."
+          >
+            <TaxonomyTrendChart data={taxFigs.typeYear} />
+          </FigureCard>
+        </div>
+
+        <FigureCard
+          number={9}
+          title="Knowledge gaps across question families"
+          caption="One bubble per question family with at least 20 member questions. Horizontal position is the share of replied questions that actually got answered; vertical position is the share of the family's questions that never received any reply; bubble area scales with the number of member questions, and color marks the question type. Dotted lines mark the corpus averages, so families in the upper-left region are the knowledge bottleneck: heavily ignored and, even when engaged, poorly resolved. Hover any bubble for the family's counts."
+        >
+          <GapQuadrantChart data={taxFigs.quadrant} meta={taxFigs.meta} />
+        </FigureCard>
+
+        <FigureCard
+          number={10}
+          title="How questions get resolved, from question type to answer mechanism"
+          caption="Flow from each substantive question type (left) to what its questions received (right): one of the ten answer mechanisms of the answer taxonomy, a reply without a classified type, or no reply at all. Flow width is the number of questions; where a question drew several answer mechanisms, the primary (first-listed) one is counted. Blue mechanisms resolve questions (prescription, explanation, experience, code citation, correction); gray ones engage without resolving (counter-question, referral, meta-response, speculation, social)."
+        >
+          <QAFlowChart data={taxFigs.flow} />
         </FigureCard>
 
         {/* Table 1, per-category classification metrics on consensus subset. */}

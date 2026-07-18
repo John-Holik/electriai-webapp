@@ -1,38 +1,40 @@
 /* Ask ElectriAI tab. Retrieves the most relevant chunks from
-   wiki_embeddings.json + wiki_chunks.json for a user question, then
-   asks Gemini to answer using only those chunks. Citations to videos
-   are rendered as clickable YouTube links; comment citations are shown
-   as inline pills (YouTube has no reliable comment deep-link).
+   kb_embeddings.json + kb_chunks.json (the taxonomy knowledge base built
+   from the gpt-5-mini comment corpus and the question taxonomy) for a
+   user question, then asks Gemini to answer using only those chunks.
+   Retrieval is hybrid: cosine similarity plus a light keyword overlap
+   boost and intent routing that steers gap/trend/answering questions
+   toward the analytics pages. Citations to videos are rendered as
+   clickable YouTube links; comment citations deep-link to the thread.
 
-   Local-dev wiring: this version calls the Gemini API directly from
-   the browser using a localhost-only dev key (set via
-   `localStorage.setItem('GEMINI_DEV_KEY', '...')`). The plan's Phase 3
-   Cloudflare Worker proxy is deferred; swapping to the proxy at deploy
-   time is a two-URL change in this file. */
+   Production routes through the Cloudflare Worker proxy; on localhost a
+   dev key from `localStorage.setItem('GEMINI_DEV_KEY', '...')` calls the
+   Gemini API directly. */
 
 window.AppChat = (function() {
   const { useState, useEffect, useMemo, useRef } = React;
   const { WikiPageModal, StatCard } = window.AppComponents;
   const { formatNumber, formatCompact } = window.AppUtils;
 
-  // Starter prompts shown in the empty chat. Each maps onto a heavily
-  // represented theme in the knowledge base (grounding, bonding, terminations,
-  // ampacity, AFCI, voltage drop) so the retriever has real passages to
-  // ground an answer in. Clicking one fires the same pipeline as typing.
+  // Starter prompts shown in the empty chat. One per capability of the
+  // taxonomy knowledge base: knowledge gaps, trends over time, answering
+  // behavior, and grounded technical content. Clicking one fires the same
+  // pipeline as typing.
   const SUGGESTED_QUESTIONS = [
-    { q: 'What size ground wire do I need for a 200 A service?', tag: 'Grounding' },
-    { q: 'What is the difference between grounding and bonding?', tag: 'Bonding' },
-    { q: 'How do I torque aluminum conductor terminations correctly?', tag: 'Terminations' },
-    { q: 'When is AFCI protection required on branch circuits?', tag: 'Protection' },
+    { q: 'What are the biggest knowledge gaps in electrical construction?', tag: 'Knowledge gaps' },
+    { q: 'How have practitioner questions changed over the years?', tag: 'Trends' },
+    { q: 'How do questions about grounding and bonding usually get answered?', tag: 'Answering behavior' },
+    { q: 'Can I bond neutral and ground in a subpanel?', tag: 'Code compliance' },
   ];
 
   const GEMINI_EMBED_URL    = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent';
-  const GEMINI_GENERATE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent';
+  const GEMINI_GENERATE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:streamGenerateContent';
 
-  const TOP_K        = 6;   // total chunks retrieved
-  const FULL_K       = 3;   // top chunks rendered in full into the prompt
-  const COMPACT_CHARS = 320; // size of "compact" chunks (the next 3)
-  const FURTHER_K    = 3;   // wiki pages surfaced in the "Further reading" footer
+  const TOP_K        = 8;   // total chunks retrieved
+  const FULL_K       = 4;   // top chunks rendered in full into the prompt
+  const COMPACT_CHARS = 320; // size of "compact" chunks (the rest)
+  const FURTHER_K    = 3;   // knowledge-base pages surfaced in the "Further reading" footer
+  const PER_PAGE_CAP = 2;   // max retrieved chunks from any single page, for diversity
 
   // ─── Vector math ────────────────────────────────────────
   // Standard cosine similarity for two equal-length numeric arrays.
@@ -80,21 +82,25 @@ window.AppChat = (function() {
     const url = workerBase
       ? `${workerBase}/api/generate`
       : `${GEMINI_GENERATE_URL}?alt=sse&key=${encodeURIComponent(apiKey)}`;
-    const res = await fetch(url, {
+    // Gemini 3.5 request shape: sampling parameters are gone and thinking is
+    // controlled by thinkingLevel. The legacy shape (temperature +
+    // thinkingBudget) is kept as a fallback so the chat still works if the
+    // Worker proxy has not been redeployed and still routes to 2.5 flash,
+    // which rejects the 3.5 fields with a 400.
+    const makeBody = (legacy) => JSON.stringify({
+      systemInstruction: { parts: [{ text: systemText }] },
+      contents: [{ role: 'user', parts: [{ text: userText }] }],
+      generationConfig: legacy
+        ? { temperature: 0.2, maxOutputTokens: 2048, thinkingConfig: { thinkingBudget: 0 } }
+        : { maxOutputTokens: 4096, thinkingConfig: { thinkingLevel: 'low' } },
+    });
+    const post = (body) => fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemText }] },
-        contents: [{ role: 'user', parts: [{ text: userText }] }],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 2048,
-          // 2.5 flash enables hidden "thinking" by default which eats the
-          // token budget before any visible text streams out. Force it off.
-          thinkingConfig: { thinkingBudget: 0 },
-        },
-      }),
+      body,
     });
+    let res = await post(makeBody(false));
+    if (res.status === 400) res = await post(makeBody(true));
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(`generate (${res.status}): ${errText.slice(0, 240)}`);
@@ -174,33 +180,93 @@ window.AppChat = (function() {
   };
 
   // ─── Retrieval ──────────────────────────────────────────
-  // Returns the top-K (chunkKey, score, chunk) triples for a query vector.
-  const retrieveTopChunks = (queryVector, embeddings, chunks, k) => {
+  // Intent routing: questions about gaps, trends, or answering behavior get
+  // their matching analytics page boosted so the retriever reliably surfaces
+  // the corpus-level statistics pages, not just topically similar families.
+  const INTENT_ROUTES = [
+    { re: /\b(gap|gaps|unanswered|ignored|no answers?|never answered|least answered|bottleneck|underserved|missing knowledge|opportunit)/i,
+      slugs: ['knowledge-gaps'] },
+    { re: /\b(trend|trends|over time|over the years|changed?|changing|evolv|history|historical|by year|per year|rising|growing|declin|fading|recent years)/i,
+      slugs: ['trends-over-time'] },
+    { re: /\b(how (do|are|does|often).*(answer|answered|solutions?|replie[sd]|respond)|answer types?|answer mechanisms?|solutions? (are )?(provided|delivered|given)|who answers|referral|kinds? of (answers?|replies))/i,
+      slugs: ['how-solutions-are-provided'] },
+    { re: /\b(how many|corpus|dataset|data set|whole|overall|what (is|can) (this|the) (knowledge base|chatbot|assistant)|taxonomy)\b/i,
+      slugs: ['overview'] },
+  ];
+  const INTENT_BOOST = 0.08;
+
+  // Keyword overlap boost: cheap lexical signal layered on top of cosine so
+  // exact term matches (family labels, code article words) win ties.
+  const STOPWORDS = new Set(['the', 'and', 'for', 'are', 'was', 'what', 'when', 'where', 'which', 'with',
+    'that', 'this', 'have', 'has', 'how', 'why', 'can', 'you', 'about', 'does', 'not', 'get', 'question',
+    'questions', 'answer', 'answers', 'electrical', 'construction']);
+  const queryTerms = (q) =>
+    q.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 2 && !STOPWORDS.has(t));
+
+  const keywordBoost = (terms, chunk) => {
+    if (!terms.length) return 0;
+    const title = chunk.title.toLowerCase();
+    const text = chunk.chunkText.toLowerCase();
+    let boost = 0;
+    for (const t of terms) {
+      if (title.includes(t)) boost += 0.02;
+      else if (text.includes(t)) boost += 0.005;
+    }
+    return Math.min(boost, 0.08);
+  };
+
+  // Returns the top-K (chunkKey, score, chunk) triples for a query. Score is
+  // cosine similarity plus the keyword and intent boosts; at most
+  // PER_PAGE_CAP chunks per page keep the passage set diverse.
+  const retrieveTopChunks = (queryText, queryVector, embeddings, chunks, k) => {
+    const terms = queryTerms(queryText);
+    const intentSlugs = new Set();
+    for (const route of INTENT_ROUTES) {
+      if (route.re.test(queryText)) route.slugs.forEach((s) => intentSlugs.add(s));
+    }
     const scored = [];
     for (const key in embeddings) {
       const vec = embeddings[key];
       if (!vec || vec.length !== queryVector.length) continue;
       const chunk = chunks[key];
       if (!chunk) continue;
-      scored.push({ key, score: cosineSimilarity(queryVector, vec), chunk });
+      let score = cosineSimilarity(queryVector, vec) + keywordBoost(terms, chunk);
+      if (intentSlugs.has(chunk.slug)) score += INTENT_BOOST;
+      scored.push({ key, score, chunk });
     }
     scored.sort((a, b) => b.score - a.score);
-    return scored.slice(0, k);
+    const picked = [];
+    const perPage = new Map();
+    for (const s of scored) {
+      const used = perPage.get(s.chunk.slug) || 0;
+      if (used >= PER_PAGE_CAP) continue;
+      perPage.set(s.chunk.slug, used + 1);
+      picked.push(s);
+      if (picked.length >= k) break;
+    }
+    return picked;
   };
 
   // ─── Prompt assembly ───────────────────────────────────
-  const SYSTEM_PROMPT = `You are a research assistant for ElectriAI, a project that mines YouTube videos and viewer Q&A comments to build a knowledge base about electrical construction. You answer questions for working electricians, apprentices, and contractors.
+  const SYSTEM_PROMPT = `You are a research assistant for ElectriAI, a project that mines YouTube comment threads on electrical construction videos to map what practitioners ask and how their questions get answered. You answer questions for working electricians, apprentices, contractors, and researchers.
 
-You will be given a small set of passages retrieved from the knowledge-base wiki. The wiki is hand-curated from video transcripts and Q&A comments, and every claim in it carries inline citations to the underlying sources:
+You will be given passages retrieved from the ElectriAI knowledge base. The knowledge base is compiled from 16,862 comment threads analyzed by GPT-5-mini and a question taxonomy of 14,980 classified practitioner questions (11 question types, 263 question families, 10 answer types, posted 2011 to 2025). Its pages carry real statistics (question counts, reply rates, answer rates, yearly activity) plus verbatim practitioner questions and the answers they received. Citations in the passages point to the underlying sources:
   - (V:VIDEOID), citation to a specific YouTube video (11-character ID)
-  - (Q:COMMENTID), citation to a viewer Q&A comment
+  - (Q:COMMENTID), citation to a viewer Q&A comment thread
+
+You can answer four kinds of question:
+  - Knowledge gaps: which topics go unanswered, using the gap statistics in the passages
+  - Trends over time: how question volume and mix shifted across years
+  - Answering behavior: how solutions get delivered (prescriptions, explanations, code citations, referrals, and so on)
+  - Technical electrical questions: answer from the practitioner Q&A evidence in the passages
 
 Rules for your response:
-1. Use ONLY the retrieved passages as evidence. Do not invent facts not present in them.
-2. When you state a substantive claim, carry forward its citations exactly as they appear in the source passages, preserve the (V:VIDEOID) and (Q:COMMENTID) markers verbatim. Do not paraphrase the citation format. When citing more than one source, use a separate parenthesis for each: write (V:abc) (V:def), never (V:abc, V:def).
-3. If the retrieved passages do not actually answer the user's question, say so plainly: "I don't know, that's outside the knowledge base." Do not guess.
-4. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
-5. Be concise: 2–6 sentences for most questions, longer only if the user asks for a deep explanation.`;
+1. Use ONLY the retrieved passages as evidence. Do not invent facts, statistics, or code references not present in them.
+2. When you state a substantive claim or quote practitioner Q&A, carry forward its citations exactly as they appear, preserving the (V:VIDEOID) and (Q:COMMENTID) markers verbatim. When citing more than one source, use a separate parenthesis for each: write (V:abc) (V:def), never (V:abc, V:def). Statistics from the knowledge base pages need no citation markers, but name the page they come from.
+3. When you give numbers, quote them exactly from the passages and mention the relevant denominator (for example "of replied questions").
+4. If the retrieved passages do not actually answer the user's question, say so plainly: "I don't know, that's outside the knowledge base." Do not guess. For safety-critical work, remind the user to verify with a licensed electrician or the authority having jurisdiction.
+5. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
+6. Be concise: 2 to 6 sentences for most questions, longer only if the user asks for a deep explanation or a ranked list.`;
 
   const buildUserPrompt = (question, topChunks) => {
     const full = topChunks.slice(0, FULL_K);
@@ -215,7 +281,7 @@ Rules for your response:
       const snippet = (ch.chunkText || '').slice(0, COMPACT_CHARS).trim();
       return `[Passage ${FULL_K + i + 1}, score=${c.score.toFixed(3)}] ${ch.title}${ch.sectionTitle ? ', ' + ch.sectionTitle : ''}\n${snippet}${ch.chunkText.length > COMPACT_CHARS ? '…' : ''}`;
     }).join('\n\n');
-    return `Retrieved passages from the ElectriAI wiki:\n\n${fullBlocks}${compactBlocks ? '\n\n---\n\n' + compactBlocks : ''}\n\n---\n\nUser question: ${question}\n\nAnswer using only the passages above. Preserve any (V:...) and (Q:...) citations exactly as they appear.`;
+    return `Retrieved passages from the ElectriAI knowledge base:\n\n${fullBlocks}${compactBlocks ? '\n\n---\n\n' + compactBlocks : ''}\n\n---\n\nUser question: ${question}\n\nAnswer using only the passages above. Preserve any (V:...) and (Q:...) citations exactly as they appear.`;
   };
 
   // ─── Citation rendering ────────────────────────────────
@@ -429,18 +495,18 @@ Rules for your response:
   }
 
   // ─── Hero stat ribbon ──────────────────────────────────
-  // "What's inside the knowledge base" counters drawn straight from
-  // summary_stats.json. Renders the shared StatCard so these tiles look
-  // and behave exactly like the Findings (home) headline stats: white
+  // "What's inside the knowledge base" counters drawn straight from the
+  // kb_pages.json meta block. Renders the shared StatCard so these tiles
+  // look and behave exactly like the Findings (home) headline stats: white
   // cards that count up from zero on scroll-in and lift on hover.
-  function KbStatRibbon({ stats }) {
-    if (!stats) return null;
+  function KbStatRibbon({ meta }) {
+    if (!meta) return null;
     const items = [
-      { value: stats.kbPages,       label: 'Wiki pages',     format: formatNumber },
-      { value: stats.totalVideos,   label: 'YouTube videos', format: formatNumber },
-      { value: stats.totalComments, label: 'Q&A comments',   format: formatNumber },
-      { value: stats.uniqueThemes,  label: 'Themes',         format: formatNumber },
-      { value: stats.totalViews,    label: 'Video views',    format: formatCompact },
+      { value: meta.questions,        label: 'Classified questions', format: formatNumber },
+      { value: meta.questionFamilies, label: 'Question families',    format: formatNumber },
+      { value: meta.answered,         label: 'Answered questions',   format: formatNumber },
+      { value: meta.videos,           label: 'YouTube videos',       format: formatNumber },
+      { value: meta.pages,            label: 'Knowledge-base pages', format: formatNumber },
     ];
     return (
       <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -491,8 +557,8 @@ Rules for your response:
     const steps = [
       { n: 1, title: 'Your question', detail: 'Asked in plain English',                        ring: 'linear-gradient(135deg,#334155,#0f172a)' },
       { n: 2, title: 'Embed',         detail: 'Gemini maps it to a 768-dimension vector',       ring: 'linear-gradient(135deg,#38bdf8,#0369a1)' },
-      { n: 3, title: 'Retrieve',      detail: 'Cosine similarity ranks the wiki; top 6 win',    ring: 'linear-gradient(135deg,#34d399,#047857)' },
-      { n: 4, title: 'Generate',      detail: 'Gemini 2.5 Flash answers from those passages only', ring: 'linear-gradient(135deg,#a78bfa,#6d28d9)' },
+      { n: 3, title: 'Retrieve',      detail: 'Cosine similarity plus keyword and intent boosts rank the knowledge base; top 8 win', ring: 'linear-gradient(135deg,#34d399,#047857)' },
+      { n: 4, title: 'Generate',      detail: 'Gemini 3.5 Flash answers from those passages only', ring: 'linear-gradient(135deg,#a78bfa,#6d28d9)' },
       { n: 5, title: 'Cited answer',  detail: 'Every claim keeps its ▶ video / comment source', ring: 'linear-gradient(135deg,#fbbf24,#d97706)' },
     ];
     return (
@@ -533,23 +599,34 @@ Rules for your response:
   }
 
   // ─── Knowledge-base coverage figure ────────────────────
-  // Left: a conic-gradient donut splitting the 78 wiki pages into
-  // curated theme pages vs. concept pages. Right: the deepest pages by
-  // source-record count, as animated bars colored by page type.
-  function CoverageFigure({ wikiPages, stats }) {
+  // Left: a conic-gradient donut splitting the knowledge-base pages by
+  // page kind (question families, question types, answer types, corpus
+  // analytics). Right: the largest question families by member questions,
+  // as animated bars.
+  function CoverageFigure({ wikiPages, meta }) {
     if (!wikiPages || !wikiPages.length) return null;
-    const themePages = (stats && stats.kbThemePages) || wikiPages.filter((p) => p.type === 'theme').length;
-    const conceptPages = (stats && stats.kbConceptPages) || wikiPages.filter((p) => p.type === 'concept').length;
-    const total = themePages + conceptPages || 1;
-    const themePct = Math.round((themePages / total) * 100);
-    const top = [...wikiPages]
-      .filter((p) => p.sourceCount)
+    const KINDS = [
+      { type: 'family',        label: 'question families', color: '#0f172a' },
+      { type: 'question-type', label: 'question types',    color: '#0ea5e9' },
+      { type: 'answer-type',   label: 'answer types',      color: '#f59e0b' },
+      { type: 'analytics',     label: 'analytics',         color: '#8b5cf6' },
+      { type: 'overview',      label: 'overview',          color: '#94a3b8' },
+    ];
+    const counts = KINDS.map((k) => ({ ...k, count: wikiPages.filter((p) => p.type === k.type).length }))
+      .filter((k) => k.count > 0);
+    const total = counts.reduce((s, k) => s + k.count, 0) || 1;
+    let acc = 0;
+    const gradientStops = counts.map((k) => {
+      const from = (acc / total) * 100;
+      acc += k.count;
+      const to = (acc / total) * 100;
+      return `${k.color} ${from}% ${to}%`;
+    }).join(', ');
+    const top = wikiPages
+      .filter((p) => p.type === 'family' && p.sourceCount)
       .sort((a, b) => b.sourceCount - a.sourceCount)
       .slice(0, 8);
     const max = top.length ? top[0].sourceCount : 1;
-
-    const THEME_COLOR = '#0f172a';
-    const CONCEPT_COLOR = '#f59e0b';
 
     return (
       <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
@@ -557,45 +634,41 @@ Rules for your response:
           <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Coverage</div>
           <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">What the knowledge base covers</h3>
           <p className="text-sm text-slate-600 serif">
-            {total} hand-curated wiki pages distilled from the underlying dataset. The deepest pages draw on the most underlying video and comment records.
+            {total} pages compiled from the question taxonomy{meta ? `: ${formatNumber(meta.questions)} classified practitioner questions across ${formatNumber(meta.videos)} videos, with per-family statistics, real question and answer pairs, yearly activity, and corpus analytics for knowledge gaps, trends, and answering behavior` : ''}.
           </p>
         </header>
         <div className="p-6 grid md:grid-cols-[minmax(0,220px)_1fr] gap-8 items-center">
-          {/* Donut: theme vs concept split */}
+          {/* Donut: page composition by kind */}
           <div className="flex flex-col items-center">
             <div className="relative w-44 h-44">
               <div
                 className="w-full h-full rounded-full"
-                style={{ background: `conic-gradient(${THEME_COLOR} 0 ${themePct}%, ${CONCEPT_COLOR} ${themePct}% 100%)` }}
+                style={{ background: `conic-gradient(${gradientStops})` }}
               />
               <div className="absolute inset-[15px] rounded-full bg-white flex flex-col items-center justify-center">
                 <span className="serif text-4xl font-semibold text-slate-900 leading-none tabular-nums">{total}</span>
-                <span className="text-[10px] uppercase tracking-wider text-slate-500 mt-1">wiki pages</span>
+                <span className="text-[10px] uppercase tracking-wider text-slate-500 mt-1">pages</span>
               </div>
             </div>
-            <div className="flex items-center gap-4 mt-4 text-[12px]">
-              <span className="inline-flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm" style={{ background: THEME_COLOR }} />
-                <span className="text-slate-700 font-medium">{themePages}</span>
-                <span className="text-slate-500">theme</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm" style={{ background: CONCEPT_COLOR }} />
-                <span className="text-slate-700 font-medium">{conceptPages}</span>
-                <span className="text-slate-500">concept</span>
-              </span>
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 mt-4 text-[12px]">
+              {counts.map((k) => (
+                <span key={k.type} className="inline-flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-sm" style={{ background: k.color }} />
+                  <span className="text-slate-700 font-medium">{k.count}</span>
+                  <span className="text-slate-500">{k.label}</span>
+                </span>
+              ))}
             </div>
           </div>
 
-          {/* Deepest pages by source-record count */}
+          {/* Largest question families by member questions */}
           <div>
             <div className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-3">
-              Deepest pages · source records
+              Largest question families · member questions
             </div>
             <ul className="space-y-2.5">
               {top.map((p, i) => {
                 const pct = Math.max(6, Math.round((p.sourceCount / max) * 100));
-                const color = p.type === 'concept' ? CONCEPT_COLOR : THEME_COLOR;
                 return (
                   <li key={p.slug}>
                     <div className="flex items-baseline justify-between gap-3 mb-1">
@@ -605,7 +678,7 @@ Rules for your response:
                     <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className="kb-bar-fill h-full rounded-full"
-                        style={{ width: `${pct}%`, background: color, animationDelay: `${i * 80}ms` }}
+                        style={{ width: `${pct}%`, background: '#0f172a', animationDelay: `${i * 80}ms` }}
                       />
                     </div>
                   </li>
@@ -738,8 +811,8 @@ Rules for your response:
           throw new Error('Embedding API returned no vector.');
         }
 
-        // 2. Retrieve top-K chunks by cosine similarity.
-        const topChunks = retrieveTopChunks(queryVec, state.wikiEmbeddings, state.wikiChunks.chunks, TOP_K);
+        // 2. Retrieve top-K chunks: cosine plus keyword and intent boosts.
+        const topChunks = retrieveTopChunks(question, queryVec, state.wikiEmbeddings, state.wikiChunks.chunks, TOP_K);
         if (topChunks.length === 0) {
           throw new Error('No retrievable chunks (embedding shape mismatch?).');
         }
@@ -809,13 +882,14 @@ Rules for your response:
                 Ask the knowledge base
               </h2>
               <p className="text-slate-600 mt-2.5 leading-relaxed">
-                Ask anything about electrical construction. Answers come only from passages retrieved
-                from the ElectriAI wiki, so every claim stays traceable. Citations:
+                Ask about electrical construction, knowledge gaps, question trends over time, or how
+                practitioners answer each other. Answers come only from passages retrieved from the
+                taxonomy knowledge base, so every claim stays traceable. Citations:
                 <span className="inline-flex items-center px-1.5 rounded bg-red-50 text-red-700 text-[11px] font-medium ml-1">▶ video</span> links the source YouTube video,
                 <span className="inline-flex items-center px-1.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium ml-1">comment</span> marks a Q&amp;A comment.
               </p>
             </div>
-            <KbStatRibbon stats={state.stats} />
+            <KbStatRibbon meta={state.kbMeta} />
           </div>
         </section>
 
@@ -834,7 +908,7 @@ Rules for your response:
         {embeddingsLoading && (
           <div className="mb-4 p-3 border border-slate-200 bg-white rounded-lg text-sm text-slate-600 flex items-center gap-3 max-w-3xl">
             <span className="inline-block w-4 h-4 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" />
-            Loading wiki embeddings (≈3 MB)…
+            Loading knowledge-base embeddings (≈3 MB)…
           </div>
         )}
 
@@ -918,7 +992,7 @@ Rules for your response:
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={onKeyDown}
                 rows={2}
-                placeholder={apiReady ? 'Ask the wiki…' : 'Chat is not configured yet'}
+                placeholder={apiReady ? 'Ask about electrical construction, gaps, trends, or answers…' : 'Chat is not configured yet'}
                 disabled={!apiReady || !embeddingsReady}
                 className="flex-1 text-sm px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 resize-none disabled:bg-slate-50 disabled:text-slate-500"
               />
@@ -961,7 +1035,7 @@ Rules for your response:
             eagerly-loaded datasets, so they render instantly with the tab. */}
         <section className="mt-10 space-y-6">
           <HowItWorksFigure />
-          <CoverageFigure wikiPages={state.wikiPages} stats={state.stats} />
+          <CoverageFigure wikiPages={state.wikiPages} meta={state.kbMeta} />
         </section>
 
         {openPage && <WikiPageModal page={openPage} onClose={() => setOpenPage(null)} />}

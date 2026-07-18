@@ -43,7 +43,10 @@
   // Tiny fetch + JSON helper that throws on a non-2xx response so the
   // error toast surfaces an actual reason rather than a silent parse failure.
   const fetchJSON = (path) =>
-    fetch(path).then(r => {
+    // 'no-cache' revalidates with the server on every load, so a regenerated
+    // data file is never masked by a stale browser copy (it still uses the
+    // cached bytes when the server confirms 304 Not Modified).
+    fetch(path, { cache: 'no-cache' }).then(r => {
       if (!r.ok) throw new Error(`${path}: HTTP ${r.status}`);
       return r.json();
     });
@@ -55,6 +58,8 @@
     const [stats, setStats]         = useState(null);
     const [themeDict, setThemeDict] = useState(null);
     const [wikiPages, setWikiPages] = useState(null);
+    const [kbMeta, setKbMeta]       = useState(null);
+    const [taxonomyFigures, setTaxonomyFigures] = useState(null);
     const [bottleneck, setBottleneck] = useState(null);
 
     // Lazy-loaded datasets, only fetched once the Ask ElectriAI tab is opened.
@@ -120,18 +125,21 @@
         fetchJSON('./data/categories.json'),
         fetchJSON('./data/summary_stats.json'),
         fetchJSON('./data/theme_dictionary.json'),
-        fetchJSON('./data/wiki_pages.json'),
+        fetchJSON('./data/kb_pages.json'),
         fetchJSON('./data/knowledge_bottleneck.json'),
+        fetchJSON('./data/taxonomy_figures.json'),
       ])
-        .then(([commentsDoc, categoriesDoc, statsDoc, themeDoc, wikiDoc, bottleneckDoc]) => {
+        .then(([commentsDoc, categoriesDoc, statsDoc, themeDoc, kbDoc, bottleneckDoc, taxFigDoc]) => {
           // The export pipeline wraps lists in { meta, records | pages },
           // so unwrap to the array shape every tab expects.
           setComments(commentsDoc.records || commentsDoc);
           setCategories(categoriesDoc);
           setStats(statsDoc);
           setThemeDict(themeDoc.themes || themeDoc);
-          setWikiPages(wikiDoc.pages || wikiDoc);
+          setWikiPages(kbDoc.pages || kbDoc);
+          setKbMeta(kbDoc.meta || null);
           setBottleneck(bottleneckDoc);
+          setTaxonomyFigures(taxFigDoc);
           setLoading(false);
         })
         .catch(err => {
@@ -146,8 +154,8 @@
       if (wikiEmbeddings || embeddingsLoading) return;
       setEmbeddingsLoading(true);
       Promise.all([
-        fetchJSON('./data/wiki_embeddings.json'),
-        fetchJSON('./data/wiki_chunks.json'),
+        fetchJSON('./data/kb_embeddings.json'),
+        fetchJSON('./data/kb_chunks.json'),
       ])
         .then(([embeddings, chunks]) => {
           setWikiEmbeddings(embeddings);
@@ -205,6 +213,8 @@
       stats,
       themeDict,
       wikiPages,
+      kbMeta,
+      taxonomyFigures,
       wikiEmbeddings,
       wikiChunks,
       bottleneck,
@@ -213,7 +223,7 @@
       qaRecords,
       geminiDevKey: GEMINI_DEV_KEY,
       geminiWorkerBase: GEMINI_WORKER_BASE,
-    }), [comments, categories, stats, themeDict, wikiPages, wikiEmbeddings, wikiChunks, bottleneck, rawVideos, qaTaxonomy, qaRecords]);
+    }), [comments, categories, stats, themeDict, wikiPages, kbMeta, taxonomyFigures, wikiEmbeddings, wikiChunks, bottleneck, rawVideos, qaTaxonomy, qaRecords]);
 
     if (loading) {
       return (
@@ -246,7 +256,7 @@
       <div className="min-h-screen">
 
         <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-8">
+          <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-8">
             <div className="min-w-0 flex-1">
               <h1 className="serif text-base sm:text-lg font-semibold text-slate-900 leading-tight whitespace-nowrap">
                 Practitioner Knowledge Base for Electrical Construction

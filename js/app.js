@@ -154,8 +154,8 @@
       if (wikiEmbeddings || embeddingsLoading) return;
       setEmbeddingsLoading(true);
       Promise.all([
-        fetchJSON('./data/wiki_embeddings.json'),
-        fetchJSON('./data/wiki_chunks.json'),
+        fetchJSON('./data/kb_embeddings.json'),
+        fetchJSON('./data/kb_chunks.json'),
       ])
         .then(([embeddings, chunks]) => {
           setWikiEmbeddings(embeddings);

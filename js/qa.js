@@ -712,14 +712,14 @@ window.AppQA = (function() {
           <SectionHeader
             eyebrow="The reply side"
             title="How the crowd answers"
-            subtitle={`The ${formatNumber(s.consolidatedAnswers)} replies that actually answered a question, classified by answer mechanism. The split explains the replied-but-unanswered tier: engagement is not the same thing as resolution.`}
+            subtitle={`How the ${formatNumber(s.consolidatedAnswers)} answered questions got their answers: the primary mechanism of the best answering reply. The taxonomy also defines five engagement forms (A6 to A10) that respond to a question without resolving it; their rarity here shows that when a question does get answered, the answer is almost always substantive.`}
           />
           <div className="grid md:grid-cols-2 gap-4">
-            <Card title="Resolution mechanisms" subtitle="Answer types A1 to A5: replies that substantively answer">
+            <Card title="Resolution mechanisms" subtitle="Answer types A1 to A5: replies that substantively answer the question">
               <AnswerTypeRows codes={['A1', 'A2', 'A3', 'A4', 'A5']} answerTypes={qa.answerTypes}
                               max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
             </Card>
-            <Card title="Engagement without resolution" subtitle="Answer types A6 to A10: replies that engage but do not resolve">
+            <Card title="Engagement without resolution" subtitle="Answer types A6 to A10: reply forms that engage a question without resolving it">
               <AnswerTypeRows codes={['A6', 'A7', 'A8', 'A9', 'A10', 'A0']} answerTypes={qa.answerTypes}
                               max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
             </Card>

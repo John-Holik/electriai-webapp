@@ -184,8 +184,13 @@ window.AppRawData = (function() {
         </h3>
 
         <div className="flex items-center gap-4 flex-wrap mb-3">
+          {video.views != null && (
+            <StatChip icon="eye" title="video views">{formatCompact(video.views)}</StatChip>
+          )}
+          {video.likes != null && (
+            <StatChip icon="heart" title="video likes">{formatCompact(video.likes)}</StatChip>
+          )}
           <StatChip icon="threads" title="comment threads">{formatNumber(stats.threads)} threads</StatChip>
-          <StatChip icon="heart" title="total comment likes">{formatCompact(stats.likes)}</StatChip>
         </div>
 
         <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between">

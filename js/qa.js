@@ -101,8 +101,9 @@ window.AppQA = (function() {
   );
 
   // One segment of a horizontal stacked outcome bar. Prints its own
-  // percentage when it is wide enough to hold the text.
-  function Seg({ value, total, color, title, darkText }) {
+  // percentage when it is wide enough to hold the text; noLabel bars
+  // (the thin ones) stay clean.
+  function Seg({ value, total, color, title, darkText, noLabel }) {
     if (!value || value <= 0) return null;
     const pct = (100 * value) / total;
     return (
@@ -111,7 +112,7 @@ window.AppQA = (function() {
         style={{ width: pct + '%', backgroundColor: color }}
         title={title}
       >
-        {pct >= 11 && (
+        {!noLabel && pct >= 11 && (
           <span className={`text-[10px] tabular-nums font-medium ${darkText ? 'text-slate-600' : 'text-white'}`}>
             {Math.round(pct)}%
           </span>

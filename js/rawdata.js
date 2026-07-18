@@ -73,6 +73,10 @@ window.AppRawData = (function() {
     return a === b ? a : `${a}–${b}`;
   };
 
+  // Null-safe compact number: shows an em-dash placeholder when a video's
+  // view/like count was hidden or unavailable at collection time.
+  const compact = (n) => (n == null ? '—' : formatCompact(n));
+
   // Small stroke-icon set (no icon library is loaded, so these are inline SVG).
   const IC = {
     comment: <path d="M4 5h16v11H8l-4 4V5z" />,
@@ -598,8 +602,8 @@ window.AppRawData = (function() {
                       value={formatCompact(dataset.totalVideos)} title={`${formatNumber(dataset.totalVideos)} videos`} />
             <StatCard icon="comment" label="Comments" accent="bg-slate-400"
                       value={formatCompact(dataset.totalComments)} title={`${formatNumber(dataset.totalComments)} comments`} />
-            <StatCard icon="threads" label="Threads" accent="bg-violet-400"
-                      value={formatCompact(dataset.threads)} title={`${formatNumber(dataset.threads)} top-level threads`} />
+            <StatCard icon="threads" label="Avg per video" accent="bg-violet-400"
+                      value={formatNumber(dataset.avg)} title={`${formatNumber(dataset.avg)} comments per video on average`} />
             <StatCard icon="heart" label="Comment likes" accent="bg-rose-400"
                       value={formatCompact(dataset.likes)} title={`${formatNumber(dataset.likes)} likes`} />
             <StatCard icon="calendar" label="Active span" accent="bg-amber-400"

@@ -43,7 +43,10 @@
   // Tiny fetch + JSON helper that throws on a non-2xx response so the
   // error toast surfaces an actual reason rather than a silent parse failure.
   const fetchJSON = (path) =>
-    fetch(path).then(r => {
+    // 'no-cache' revalidates with the server on every load, so a regenerated
+    // data file is never masked by a stale browser copy (it still uses the
+    // cached bytes when the server confirms 304 Not Modified).
+    fetch(path, { cache: 'no-cache' }).then(r => {
       if (!r.ok) throw new Error(`${path}: HTTP ${r.status}`);
       return r.json();
     });

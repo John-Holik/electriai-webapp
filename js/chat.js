@@ -281,7 +281,7 @@ Rules for your response:
       const snippet = (ch.chunkText || '').slice(0, COMPACT_CHARS).trim();
       return `[Passage ${FULL_K + i + 1}, score=${c.score.toFixed(3)}] ${ch.title}${ch.sectionTitle ? ', ' + ch.sectionTitle : ''}\n${snippet}${ch.chunkText.length > COMPACT_CHARS ? '…' : ''}`;
     }).join('\n\n');
-    return `Retrieved passages from the ElectriAI wiki:\n\n${fullBlocks}${compactBlocks ? '\n\n---\n\n' + compactBlocks : ''}\n\n---\n\nUser question: ${question}\n\nAnswer using only the passages above. Preserve any (V:...) and (Q:...) citations exactly as they appear.`;
+    return `Retrieved passages from the ElectriAI knowledge base:\n\n${fullBlocks}${compactBlocks ? '\n\n---\n\n' + compactBlocks : ''}\n\n---\n\nUser question: ${question}\n\nAnswer using only the passages above. Preserve any (V:...) and (Q:...) citations exactly as they appear.`;
   };
 
   // ─── Citation rendering ────────────────────────────────

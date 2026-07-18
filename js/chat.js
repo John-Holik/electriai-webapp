@@ -495,18 +495,18 @@ Rules for your response:
   }
 
   // ─── Hero stat ribbon ──────────────────────────────────
-  // "What's inside the knowledge base" counters drawn straight from
-  // summary_stats.json. Renders the shared StatCard so these tiles look
-  // and behave exactly like the Findings (home) headline stats: white
+  // "What's inside the knowledge base" counters drawn straight from the
+  // kb_pages.json meta block. Renders the shared StatCard so these tiles
+  // look and behave exactly like the Findings (home) headline stats: white
   // cards that count up from zero on scroll-in and lift on hover.
-  function KbStatRibbon({ stats }) {
-    if (!stats) return null;
+  function KbStatRibbon({ meta }) {
+    if (!meta) return null;
     const items = [
-      { value: stats.kbPages,       label: 'Wiki pages',     format: formatNumber },
-      { value: stats.totalVideos,   label: 'YouTube videos', format: formatNumber },
-      { value: stats.totalComments, label: 'Q&A comments',   format: formatNumber },
-      { value: stats.uniqueThemes,  label: 'Themes',         format: formatNumber },
-      { value: stats.totalViews,    label: 'Video views',    format: formatCompact },
+      { value: meta.questions,        label: 'Classified questions', format: formatNumber },
+      { value: meta.questionFamilies, label: 'Question families',    format: formatNumber },
+      { value: meta.answered,         label: 'Answered questions',   format: formatNumber },
+      { value: meta.videos,           label: 'YouTube videos',       format: formatNumber },
+      { value: meta.pages,            label: 'Knowledge-base pages', format: formatNumber },
     ];
     return (
       <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">

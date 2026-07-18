@@ -1,14 +1,15 @@
 /* Ask ElectriAI tab. Retrieves the most relevant chunks from
-   wiki_embeddings.json + wiki_chunks.json for a user question, then
-   asks Gemini to answer using only those chunks. Citations to videos
-   are rendered as clickable YouTube links; comment citations are shown
-   as inline pills (YouTube has no reliable comment deep-link).
+   kb_embeddings.json + kb_chunks.json (the taxonomy knowledge base built
+   from the gpt-5-mini comment corpus and the question taxonomy) for a
+   user question, then asks Gemini to answer using only those chunks.
+   Retrieval is hybrid: cosine similarity plus a light keyword overlap
+   boost and intent routing that steers gap/trend/answering questions
+   toward the analytics pages. Citations to videos are rendered as
+   clickable YouTube links; comment citations deep-link to the thread.
 
-   Local-dev wiring: this version calls the Gemini API directly from
-   the browser using a localhost-only dev key (set via
-   `localStorage.setItem('GEMINI_DEV_KEY', '...')`). The plan's Phase 3
-   Cloudflare Worker proxy is deferred; swapping to the proxy at deploy
-   time is a two-URL change in this file. */
+   Production routes through the Cloudflare Worker proxy; on localhost a
+   dev key from `localStorage.setItem('GEMINI_DEV_KEY', '...')` calls the
+   Gemini API directly. */
 
 window.AppChat = (function() {
   const { useState, useEffect, useMemo, useRef } = React;

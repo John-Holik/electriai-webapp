@@ -180,18 +180,71 @@ window.AppChat = (function() {
   };
 
   // ─── Retrieval ──────────────────────────────────────────
-  // Returns the top-K (chunkKey, score, chunk) triples for a query vector.
-  const retrieveTopChunks = (queryVector, embeddings, chunks, k) => {
+  // Intent routing: questions about gaps, trends, or answering behavior get
+  // their matching analytics page boosted so the retriever reliably surfaces
+  // the corpus-level statistics pages, not just topically similar families.
+  const INTENT_ROUTES = [
+    { re: /\b(gap|gaps|unanswered|ignored|no answers?|never answered|least answered|bottleneck|underserved|missing knowledge|opportunit)/i,
+      slugs: ['knowledge-gaps'] },
+    { re: /\b(trend|trends|over time|over the years|changed?|changing|evolv|history|historical|by year|per year|rising|growing|declin|fading|recent years)/i,
+      slugs: ['trends-over-time'] },
+    { re: /\b(how (do|are|does|often).*(answer|answered|solutions?|replie[sd]|respond)|answer types?|answer mechanisms?|solutions? (are )?(provided|delivered|given)|who answers|referral|kinds? of (answers?|replies))/i,
+      slugs: ['how-solutions-are-provided'] },
+    { re: /\b(how many|corpus|dataset|data set|whole|overall|what (is|can) (this|the) (knowledge base|chatbot|assistant)|taxonomy)\b/i,
+      slugs: ['overview'] },
+  ];
+  const INTENT_BOOST = 0.08;
+
+  // Keyword overlap boost: cheap lexical signal layered on top of cosine so
+  // exact term matches (family labels, code article words) win ties.
+  const STOPWORDS = new Set(['the', 'and', 'for', 'are', 'was', 'what', 'when', 'where', 'which', 'with',
+    'that', 'this', 'have', 'has', 'how', 'why', 'can', 'you', 'about', 'does', 'not', 'get', 'question',
+    'questions', 'answer', 'answers', 'electrical', 'construction']);
+  const queryTerms = (q) =>
+    q.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 2 && !STOPWORDS.has(t));
+
+  const keywordBoost = (terms, chunk) => {
+    if (!terms.length) return 0;
+    const title = chunk.title.toLowerCase();
+    const text = chunk.chunkText.toLowerCase();
+    let boost = 0;
+    for (const t of terms) {
+      if (title.includes(t)) boost += 0.02;
+      else if (text.includes(t)) boost += 0.005;
+    }
+    return Math.min(boost, 0.08);
+  };
+
+  // Returns the top-K (chunkKey, score, chunk) triples for a query. Score is
+  // cosine similarity plus the keyword and intent boosts; at most
+  // PER_PAGE_CAP chunks per page keep the passage set diverse.
+  const retrieveTopChunks = (queryText, queryVector, embeddings, chunks, k) => {
+    const terms = queryTerms(queryText);
+    const intentSlugs = new Set();
+    for (const route of INTENT_ROUTES) {
+      if (route.re.test(queryText)) route.slugs.forEach((s) => intentSlugs.add(s));
+    }
     const scored = [];
     for (const key in embeddings) {
       const vec = embeddings[key];
       if (!vec || vec.length !== queryVector.length) continue;
       const chunk = chunks[key];
       if (!chunk) continue;
-      scored.push({ key, score: cosineSimilarity(queryVector, vec), chunk });
+      let score = cosineSimilarity(queryVector, vec) + keywordBoost(terms, chunk);
+      if (intentSlugs.has(chunk.slug)) score += INTENT_BOOST;
+      scored.push({ key, score, chunk });
     }
     scored.sort((a, b) => b.score - a.score);
-    return scored.slice(0, k);
+    const picked = [];
+    const perPage = new Map();
+    for (const s of scored) {
+      const used = perPage.get(s.chunk.slug) || 0;
+      if (used >= PER_PAGE_CAP) continue;
+      perPage.set(s.chunk.slug, used + 1);
+      picked.push(s);
+      if (picked.length >= k) break;
+    }
+    return picked;
   };
 
   // ─── Prompt assembly ───────────────────────────────────

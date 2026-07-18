@@ -504,22 +504,15 @@ window.AppRawData = (function() {
       return map;
     }, [videos]);
 
-    // Dataset-wide totals for the stat strip.
-    const dataset = useMemo(() => {
-      let likes = 0, threads = 0, first = null, last = null;
+    // Earliest/latest comment date across the dataset, for the active-span card.
+    const activeSpan = useMemo(() => {
+      let first = null, last = null;
       for (const s of statsByVideo.values()) {
-        likes += s.likes;
-        threads += s.threads;
         if (s.first && (!first || s.first < first)) first = s.first;
         if (s.last && (!last || s.last > last)) last = s.last;
       }
-      const totalVideos = videos.length;
-      const totalComments = meta ? meta.totalComments : 0;
-      return {
-        likes, threads, first, last, totalVideos, totalComments,
-        avg: totalVideos ? Math.round(totalComments / totalVideos) : 0,
-      };
-    }, [statsByVideo, videos, meta]);
+      return { first, last };
+    }, [statsByVideo]);
 
     // Consume a cross-tab nav intent (e.g. the chat tab asked us to open
     // a specific video and scroll to a specific cited comment). Waits

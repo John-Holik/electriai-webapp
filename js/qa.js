@@ -300,11 +300,11 @@ window.AppQA = (function() {
           <div className="space-y-1.5 pt-0.5">
             <div className="flex h-1.5 rounded-full overflow-hidden bg-slate-100">
               <Seg value={outcome.answered} total={outcome.total} color={TIER.answered.color}
-                   title={`Answered: ${formatNumber(outcome.answered)}`} />
+                   title={`Answered: ${formatNumber(outcome.answered)}`} noLabel />
               <Seg value={outcome.repliedUnanswered} total={outcome.total} color={TIER.repliedUnanswered.color}
-                   title={`Replied without answer: ${formatNumber(outcome.repliedUnanswered)}`} />
+                   title={`Replied without answer: ${formatNumber(outcome.repliedUnanswered)}`} noLabel />
               <Seg value={outcome.neverReplied} total={outcome.total} color={TIER.neverReplied.color}
-                   title={`Never replied: ${formatNumber(outcome.neverReplied)}`} darkText />
+                   title={`Never replied: ${formatNumber(outcome.neverReplied)}`} noLabel />
             </div>
             <div className="flex items-baseline justify-between text-[11px] text-slate-500">
               <span className="tabular-nums">{formatNumber(outcome.total)} questions · {share}% of corpus</span>

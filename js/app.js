@@ -58,6 +58,8 @@
     const [stats, setStats]         = useState(null);
     const [themeDict, setThemeDict] = useState(null);
     const [wikiPages, setWikiPages] = useState(null);
+    const [kbMeta, setKbMeta]       = useState(null);
+    const [taxonomyFigures, setTaxonomyFigures] = useState(null);
     const [bottleneck, setBottleneck] = useState(null);
 
     // Lazy-loaded datasets, only fetched once the Ask ElectriAI tab is opened.

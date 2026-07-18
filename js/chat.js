@@ -1035,7 +1035,7 @@ Rules for your response:
             eagerly-loaded datasets, so they render instantly with the tab. */}
         <section className="mt-10 space-y-6">
           <HowItWorksFigure />
-          <CoverageFigure wikiPages={state.wikiPages} stats={state.stats} />
+          <CoverageFigure wikiPages={state.wikiPages} meta={state.kbMeta} />
         </section>
 
         {openPage && <WikiPageModal page={openPage} onClose={() => setOpenPage(null)} />}

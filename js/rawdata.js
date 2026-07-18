@@ -599,15 +599,15 @@ window.AppRawData = (function() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6">
             <StatCard icon="video" label="Videos" accent="bg-sky-400"
-                      value={formatCompact(dataset.totalVideos)} title={`${formatNumber(dataset.totalVideos)} videos`} />
+                      value={formatCompact(meta.totalVideos)} title={`${formatNumber(meta.totalVideos)} videos`} />
+            <StatCard icon="eye" label="Views" accent="bg-violet-400"
+                      value={formatCompact(meta.totalViews)} title={`${formatNumber(meta.totalViews)} total views`} />
+            <StatCard icon="heart" label="Video likes" accent="bg-rose-400"
+                      value={formatCompact(meta.totalLikes)} title={`${formatNumber(meta.totalLikes)} total video likes`} />
             <StatCard icon="comment" label="Comments" accent="bg-slate-400"
-                      value={formatCompact(dataset.totalComments)} title={`${formatNumber(dataset.totalComments)} comments`} />
-            <StatCard icon="threads" label="Avg per video" accent="bg-violet-400"
-                      value={formatNumber(dataset.avg)} title={`${formatNumber(dataset.avg)} comments per video on average`} />
-            <StatCard icon="heart" label="Comment likes" accent="bg-rose-400"
-                      value={formatCompact(dataset.likes)} title={`${formatNumber(dataset.likes)} likes`} />
+                      value={formatCompact(meta.totalComments)} title={`${formatNumber(meta.totalComments)} comments`} />
             <StatCard icon="calendar" label="Active span" accent="bg-amber-400"
-                      value={yearRange(dataset.first, dataset.last)} title={formatDateRange(dataset.first, dataset.last)} />
+                      value={yearRange(activeSpan.first, activeSpan.last)} title={formatDateRange(activeSpan.first, activeSpan.last)} />
           </div>
         </section>
 

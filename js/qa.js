@@ -756,7 +756,7 @@ window.AppQA = (function() {
           {/* Answer-rate contrast */}
           {(contrast.mostAnswered || []).length > 0 && (
             <Card title="Which questions get answered, and which get ignored"
-                  subtitle="Patterns with at least 30 comments; answer rate measured among questions that received replies">
+                  subtitle="Question families with at least 30 member questions; answer rate measured among questions that received replies">
               <div className="grid md:grid-cols-3 gap-6 text-xs">
                 <div>
                   <h4 className="font-semibold text-emerald-700 mb-3 flex items-center gap-1.5">

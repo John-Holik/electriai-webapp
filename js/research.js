@@ -828,6 +828,8 @@ window.AppResearch = (function() {
 
   function ResearchTab({ state }) {
     const stats = state.stats || {};
+    const kbMeta = state.kbMeta || {};
+    const taxFigs = state.taxonomyFigures || {};
     const categories = state.categories || [];
 
     // Clicking a schema chip reveals sample comments from that category.

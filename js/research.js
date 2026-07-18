@@ -843,7 +843,7 @@ window.AppResearch = (function() {
       { label: 'Videos analyzed',      value: stats.totalVideos,   format: formatNumber,  hint: `${formatNumber(stats.videosWithQa)} with Q&A comments` },
       { label: 'Comments processed',   value: stats.totalComments, format: formatNumber },
       { label: 'Unique themes',        value: stats.uniqueThemes,  format: formatNumber },
-      { label: 'Knowledge-base pages', value: stats.kbPages,       format: formatNumber,  hint: `${formatNumber(stats.kbThemePages)} themes + ${formatNumber(stats.kbConceptPages)} concepts` },
+      { label: 'Questions classified', value: kbMeta.questions,    format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} question families` },
       { label: 'Total video views',    value: stats.totalViews,    format: formatCompact },
     ];
 

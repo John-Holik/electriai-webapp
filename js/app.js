@@ -125,18 +125,21 @@
         fetchJSON('./data/categories.json'),
         fetchJSON('./data/summary_stats.json'),
         fetchJSON('./data/theme_dictionary.json'),
-        fetchJSON('./data/wiki_pages.json'),
+        fetchJSON('./data/kb_pages.json'),
         fetchJSON('./data/knowledge_bottleneck.json'),
+        fetchJSON('./data/taxonomy_figures.json'),
       ])
-        .then(([commentsDoc, categoriesDoc, statsDoc, themeDoc, wikiDoc, bottleneckDoc]) => {
+        .then(([commentsDoc, categoriesDoc, statsDoc, themeDoc, kbDoc, bottleneckDoc, taxFigDoc]) => {
           // The export pipeline wraps lists in { meta, records | pages },
           // so unwrap to the array shape every tab expects.
           setComments(commentsDoc.records || commentsDoc);
           setCategories(categoriesDoc);
           setStats(statsDoc);
           setThemeDict(themeDoc.themes || themeDoc);
-          setWikiPages(wikiDoc.pages || wikiDoc);
+          setWikiPages(kbDoc.pages || kbDoc);
+          setKbMeta(kbDoc.meta || null);
           setBottleneck(bottleneckDoc);
+          setTaxonomyFigures(taxFigDoc);
           setLoading(false);
         })
         .catch(err => {

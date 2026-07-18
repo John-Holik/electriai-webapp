@@ -17,6 +17,7 @@
   const { RawDataTab } = window.AppRawData;
   const { ChatTab } = window.AppChat;
   const { AboutTab } = window.AppAbout;
+  const { QATab } = window.AppQA;
 
   // Localhost-only Gemini dev key. In production this stays empty and
   // the Ask ElectriAI tab will route through the Cloudflare Worker instead.
@@ -32,6 +33,7 @@
 
   const TABS = [
     { id: 'research', label: 'Findings' },
+    { id: 'qa',       label: 'Questions & Answers' },
     { id: 'chat',     label: 'Ask the Knowledge Base' },
     { id: 'rawdata',  label: 'Videos & Comments' },
     { id: 'comments', label: 'Validation Set' },
@@ -63,6 +65,12 @@
     // Lazy-loaded raw video dataset, only fetched once the Raw Data tab is opened.
     const [rawVideos, setRawVideos]           = useState(null);
     const [rawVideosLoading, setRawVideosLoading] = useState(false);
+
+    // Lazy-loaded question dictionary datasets, only fetched once the
+    // Questions & Answers tab is opened.
+    const [qaTaxonomy, setQaTaxonomy] = useState(null);
+    const [qaRecords, setQaRecords]   = useState(null);
+    const [qaLoading, setQaLoading]   = useState(false);
 
     const [loading, setLoading] = useState(true);
     const [error, setError]     = useState(null);
@@ -170,6 +178,26 @@
         });
     }, [tab, rawVideos, rawVideosLoading]);
 
+    // Lazy question-dictionary load: trigger the first time the QA tab is shown.
+    useEffect(() => {
+      if (tab !== 'qa') return;
+      if (qaTaxonomy || qaLoading) return;
+      setQaLoading(true);
+      Promise.all([
+        fetchJSON('./data/qa_taxonomy.json'),
+        fetchJSON('./data/qa_records.json'),
+      ])
+        .then(([taxonomyDoc, recordsDoc]) => {
+          setQaTaxonomy(taxonomyDoc);
+          setQaRecords(recordsDoc);
+          setQaLoading(false);
+        })
+        .catch(err => {
+          setError(err.message);
+          setQaLoading(false);
+        });
+    }, [tab, qaTaxonomy, qaLoading]);
+
     // Single state bag passed down to every tab so they share a stable shape.
     const state = useMemo(() => ({
       comments,
@@ -181,9 +209,11 @@
       wikiChunks,
       bottleneck,
       rawVideos,
+      qaTaxonomy,
+      qaRecords,
       geminiDevKey: GEMINI_DEV_KEY,
       geminiWorkerBase: GEMINI_WORKER_BASE,
-    }), [comments, categories, stats, themeDict, wikiPages, wikiEmbeddings, wikiChunks, bottleneck, rawVideos]);
+    }), [comments, categories, stats, themeDict, wikiPages, wikiEmbeddings, wikiChunks, bottleneck, rawVideos, qaTaxonomy, qaRecords]);
 
     if (loading) {
       return (
@@ -243,6 +273,7 @@
 
         <main className="max-w-6xl mx-auto px-4 sm:px-6">
           {tab === 'research' && <ResearchTab state={state} />}
+          {tab === 'qa' && <QATab state={state} loading={qaLoading} />}
           {tab === 'rawdata' && (
             <RawDataTab
               state={state}

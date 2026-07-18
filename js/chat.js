@@ -557,8 +557,8 @@ Rules for your response:
     const steps = [
       { n: 1, title: 'Your question', detail: 'Asked in plain English',                        ring: 'linear-gradient(135deg,#334155,#0f172a)' },
       { n: 2, title: 'Embed',         detail: 'Gemini maps it to a 768-dimension vector',       ring: 'linear-gradient(135deg,#38bdf8,#0369a1)' },
-      { n: 3, title: 'Retrieve',      detail: 'Cosine similarity ranks the wiki; top 6 win',    ring: 'linear-gradient(135deg,#34d399,#047857)' },
-      { n: 4, title: 'Generate',      detail: 'Gemini 2.5 Flash answers from those passages only', ring: 'linear-gradient(135deg,#a78bfa,#6d28d9)' },
+      { n: 3, title: 'Retrieve',      detail: 'Cosine similarity plus keyword and intent boosts rank the knowledge base; top 8 win', ring: 'linear-gradient(135deg,#34d399,#047857)' },
+      { n: 4, title: 'Generate',      detail: 'Gemini 3.5 Flash answers from those passages only', ring: 'linear-gradient(135deg,#a78bfa,#6d28d9)' },
       { n: 5, title: 'Cited answer',  detail: 'Every claim keeps its ▶ video / comment source', ring: 'linear-gradient(135deg,#fbbf24,#d97706)' },
     ];
     return (

@@ -82,21 +82,25 @@ window.AppChat = (function() {
     const url = workerBase
       ? `${workerBase}/api/generate`
       : `${GEMINI_GENERATE_URL}?alt=sse&key=${encodeURIComponent(apiKey)}`;
-    const res = await fetch(url, {
+    // Gemini 3.5 request shape: sampling parameters are gone and thinking is
+    // controlled by thinkingLevel. The legacy shape (temperature +
+    // thinkingBudget) is kept as a fallback so the chat still works if the
+    // Worker proxy has not been redeployed and still routes to 2.5 flash,
+    // which rejects the 3.5 fields with a 400.
+    const makeBody = (legacy) => JSON.stringify({
+      systemInstruction: { parts: [{ text: systemText }] },
+      contents: [{ role: 'user', parts: [{ text: userText }] }],
+      generationConfig: legacy
+        ? { temperature: 0.2, maxOutputTokens: 2048, thinkingConfig: { thinkingBudget: 0 } }
+        : { maxOutputTokens: 4096, thinkingConfig: { thinkingLevel: 'low' } },
+    });
+    const post = (body) => fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemText }] },
-        contents: [{ role: 'user', parts: [{ text: userText }] }],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 2048,
-          // 2.5 flash enables hidden "thinking" by default which eats the
-          // token budget before any visible text streams out. Force it off.
-          thinkingConfig: { thinkingBudget: 0 },
-        },
-      }),
+      body,
     });
+    let res = await post(makeBody(false));
+    if (res.status === 400) res = await post(makeBody(true));
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(`generate (${res.status}): ${errText.slice(0, 240)}`);

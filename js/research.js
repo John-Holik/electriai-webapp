@@ -1038,22 +1038,23 @@ window.AppResearch = (function() {
           )}
         </section>
 
-        {/* Section divider into the paper figures. The intro and the first figure are
-            grouped so the paragraph sits directly above the chart with no large gap. */}
+        {/* Section divider into the foundation figures. The intro and the first
+            figure are grouped so the paragraph sits directly above the chart. */}
         <div className="space-y-4">
           <section>
             <h3 className="serif text-xl font-semibold text-slate-900 mb-2">Figures from the paper</h3>
             <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
-              The first chart is an interactive Plotly visualization (hover or click any
-              bubble to inspect a theme); the second is an interactive 3D knowledge-demand
-              terrain you can drag and zoom.
+              Figures 4 through 10 come from this foundation stage. Figure 4 is an interactive
+              Plotly visualization (hover or click any bubble to inspect a subject category);
+              Figure 5 is an interactive 3D knowledge-demand terrain you can drag and zoom.
             </p>
           </section>
 
           <FigureCard
-            number={1}
+            number={4}
             title="Knowledge bottleneck across the 10-class schema"
-            caption="Each bubble represents a topic theme. Horizontal position encodes the share of comments that asked questions on that theme; vertical position encodes the share of comments that received useful answers. Bubble area scales with the total number of comments. Themes far below the diagonal are knowledge bottlenecks: high demand, low answer rate."
+            caption="Each bubble is one of the ten subject categories. Horizontal position is the total number of questions asked in that category; vertical position is its resolution rate: the share of all its questions, including the majority that never received a reply, that ended with a substantive answer. Bubble area scales with the category's total comments, and color with the average view count of its videos. Dashed lines mark the mean resolution rate (26.5 percent) and the median question count, splitting the plot into four quadrants; quadrant IV (high volume, low resolution) is the knowledge bottleneck. Resolution rates here look low because the denominator is every question asked; Figure 2 separates the two stages, showing that most of the gap is questions that never get a reply at all, while replied questions are answered 71.2 percent of the time."
+            dataSource="web_app/data/knowledge_bottleneck.json"
           >
             <BottleneckChart bottleneck={state.bottleneck} comments={state.comments} />
           </FigureCard>

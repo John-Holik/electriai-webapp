@@ -1281,46 +1281,6 @@ window.AppResearch = (function() {
           />
         </FigureCard>
 
-        {/* Question taxonomy section: what gets asked, how the mix shifted,
-            and how questions get resolved. Data: taxonomy_figures.json. */}
-        <div className="space-y-4">
-          <section>
-            <h3 className="serif text-xl font-semibold text-slate-900 mb-2">The question taxonomy</h3>
-            <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
-              Every extracted practitioner question ({kbMeta.questions ? formatNumber(kbMeta.questions) : '14,980'} in
-              total) was classified into an eleven-type question taxonomy and consolidated
-              into {kbMeta.questionFamilies || 263} recurring question families; the replies each question received
-              carry a ten-type answer taxonomy. The three figures below summarize what practitioners ask, how the
-              mix has shifted over the years, and how (or whether) their questions get resolved. Labels come from a
-              single-model pilot (GPT-5.6 Luna, taxonomy v0) and are provisional.
-            </p>
-          </section>
-
-          <FigureCard
-            number={8}
-            title="Question type mix by year"
-            caption="Stacked question volume per year, split by primary question type. Dates are the publication dates of the question comments; the scrape cutoff is October 2025, so 2025 is a partial year. Hover any year for each type's count and its share of that year's questions. Resource identification and sourcing, conceptual, and permissibility questions dominate throughout, while the overall volume tracks the corpus comment surge into 2023."
-          >
-            <TaxonomyTrendChart data={taxFigs.typeYear} />
-          </FigureCard>
-        </div>
-
-        <FigureCard
-          number={9}
-          title="Knowledge gaps across question families"
-          caption="One bubble per question family with at least 20 member questions. Horizontal position is the share of replied questions that actually got answered; vertical position is the share of the family's questions that never received any reply; bubble area scales with the number of member questions, and color marks the question type. Dotted lines mark the corpus averages, so families in the upper-left region are the knowledge bottleneck: heavily ignored and, even when engaged, poorly resolved. Hover any bubble for the family's counts."
-        >
-          <GapQuadrantChart data={taxFigs.quadrant} meta={taxFigs.meta} />
-        </FigureCard>
-
-        <FigureCard
-          number={10}
-          title="How questions get resolved, from question type to answer mechanism"
-          caption="Flow from each substantive question type (left) to what its questions received (right): one of the ten answer mechanisms of the answer taxonomy, a reply without a classified type, or no reply at all. Flow width is the number of questions; where a question drew several answer mechanisms, the primary (first-listed) one is counted. Blue mechanisms resolve questions (prescription, explanation, experience, code citation, correction); gray ones engage without resolving (counter-question, referral, meta-response, speculation, social)."
-        >
-          <QAFlowChart data={taxFigs.flow} />
-        </FigureCard>
-
         {/* Table 1, per-category classification metrics on consensus subset. */}
         <figure className="bg-white border border-slate-200 rounded-lg overflow-hidden mt-8">
           <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-2">

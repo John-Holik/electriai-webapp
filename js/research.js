@@ -1267,10 +1267,10 @@ window.AppResearch = (function() {
                     <div>
                       <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
                       <a
-                        href="#fig-6"
+                        href="#fig-9"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 6, transcript topics treemap ↑
+                        See Figure 9, transcript topics treemap ↑
                       </a>
                     </div>
                   );

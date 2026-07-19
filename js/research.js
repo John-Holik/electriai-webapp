@@ -740,6 +740,26 @@ window.AppResearch = (function() {
       }));
       const vline = meta ? meta.corpusAnswerRate : 70;
       const hline = meta ? meta.corpusNeverShare : 60;
+      // Leader-line callouts for the three extreme families, located by their
+      // exact label strings in the loaded data so text and position stay in
+      // sync with the figure data.
+      const calloutFor = (label, text, ax, ay) => {
+        const f = data.find((d) => d.label === label);
+        if (!f) return null;
+        return {
+          x: f.answerRate, y: f.neverShare, text: text(f),
+          showarrow: true, arrowwidth: 1, arrowcolor: '#64748b', ax, ay,
+          font: { size: 10, color: '#334155' },
+        };
+      };
+      const callouts = [
+        calloutFor('Tools Workmanship and Techniques',
+          (f) => `${f.label}: ${f.neverShare}% never replied`, -10, -30),
+        calloutFor('Industrial Controls And Automation',
+          (f) => `${f.label}: ${f.answerRate}% answered when replied`, 30, -36),
+        calloutFor('Batteries Solar and Inverters',
+          (f) => `${f.label}: ${f.answerRate}% answered when replied`, -60, 34),
+      ].filter(Boolean);
       Plotly.newPlot(el, traces, {
         margin: { l: 56, r: 8, t: 8, b: 44 },
         font: { family: 'Inter, system-ui, sans-serif', size: 11, color: '#334155' },

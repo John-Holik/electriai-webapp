@@ -44,7 +44,9 @@ window.AppComponents = window.AppComponents || {};
   // `hint` is optional small supporting text under the label.
   // Headline statistic tile. When `value` is a number, it counts up from
   // zero the first time the card scrolls into view; `format` renders each
-  // frame. The card also lifts on hover. A non-numeric `value` renders as-is.
+  // frame. At rest the card shows the final value, so a tile that has not
+  // (or never) intersected still reads the real number instead of 0.
+  // The card also lifts on hover. A non-numeric `value` renders as-is.
   const StatCard = ({ label, value, hint, format }) => {
     const fmt = format || ((n) => Math.round(n).toLocaleString('en-US'));
     const target = Number(value);

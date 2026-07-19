@@ -1288,7 +1288,7 @@ window.AppResearch = (function() {
               Table 1
             </div>
             <h4 className="serif text-lg font-semibold text-slate-900">
-              Per-category LLM classification metrics on consensus comments
+              Per-category GPT-5-mini subject-classification metrics on consensus comments
             </h4>
             <p className="text-sm text-slate-700 leading-relaxed serif">
               Per-category precision, recall, and F1 scores for LLM classification evaluated on consensus comments only (N = 67 comments where a student majority label was established independently of the LLM).

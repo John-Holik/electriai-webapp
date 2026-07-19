@@ -22,10 +22,13 @@ window.AppAbout = (function() {
           <h3 className="serif text-xl font-semibold text-slate-900 mb-3">What we built</h3>
           <div className="text-slate-700 leading-relaxed text-base space-y-4">
             <p>
-              This project mines practitioner discussion on YouTube to map the practical questions electrical contractors and apprentices ask every day. Transcripts and viewer question-and-answer comments are classified into a ten-category schema covering the major areas of the electrical trade. GPT-5-mini performs a first-pass classification, and trained human annotators validate a balanced subset through Qualtrics surveys, which measures where the model agrees with practitioners and where it does not.
+              This project mines practitioner discussion on YouTube to map the practical questions electrical contractors and apprentices ask every day, and it does so in two stages. In the first stage, GPT-5-mini classified 16,862 viewer comment threads from 794 collected YouTube videos into question and answer structure and a ten-category subject schema covering the major areas of the electrical trade; trained human annotators then validated a balanced subset through Qualtrics surveys, which measures where the model agrees with practitioners and where it does not.
             </p>
             <p>
-              The companion assistant, available under the Ask the Knowledge Base tab, is grounded in a hand-curated knowledge base distilled from the underlying dataset. It is not a general-purpose language model wrapped around the open web; every answer cites the knowledge-base page, source video, or viewer comment from which it is drawn.
+              In the second stage, GPT-5.6 Luna (medium reasoning effort) re-read all 14,980 detected questions and classified them into a literature-grounded taxonomy of ten substantive question types (a residual class, Q11 social or rhetorical, is excluded from the gap analysis) and ten answer mechanisms (A1 to A10), plus a small untyped bucket for replied rows with no classified mechanism. A consolidation pass then grouped the questions into 263 recurring question families and the answers into 204 answer families. The headline finding is that 60.2 percent of substantive questions never receive a reply, while 71.2 percent of replied questions get a substantive answer, so knowledge bottlenecks are read off per question type and family.
+            </p>
+            <p>
+              The companion assistant, available under the Ask the Knowledge Base tab, is grounded in a 288-page knowledge base compiled automatically from the question taxonomy and served through retrieval-augmented generation (Gemini embeddings with in-browser cosine retrieval). It is not a general-purpose language model wrapped around the open web; every answer cites the knowledge-base page, source video, or viewer comment from which it is drawn.
             </p>
           </div>
         </section>

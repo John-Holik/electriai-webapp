@@ -1061,9 +1061,10 @@ window.AppResearch = (function() {
         </div>
 
         <FigureCard
-          number={2}
+          number={5}
           title="Knowledge-demand terrain across the theme map"
-          caption="A three-dimensional landscape built over the same theme co-occurrence map as Figure 3. Each theme raises a peak whose height scales with how often electricians ask about it, and the surface is colored by how often those questions actually get answered: warm terrain marks the knowledge bottleneck (high demand, few answers) while cool terrain marks well-covered themes. The tall, isolated warm peak is battery storage: heavily asked, rarely answered, and semantically distant from everything else. Drag to orbit, scroll to zoom, and hover any summit for its theme, question volume, and answer rate."
+          caption="A three-dimensional landscape built over the same theme co-occurrence map as Figure 6. Each theme raises a peak whose height scales with how often electricians ask about it, and the surface is colored by how often those questions actually get answered: warm terrain marks the knowledge bottleneck (high demand, few answers) while cool terrain marks well-covered themes. The tallest warm peaks are conductor terminations and splicing and jobsite workflow, tools, and best practices: heavily asked but answered several points below the 26 percent corpus average. Drag to orbit, scroll to zoom, and hover any summit for its theme, question volume, and answer rate; the question volume shown is a relevance-weighted score, not a count of questions."
+          dataSource="web_app/figures/theme_terrain_3d_interactive.html"
         >
           <iframe
             src="figures/theme_terrain_3d_interactive.html"

@@ -260,14 +260,15 @@ window.AppQA = (function() {
         </div>
         <div className="grid md:grid-cols-2 gap-3 text-xs leading-relaxed">
           <div className="border-l-4 rounded-r-md bg-rose-50/60 border-rose-400 px-4 py-3 text-slate-700">
-            <span className="font-semibold text-rose-700">The bottleneck is attention, not expertise. </span>
-            {pctNever}% of substantive questions die silently: no reply of any kind. That is the
-            single largest loss of knowledge transfer in the corpus.
+            <span className="font-semibold text-rose-700">Silence is the dominant failure mode. </span>
+            {pctNever}% of substantive questions never receive a single reply of any kind. That is
+            the largest observed loss of knowledge transfer in the corpus.
           </div>
           <div className="border-l-4 rounded-r-md bg-emerald-50/60 border-emerald-400 px-4 py-3 text-slate-700">
-            <span className="font-semibold text-emerald-700">When someone engages, answers follow. </span>
+            <span className="font-semibold text-emerald-700">When someone engages, answers usually follow. </span>
             Among questions that got any reply at all, {s.answerRateReplied}% received a genuine
-            answer. The expertise exists in the community; it simply never reaches most askers.
+            answer. The observed gap sits in questions that never draw a response, not in replies
+            that fail to answer.
           </div>
         </div>
       </div>

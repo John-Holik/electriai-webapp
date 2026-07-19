@@ -557,15 +557,21 @@ window.AppQA = (function() {
       scrollTo(dictRef);
     };
 
-    // Convert the column-array record rows into objects once.
+    // Convert the column-array record rows into objects once, then keep only the
+    // eligible (substantive) population the rest of the tab reports on: primary
+    // type is not Q11 and the canonical restatement is non-blank. This is the
+    // same 12,933-row predicate behind the funnel; the excluded Q11 rows stay in
+    // the downloadable database.
     const records = useMemo(() => {
       if (!recordsDoc) return null;
       const cols = recordsDoc.columns;
-      return recordsDoc.rows.map((row) => {
-        const r = {};
-        cols.forEach((c, i) => { r[c] = row[i]; });
-        return r;
-      });
+      return recordsDoc.rows
+        .map((row) => {
+          const r = {};
+          cols.forEach((c, i) => { r[c] = row[i]; });
+          return r;
+        })
+        .filter((r) => r.primaryType !== 'Q11' && String(r.canonical || '').trim() !== '');
     }, [recordsDoc]);
 
     // Counts for the record status filter chips.

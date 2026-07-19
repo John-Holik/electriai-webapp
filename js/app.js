@@ -309,7 +309,7 @@
         <footer className="border-t border-slate-200 mt-12 py-6">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 text-xs text-slate-500 flex flex-col gap-2">
             <span>Companion site for the study "Identifying Knowledge Bottlenecks in Electrical Construction from Practitioner Discussion on YouTube Using Large Language Models"</span>
-            <span>Manuscript under review · React and Tailwind single-page application served over a global CDN with a serverless API gateway · Data generated May 2026</span>
+            <span>Manuscript in preparation · React and Tailwind single-page application served over a global CDN with a serverless API gateway · Data generated July 2026</span>
           </div>
         </footer>
 

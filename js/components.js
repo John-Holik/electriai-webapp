@@ -89,7 +89,7 @@ window.AppComponents = window.AppComponents || {};
         className="bg-white border border-slate-200 rounded-lg p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300"
       >
         <div ref={numRef} className="serif text-3xl sm:text-4xl font-semibold text-slate-900 tabular-nums leading-none">
-          {animatable ? fmt(0) : value}
+          {animatable ? fmt(target) : value}
         </div>
         <div className="text-[11px] uppercase tracking-wider text-slate-500 mt-2 font-medium">
           {label}

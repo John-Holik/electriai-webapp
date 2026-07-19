@@ -364,7 +364,7 @@ window.AppRawData = (function() {
       { value: formatNumber(video.commentCount), label: 'comments' },
       { value: formatNumber(stats.threads), label: 'threads' },
       { value: formatNumber(stats.replies), label: 'replies' },
-      { value: formatDateRange(stats.first, stats.last) || '—', label: 'active' },
+      { value: formatDateRange(stats.first, stats.last) || 'n/a', label: 'active' },
     ];
 
     return (

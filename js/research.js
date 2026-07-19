@@ -1381,21 +1381,21 @@ window.AppResearch = (function() {
                   <td className="text-right py-2 px-3">0.816</td>
                   <td className="text-right py-2 px-3">0.848</td>
                   <td className="text-right py-2 px-3">0.797</td>
-                  <td className="text-right py-2 pl-3">67.000</td>
+                  <td className="text-right py-2 pl-3">67</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4 font-semibold">Weighted Avg</td>
                   <td className="text-right py-2 px-3">0.874</td>
                   <td className="text-right py-2 px-3">0.866</td>
                   <td className="text-right py-2 px-3">0.858</td>
-                  <td className="text-right py-2 pl-3">67.000</td>
+                  <td className="text-right py-2 pl-3">67</td>
                 </tr>
                 <tr>
                   <td className="py-2 pr-4 font-semibold">Accuracy</td>
                   <td className="text-right py-2 px-3 text-slate-400">&middot;</td>
                   <td className="text-right py-2 px-3 text-slate-400">&middot;</td>
                   <td className="text-right py-2 px-3">0.866</td>
-                  <td className="text-right py-2 pl-3">67.000</td>
+                  <td className="text-right py-2 pl-3">67</td>
                 </tr>
               </tbody>
             </table>

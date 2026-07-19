@@ -643,11 +643,13 @@ window.AppQA = (function() {
         {/* Provenance banner: these numbers come from the new analysis generation */}
         <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-900 leading-relaxed">
           <span className="font-semibold">Preliminary results. </span>
-          Questions and answers were extracted by an earlier analysis pass, classified into the
-          question and answer taxonomy by GPT-5.6 Luna (taxonomy {qa.meta.taxonomyVersion}), and
-          consolidated into patterns and families by a second GPT-5.6 Luna pass
-          (consolidation {qa.meta.consolidationVersion}). Single-model results; human validation is
-          in progress. Other tabs on this site still reflect the earlier analysis generation.
+          Questions and answers were extracted from the comment corpus by the GPT-5-mini
+          classification pass, classified into the question and answer taxonomy by GPT-5.6 Luna
+          (taxonomy {qa.meta.taxonomyVersion}), and consolidated into patterns and families by a
+          second GPT-5.6 Luna pass (consolidation {qa.meta.consolidationVersion}). Single-model
+          results; human validation is in progress. The foundation figures on the Findings tab and
+          the Videos &amp; Comments and Validation Set tabs cover the earlier GPT-5-mini analysis
+          generation.
           {partial && <span className="font-semibold"> The consolidation currently covers a subset of the data (pilot run).</span>}
         </div>
 

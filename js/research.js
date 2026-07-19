@@ -1360,7 +1360,7 @@ window.AppResearch = (function() {
                   <td className="text-right py-2 px-3">0.900</td>
                   <td className="text-right py-2 px-3">0.900</td>
                   <td className="text-right py-2 px-3">0.900</td>
-                  <td className="text-right py-2 pl-3">10.000</td>
+                  <td className="text-right py-2 pl-3">10</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Power Distribution and Service Infrastructure</td>

@@ -512,7 +512,7 @@ window.AppQA = (function() {
                 <span className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden inline-block">
                   <span className="block h-full rounded-full" style={{ width: Math.min(100, family.answerRate) + '%', backgroundColor: TIER.answered.color }} />
                 </span>
-                <span className="text-[10px] text-slate-400 tabular-nums">{family.answerRate}% answered</span>
+                <span className="text-[10px] text-slate-400 tabular-nums">{family.answerRate}% answered when replied</span>
               </span>
             )}
           </span>

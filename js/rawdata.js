@@ -592,9 +592,10 @@ window.AppRawData = (function() {
             Browse {formatNumber(meta.totalVideos)} videos &amp; {formatNumber(meta.totalComments)} comments
           </h2>
           <p className="text-slate-600 mt-3 max-w-2xl leading-relaxed">
-            Every YouTube video and comment that made it through the GPT
-            classification pipeline. Click a video to open its full thread and
-            transcript, then click any comment to expand the full text.
+            The 404 Q&amp;A videos with their 16,872 collected comment threads, of
+            which 16,862 were classified by the GPT-5-mini pipeline. Click a video
+            to open its full thread and transcript, then click any comment to
+            expand the full text.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6">

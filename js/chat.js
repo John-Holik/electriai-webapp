@@ -290,7 +290,8 @@ Rules for your response:
 6. Add the reminder to verify with a licensed electrician or the authority having jurisdiction only when the question concerns hands-on electrical work, not for statistics or methodology questions.
 7. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
 8. Be concise: 2 to 6 sentences for most questions, longer only if the user asks for a deep explanation or a ranked list.
-9. When asked how many types the taxonomy has, say ten substantive question types (an eleventh residual class is excluded from the analysis) and ten answer mechanisms plus an untyped bucket.`;
+9. When asked how many types the taxonomy has, say ten substantive question types (an eleventh residual class is excluded from the analysis) and ten answer mechanisms plus an untyped bucket.
+10. When asked about the methodology, the models, or how reliable the statistics are, state that the taxonomy labels come from a single-model pilot (GPT-5.6 Luna, taxonomy v0, consolidation v1) and are provisional pending human validation.`;
 
   const buildUserPrompt = (question, topChunks) => {
     const full = topChunks.slice(0, FULL_K);

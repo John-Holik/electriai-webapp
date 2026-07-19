@@ -673,9 +673,9 @@ window.AppQA = (function() {
         {/* Headline numbers */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <StatCard label="Questions extracted" value={s.extractedQuestions} />
-          <StatCard label="Never receive a reply" value={s.eligibleQuestions ? Math.round(100 * s.neverReplied / s.eligibleQuestions) : 0}
-                    format={(n) => n + '%'} hint={`${formatNumber(s.neverReplied)} of ${formatNumber(s.eligibleQuestions)} substantive questions`} />
-          <StatCard label="Answered when replied" value={s.answerRateReplied || 0} format={(n) => n + '%'}
+          <StatCard label="Never receive a reply" value={s.eligibleQuestions ? (100 * s.neverReplied / s.eligibleQuestions).toFixed(1) + '%' : '0%'}
+                    hint={`${formatNumber(s.neverReplied)} of ${formatNumber(s.eligibleQuestions)} substantive questions`} />
+          <StatCard label="Answered when replied" value={`${s.answerRateReplied || 0}%`}
                     hint={`${formatNumber(s.answered)} answered of ${formatNumber(s.replied)} replied`} />
           <StatCard label="Question patterns" value={s.questionPatterns} hint={`${formatNumber(s.questionFamilies)} families`} />
           <StatCard label="Answer patterns" value={s.answerPatterns} hint={`${formatNumber(s.answerFamilies)} families`} />

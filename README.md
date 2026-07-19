@@ -78,16 +78,18 @@ The frontend will call the Gemini API directly from the browser. The key never l
 
 ## Refreshing the data after notebook updates
 
-All JSON under `web_app/data/` is generated from the upstream notebook outputs. After re-running notebooks `01–05`, regenerate the webapp data:
+All JSON under `web_app/data/` is generated from the upstream notebook outputs. The question taxonomy comes from `notebooks/09_Question_Taxonomy_Extraction.ipynb` and `notebooks/10_Question_Consolidation.ipynb`. After re-running the notebooks, regenerate the webapp data:
 
 ```powershell
-python -m src.web.export_data
-python -m src.web.build_kb_wiki             # taxonomy knowledge base -> kb_pages.json
-python -m src.web.compute_kb_embeddings     # GEMINI_API_KEY in .env, or falls back to the Worker proxy
-python -m src.web.build_web_taxonomy_figures
+py -3 -m src.web.export_data                # old-pipeline exports
+py -3 -m src.web.build_web_taxonomy_figures
+py -3 -m src.web.export_qa_data
+py -3 -m src.web.build_web_raw_videos
+py -3 -m src.web.build_kb_wiki              # taxonomy knowledge base -> kb_pages.json
+py -3 -m src.web.compute_kb_embeddings      # needs the Gemini key or the Worker proxy
 ```
 
-`export_data` writes the legacy JSON in `web_app/data/` and copies figure assets into `web_app/figures/`. `build_kb_wiki` compiles the taxonomy knowledge base from `taxonomy/` and `Final_Analysis.csv`. `compute_kb_embeddings` computes one Gemini embedding per page chunk (H2 boundaries) and writes `kb_embeddings.json` + `kb_chunks.json`. `build_web_taxonomy_figures` exports the Findings tab taxonomy figures.
+`export_data` writes the legacy JSON in `web_app/data/` and copies figure assets into `web_app/figures/`. `build_web_taxonomy_figures` exports the Findings tab taxonomy figures. `export_qa_data` exports the Questions & Answers taxonomy summary and records. `build_web_raw_videos` exports the 404 Q&A videos and their comment threads. `build_kb_wiki` compiles the 288-page taxonomy knowledge base from `taxonomy/` and `Final_Analysis.csv`. `compute_kb_embeddings` computes one Gemini embedding per page chunk (H2 boundaries) and writes `kb_embeddings.json` + `kb_chunks.json`.
 
 Commit the resulting JSON. The site reads everything from static files at load time, so no rebuild is needed beyond a redeploy.
 

@@ -1374,7 +1374,7 @@ window.AppResearch = (function() {
                   <td className="text-right py-2 px-3">0.333</td>
                   <td className="text-right py-2 px-3">0.167</td>
                   <td className="text-right py-2 px-3">0.222</td>
-                  <td className="text-right py-2 pl-3">6.000</td>
+                  <td className="text-right py-2 pl-3">6</td>
                 </tr>
                 <tr className="border-t-2 border-slate-300">
                   <td className="py-2 pr-4 font-semibold">Macro Avg</td>

@@ -73,9 +73,9 @@ window.AppRawData = (function() {
     return a === b ? a : `${a}–${b}`;
   };
 
-  // Null-safe compact number: shows an em-dash placeholder when a video's
+  // Null-safe compact number: shows an 'n/a' placeholder when a video's
   // view/like count was hidden or unavailable at collection time.
-  const compact = (n) => (n == null ? '—' : formatCompact(n));
+  const compact = (n) => (n == null ? 'n/a' : formatCompact(n));
 
   // Small stroke-icon set (no icon library is loaded, so these are inline SVG).
   const IC = {

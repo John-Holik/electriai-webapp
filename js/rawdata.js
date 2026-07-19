@@ -1,5 +1,5 @@
 /* Videos & Comments tab. Browses the YouTube dataset restricted to videos and
-   comments that survived the GPT classification pipeline (i.e. those
+   comments that survived the GPT-5-mini classification pipeline (i.e. those
    present in Final_Analysis.csv, surfaced via data/raw_videos.json).
    Default view is a grid of video cards topped by a dataset stat strip;
    clicking a card drills into that video's full comment thread, and

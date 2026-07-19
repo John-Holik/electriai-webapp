@@ -480,7 +480,7 @@ window.AppRawData = (function() {
     { id: 'comments', label: 'Most comments' },
     { id: 'likes', label: 'Most likes' },
     { id: 'recent', label: 'Newest' },
-    { id: 'title', label: 'A–Z' },
+    { id: 'title', label: 'A to Z' },
   ];
 
   // Top-level Videos & Comments tab.

@@ -1,6 +1,6 @@
 /* About tab. Static prose: project description, authors, citation,
    code/data links, acknowledgments, contact. Several fields are currently
-   redacted while the paper is under peer review. */
+   redacted while the manuscript is in preparation. */
 
 window.AppAbout = (function() {
 

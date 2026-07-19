@@ -1254,10 +1254,10 @@ window.AppResearch = (function() {
                     <div>
                       <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
                       <a
-                        href="#fig-5"
+                        href="#fig-8"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 5, theme frequency across the dataset ↑
+                        See Figure 8, theme frequency across the dataset ↑
                       </a>
                     </div>
                   );

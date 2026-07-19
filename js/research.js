@@ -319,9 +319,8 @@ window.AppResearch = (function() {
           const wMax = Math.max(...linkW);
           const norm = (w) => (w - wMin) / (wMax - wMin + 1e-9);
 
-          // Lookups for link coloring and the click-to-inspect panel.
+          // Lookup for the click-to-inspect panel.
           const nodeById = new Map(data.nodes.map(n => [n.id, n]));
-          const colorById = new Map(data.nodes.map(n => [n.id, n.color]));
           const endId = (e) => (typeof e === 'object' && e !== null ? e.id : e);
           const neighbors = new Map();
           data.links.forEach(l => {

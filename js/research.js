@@ -638,12 +638,7 @@ window.AppResearch = (function() {
 
     return (
       <>
-        <div ref={containerRef} style={{ width: '100%', position: 'relative' }}>
-          {/* Fallback shown until the SVG fetch resolves; replaced on inject. */}
-          <noscript>
-            <img src={fallbackSvg} alt={fallbackAlt} style={{ width: '100%', display: 'block' }} />
-          </noscript>
-        </div>
+        <div ref={containerRef} style={{ width: '100%', position: 'relative' }} />
         {tooltip && (
           <div
             className="fixed pointer-events-none bg-slate-900 text-white text-xs rounded px-2 py-1 shadow-lg z-50"

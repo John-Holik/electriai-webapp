@@ -721,7 +721,7 @@ window.AppQA = (function() {
           <SectionHeader
             eyebrow="The reply side"
             title="How the crowd answers"
-            subtitle={`How the ${formatNumber(s.consolidatedAnswers)} answered questions got their answers: the primary mechanism of the best answering reply. The taxonomy also defines five engagement forms (A6 to A10) that respond to a question without resolving it; their rarity here shows that when a question does get answered, the answer is almost always substantive.`}
+            subtitle={`How the ${formatNumber(s.consolidatedAnswers)} answered questions got their answers: the primary mechanism of the best answering reply. The taxonomy also defines five engagement forms (A6 to A10) that respond to a question without resolving it; their rarity here shows that when a question does get answered, the answer is almost always substantive. Each answered question is counted once, by its primary (first-listed) answer type; the totals sum to the ${formatNumber(s.consolidatedAnswers)} answered questions.`}
           />
           <div className="grid md:grid-cols-2 gap-4">
             <Card title="Resolution mechanisms" subtitle="Answer types A1 to A5: replies that substantively answer the question">

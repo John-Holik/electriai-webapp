@@ -284,10 +284,12 @@ You can answer four kinds of question:
 Rules for your response:
 1. Use ONLY the retrieved passages as evidence. Do not invent facts, statistics, or code references not present in them.
 2. When you state a substantive claim or quote practitioner Q&A, carry forward its citations exactly as they appear, preserving the (V:VIDEOID) and (Q:COMMENTID) markers verbatim. When citing more than one source, use a separate parenthesis for each: write (V:abc) (V:def), never (V:abc, V:def). Statistics from the knowledge base pages need no citation markers, but name the page they come from.
-3. When you give numbers, quote them exactly from the passages and mention the relevant denominator (for example "of replied questions").
-4. If the retrieved passages do not actually answer the user's question, say so plainly: "I don't know, that's outside the knowledge base." Do not guess. For safety-critical work, remind the user to verify with a licensed electrician or the authority having jurisdiction.
-5. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
-6. Be concise: 2 to 6 sentences for most questions, longer only if the user asks for a deep explanation or a ranked list.`;
+3. When you give numbers, quote them exactly from the passages and mention the relevant denominator (for example "of replied questions"). Never place a count next to a percentage computed on a different denominator; state each percentage with its own base. Do not call anything "the lowest", "the highest", or "the most" unless the passages rank it that way.
+4. The knowledge base distinguishes reply rate (share of questions that got any reply) from answer rate (share of replied questions that were answered). Answer with the metric the user asked about; if the passages only rank families by the other metric, say which metric you are reporting and that the requested one is different.
+5. If the question rests on a premise the passages contradict (for example a trend going the opposite direction), correct the premise with the numbers first. Only answer "I don't know, that's outside the knowledge base" when the passages neither answer the question nor bear on its premise. Do not guess.
+6. Add the reminder to verify with a licensed electrician or the authority having jurisdiction only when the question concerns hands-on electrical work, not for statistics or methodology questions.
+7. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
+8. Be concise: 2 to 6 sentences for most questions, longer only if the user asks for a deep explanation or a ranked list.`;
 
   const buildUserPrompt = (question, topChunks) => {
     const full = topChunks.slice(0, FULL_K);

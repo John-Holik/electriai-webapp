@@ -64,9 +64,9 @@ python -m http.server 8000
 
 Or use VS Code's Live Server extension, or `npx http-server`.
 
-Three tabs (Research Results, Raw Data, About) work with no extra setup. The Ask ElectriAI tab needs a Gemini key.
+All tabs except Ask the Knowledge Base work with no extra setup; the Ask the Knowledge Base tab needs a Gemini key or the deployed Worker proxy.
 
-### Gemini dev key for Ask ElectriAI
+### Gemini dev key for Ask the Knowledge Base
 
 Paste a Google AI Studio key into `localStorage` once, then reload:
 

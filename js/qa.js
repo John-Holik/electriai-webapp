@@ -403,11 +403,13 @@ window.AppQA = (function() {
           const meta = A_META[code] || {};
           const pct = Math.max(1, Math.round((100 * t.count) / max));
           const share = Math.round((1000 * t.count) / total) / 10;
+          // A0 is a web-export residual, not a codebook mechanism; spell that out.
+          const label = code === 'A0' ? 'Untyped (no classified mechanism; not a codebook type)' : t.name;
           return (
             <div key={code} className="space-y-1">
               <div className="flex items-baseline gap-2">
                 <CategoryBadge code={code} color={meta.color} />
-                <span className="text-xs font-medium text-slate-800">{t.name}</span>
+                <span className="text-xs font-medium text-slate-800">{label}</span>
                 <span className="ml-auto text-[11px] text-slate-500 tabular-nums flex-shrink-0">
                   {formatNumber(t.count)} · {share}%
                 </span>

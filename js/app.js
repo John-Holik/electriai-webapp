@@ -1,12 +1,14 @@
 /* ElectriAI Research companion webapp, root shell.
 
    Responsibilities:
-     - Load the five eager JSON datasets exported by src/web/export_data.py.
+     - Load the seven eager JSON datasets exported by the src/web builders
+       (export_data.py, export_qa_data.py, build_web_taxonomy_figures.py,
+       build_kb_wiki.py).
      - Lazy-load the wiki embeddings and chunks the first time the user
        opens the Ask ElectriAI tab (they are ~3 MB combined).
-     - Render the header + four-tab navigation and dispatch to the
-       per-tab root components registered on window.AppOverview /
-       AppFindings / AppComments / AppChat.
+     - Render the header + six-tab navigation and dispatch to the
+       per-tab root components registered on window.AppResearch /
+       AppQA / AppChat / AppRawData / AppComments / AppAbout.
      - Surface a single Gemini dev key from localStorage, but only when
        running on localhost so the key cannot leak in production. */
 

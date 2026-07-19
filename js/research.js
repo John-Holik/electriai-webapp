@@ -1179,9 +1179,10 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={7}
+          number={10}
           title="Data collection and comment analysis pipeline"
           caption="Three-panel summary of how the dataset was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment funnel from collected parent threads through filtering to the LLM-labeled question set. Panel C shows the question versus non-question breakdown of the labeled comment set. Hover any bar for its exact count; click for the stage definition."
+          dataSource="web_app/figures/data_collection_comment_analysis_interactive.svg with web_app/data/data_collection_comment_analysis_interactive.json"
         >
           <MplInlineChart
             svgUrl="figures/data_collection_comment_analysis_interactive.svg"

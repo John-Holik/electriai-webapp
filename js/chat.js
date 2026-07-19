@@ -867,10 +867,13 @@ Rules for your response:
         });
       } catch (e) {
         const msg = e.message || String(e);
-        // A 429 that survived the retry means the per-minute quota is
-        // exhausted; tell the user to wait rather than dumping raw JSON.
+        // A 429 that survived the retry is a quota problem; tell the user
+        // what kind rather than dumping raw JSON. PerDay in the quota id
+        // means the free-tier daily budget is spent and retrying is futile.
         setError(/\(429\)/.test(msg)
-          ? 'The AI service is briefly rate limited. Wait about a minute and ask again.'
+          ? (/PerDay/i.test(msg)
+              ? 'The AI service has reached its daily request limit. Please come back tomorrow.'
+              : 'The AI service is briefly rate limited. Wait about a minute and ask again.')
           : msg);
         setMessages((m) => {
           const next = m.slice();

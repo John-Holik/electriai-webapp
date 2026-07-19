@@ -68,7 +68,7 @@ window.AppRawData = (function() {
     return a === b ? a : `${a} to ${b}`;
   };
   const yearRange = (first, last) => {
-    if (!first) return '—';
+    if (!first) return 'n/a';
     const a = String(first).slice(0, 4), b = String(last).slice(0, 4);
     return a === b ? a : `${a}–${b}`;
   };

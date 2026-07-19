@@ -617,7 +617,6 @@ window.AppResearch = (function() {
         };
         const onClick = () => {
           setSelected(el.gid);
-          if (onElementClick) onElementClick(el);
         };
         node.addEventListener('mouseenter', onEnter);
         node.addEventListener('mousemove', onMove);

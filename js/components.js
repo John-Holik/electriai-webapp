@@ -1,6 +1,4 @@
-/* Reusable presentational primitives shared across tabs.
-   Borrowed and trimmed from the original paper-components.js scaffold;
-   only the ElectriAI-relevant pieces are kept. */
+/* Reusable presentational primitives shared across tabs. */
 
 window.AppComponents = window.AppComponents || {};
 

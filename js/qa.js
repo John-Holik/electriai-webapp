@@ -921,8 +921,8 @@ window.AppQA = (function() {
                     className="ml-auto text-xs border border-slate-200 rounded-md px-2 py-1.5 text-slate-700"
                   >
                     <option value="all">All question types</option>
-                    {Object.entries(qTypeNames).map(([code, name]) => (
-                      <option key={code} value={code}>{code} · {name}</option>
+                    {qa.questionTypes.map((t) => (
+                      <option key={t.code} value={t.code}>{t.code} · {t.name || qTypeNames[t.code]}</option>
                     ))}
                   </select>
                 </div>

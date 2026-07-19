@@ -1318,7 +1318,7 @@ window.AppResearch = (function() {
                   <td className="text-right py-2 px-3">0.250</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">0.400</td>
-                  <td className="text-right py-2 pl-3">1.000</td>
+                  <td className="text-right py-2 pl-3">1</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Grounding, Bonding, and Fault Management</td>
@@ -1339,7 +1339,7 @@ window.AppResearch = (function() {
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 pl-3">1.000</td>
+                  <td className="text-right py-2 pl-3">1</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Devices, Lighting, and Utilization Equipment</td>

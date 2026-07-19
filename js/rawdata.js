@@ -65,7 +65,7 @@ window.AppRawData = (function() {
   const formatDateRange = (first, last) => {
     if (!first) return '';
     const a = monthYear(first), b = monthYear(last);
-    return a === b ? a : `${a} – ${b}`;
+    return a === b ? a : `${a} to ${b}`;
   };
   const yearRange = (first, last) => {
     if (!first) return '—';

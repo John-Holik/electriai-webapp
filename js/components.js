@@ -72,8 +72,19 @@ window.AppComponents = window.AppComponents || {};
         num.textContent = fmt(Math.round(target * eased));
         if (p < 1) raf = requestAnimationFrame(step);
       };
+      // The first callback reports the state at mount: a card already on
+      // screen keeps its statically rendered value (animating it would flash
+      // the number back to zero). Only a card that enters the viewport later
+      // runs the count-up.
+      let sawFirstCallback = false;
       const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
+        const visible = entries[0].isIntersecting;
+        if (!sawFirstCallback) {
+          sawFirstCallback = true;
+          if (visible) observer.disconnect();
+          return;
+        }
+        if (visible) {
           raf = requestAnimationFrame(step);
           observer.disconnect();
         }

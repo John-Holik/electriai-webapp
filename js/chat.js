@@ -52,12 +52,23 @@ window.AppChat = (function() {
   };
 
   // ─── Gemini API calls ──────────────────────────────────
+  // Free-tier Gemini quotas are per-minute, so a burst of questions can
+  // return 429. Read the retryDelay Gemini suggests in the error body,
+  // wait it out (capped at 25 s), and retry the request once.
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const retryAfter429 = async (res) => {
+    const body = await res.text();
+    const m = body.match(/"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"/);
+    const ms = Math.min(m ? parseFloat(m[1]) * 1000 : 10000, 25000);
+    await sleep(ms);
+  };
+
   // Embeds the user query and returns the 768-d vector.
   const embedQuery = async (apiKey, text, workerBase) => {
     const url = workerBase
       ? `${workerBase}/api/embed`
       : `${GEMINI_EMBED_URL}?key=${encodeURIComponent(apiKey)}`;
-    const res = await fetch(url, {
+    const post = () => fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -66,6 +77,11 @@ window.AppChat = (function() {
         outputDimensionality: 768,
       }),
     });
+    let res = await post();
+    if (res.status === 429) {
+      await retryAfter429(res);
+      res = await post();
+    }
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(`embed (${res.status}): ${errText.slice(0, 240)}`);
@@ -101,9 +117,14 @@ window.AppChat = (function() {
     });
     let res = await post(makeBody(false));
     if (res.status === 400) res = await post(makeBody(true));
+    if (res.status === 429) {
+      await retryAfter429(res);
+      res = await post(makeBody(false));
+      if (res.status === 400) res = await post(makeBody(true));
+    }
     if (!res.ok) {
       const errText = await res.text();
-      throw new Error(`generate (${res.status}): ${errText.slice(0, 240)}`);
+      throw new Error(`generate (${res.status}): ${errText.slice(0, 800)}`);
     }
     const reader = res.body.getReader();
     const decoder = new TextDecoder('utf-8');
@@ -250,7 +271,7 @@ window.AppChat = (function() {
   // ─── Prompt assembly ───────────────────────────────────
   const SYSTEM_PROMPT = `You are a research assistant for ElectriAI, a project that mines YouTube comment threads on electrical construction videos to map what practitioners ask and how their questions get answered. You answer questions for working electricians, apprentices, contractors, and researchers.
 
-You will be given passages retrieved from the ElectriAI knowledge base. The knowledge base is compiled from 16,862 comment threads analyzed by GPT-5-mini and a question taxonomy of 14,980 classified practitioner questions (11 question types, 263 question families, 10 answer types, posted 2011 to 2025). Its pages carry real statistics (question counts, reply rates, answer rates, yearly activity) plus verbatim practitioner questions and the answers they received. Citations in the passages point to the underlying sources:
+You will be given passages retrieved from the ElectriAI knowledge base. The knowledge base is compiled from 16,862 comment threads analyzed by GPT-5-mini and a question taxonomy of 14,980 classified practitioner questions (ten substantive question types Q1 to Q10, plus a residual Q11 social or rhetorical class that is excluded from the ranked bottleneck figures; the 12,933 substantive questions consolidate into 263 question families; ten answer mechanisms A1 to A10 plus a small untyped bucket for replied rows with no classified mechanism; posted 2011 to 2025). The taxonomy labels are a single-model pilot (GPT-5.6 Luna at medium reasoning effort, taxonomy v0, consolidation v1) and are provisional pending human validation. Its pages carry real statistics (question counts, reply rates, answer rates, yearly activity) plus verbatim practitioner questions and the answers they received. Citations in the passages point to the underlying sources:
   - (V:VIDEOID), citation to a specific YouTube video (11-character ID)
   - (Q:COMMENTID), citation to a viewer Q&A comment thread
 
@@ -262,11 +283,15 @@ You can answer four kinds of question:
 
 Rules for your response:
 1. Use ONLY the retrieved passages as evidence. Do not invent facts, statistics, or code references not present in them.
-2. When you state a substantive claim or quote practitioner Q&A, carry forward its citations exactly as they appear, preserving the (V:VIDEOID) and (Q:COMMENTID) markers verbatim. When citing more than one source, use a separate parenthesis for each: write (V:abc) (V:def), never (V:abc, V:def). Statistics from the knowledge base pages need no citation markers, but name the page they come from.
-3. When you give numbers, quote them exactly from the passages and mention the relevant denominator (for example "of replied questions").
-4. If the retrieved passages do not actually answer the user's question, say so plainly: "I don't know, that's outside the knowledge base." Do not guess. For safety-critical work, remind the user to verify with a licensed electrician or the authority having jurisdiction.
-5. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
-6. Be concise: 2 to 6 sentences for most questions, longer only if the user asks for a deep explanation or a ranked list.`;
+2. When you state a substantive claim or quote practitioner Q&A, carry forward its citations exactly as they appear, preserving the (V:VIDEOID) and (Q:COMMENTID) markers verbatim. When citing more than one source, use a separate parenthesis for each: write (V:abc) (V:def), never (V:abc, V:def). Statistics from the knowledge base pages need no citation markers, but name the specific page each statistic comes from (for example "the Knowledge gaps page"), even when one answer draws on several pages.
+3. When you give numbers, quote them exactly from the passages and mention the relevant denominator (for example "of replied questions"). Never place a count next to a percentage computed on a different denominator; state each percentage with its own base. Do not call anything "the lowest", "the highest", or "the most" unless the passages rank it that way.
+4. The knowledge base distinguishes reply rate (share of questions that got any reply) from answer rate (share of replied questions that were answered). Answer with the metric the user asked about; if the passages only rank families by the other metric, say which metric you are reporting and that the requested one is different.
+5. If the question rests on a premise the passages contradict (for example a trend going the opposite direction), correct the premise with the numbers first. Only answer "I don't know, that's outside the knowledge base" when the passages neither answer the question nor bear on its premise. Do not guess.
+6. Add the reminder to verify with a licensed electrician or the authority having jurisdiction only when the question concerns hands-on electrical work, not for statistics or methodology questions.
+7. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
+8. Be concise: 2 to 6 sentences for most questions, longer only if the user asks for a deep explanation or a ranked list.
+9. When asked how many types the taxonomy has, say ten substantive question types (an eleventh residual class is excluded from the analysis) and ten answer mechanisms plus an untyped bucket.
+10. When asked about the methodology, the models, or how reliable the statistics are, state that the taxonomy labels come from a single-model pilot (GPT-5.6 Luna, taxonomy v0, consolidation v1) and are provisional pending human validation.`;
 
   const buildUserPrompt = (question, topChunks) => {
     const full = topChunks.slice(0, FULL_K);
@@ -567,7 +592,7 @@ Rules for your response:
           <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Under the hood</div>
           <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">How Ask ElectriAI answers</h3>
           <p className="text-sm text-slate-600 serif">
-            Retrieval-augmented generation keeps every answer tethered to the source knowledge base, never the model's imagination.
+            The assistant composes answers from passages retrieved from the knowledge base, with instructions to cite its sources and to say so when the passages do not contain an answer.
           </p>
         </header>
         <div className="p-6 bg-stone-50">
@@ -843,7 +868,15 @@ Rules for your response:
           return next;
         });
       } catch (e) {
-        setError(e.message || String(e));
+        const msg = e.message || String(e);
+        // A 429 that survived the retry is a quota problem; tell the user
+        // what kind rather than dumping raw JSON. PerDay in the quota id
+        // means the free-tier daily budget is spent and retrying is futile.
+        setError(/\(429\)/.test(msg)
+          ? (/PerDay/i.test(msg)
+              ? 'The AI service has reached its daily request limit. Please come back tomorrow.'
+              : 'The AI service is briefly rate limited. Wait about a minute and ask again.')
+          : msg);
         setMessages((m) => {
           const next = m.slice();
           if (next.length && next[next.length - 1].role === 'assistant') next.pop();
@@ -883,8 +916,10 @@ Rules for your response:
               </h2>
               <p className="text-slate-600 mt-2.5 leading-relaxed">
                 Ask about electrical construction, knowledge gaps, question trends over time, or how
-                practitioners answer each other. Answers come only from passages retrieved from the
-                taxonomy knowledge base, so every claim stays traceable. Citations:
+                practitioners answer each other. Answers are grounded in passages retrieved from the
+                taxonomy knowledge base and cite the sources they draw on. The taxonomy behind it is
+                a single-model pilot (GPT-5.6 Luna, taxonomy v0), provisional pending human
+                validation. Citations:
                 <span className="inline-flex items-center px-1.5 rounded bg-red-50 text-red-700 text-[11px] font-medium ml-1">▶ video</span> links the source YouTube video,
                 <span className="inline-flex items-center px-1.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium ml-1">comment</span> marks a Q&amp;A comment.
               </p>

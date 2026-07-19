@@ -1,7 +1,7 @@
-/* Research Results tab. Single landing tab that merges the old Overview
-   (project intro, headline stats, 10-class schema) with the old Findings
-   (four paper figures). The bottom "Where to next" CTA grid was dropped
-   when the tab count shrank to four. */
+/* Findings tab. Landing tab for the study: the question-taxonomy results
+   lead (headline gap numbers, methods summary, Figures 1 to 3), followed by
+   the foundation stage (10-class subject schema, legacy Figures 4 to 10,
+   and the Table 1 classification metrics). */
 
 window.AppResearch = (function() {
   const { useState, useEffect, useRef, useMemo } = React;
@@ -248,13 +248,6 @@ window.AppResearch = (function() {
           </p>
         )}
         <div ref={divRef} style={{ width: '100%', height: '640px' }} />
-        <noscript>
-          <img
-            src="figures/knowledge_bottleneck_bubble.svg"
-            alt="Static fallback bubble chart showing demand and answer rate per electrical theme."
-            style={{ width: '100%', display: 'block' }}
-          />
-        </noscript>
         {selected && (
           <div className="mt-4 bg-slate-100 rounded-lg p-4 border border-slate-200">
             <div className="flex items-baseline justify-between mb-3">
@@ -326,9 +319,8 @@ window.AppResearch = (function() {
           const wMax = Math.max(...linkW);
           const norm = (w) => (w - wMin) / (wMax - wMin + 1e-9);
 
-          // Lookups for link coloring and the click-to-inspect panel.
+          // Lookup for the click-to-inspect panel.
           const nodeById = new Map(data.nodes.map(n => [n.id, n]));
-          const colorById = new Map(data.nodes.map(n => [n.id, n.color]));
           const endId = (e) => (typeof e === 'object' && e !== null ? e.id : e);
           const neighbors = new Map();
           data.links.forEach(l => {
@@ -358,7 +350,7 @@ window.AppResearch = (function() {
             .nodeId('id')
             .nodeLabel(n => `<div style="color:#000000;font-family:Arial,sans-serif;font-weight:bold;">${n.label}</div>`)
             .nodeVal('val')
-            // Color the links by their source theme's cluster color (was flat gray).
+            // Links render flat black at low opacity; weight drives width only.
             .linkColor(() => '#000000')
             .linkWidth(l => 0.3 + norm(l.weight) * 2.4)
             .linkOpacity(0.18)
@@ -560,7 +552,7 @@ window.AppResearch = (function() {
   // The SVG file carries id="<prefix>-N" attributes (set via Artist.set_gid in
   // build_web_interactive_svgs.py); the sidecar JSON tells us what each gid
   // represents. Visual is pixel-identical to the original paper figure.
-  function MplInlineChart({ svgUrl, metaUrl, fallbackSvg, fallbackAlt, onElementClick, getTooltip, gidPrefix, renderDrilldown }) {
+  function MplInlineChart({ svgUrl, metaUrl, fallbackSvg, fallbackAlt, getTooltip, renderDrilldown }) {
     const containerRef = useRef(null);
     const [meta, setMeta]       = useState(null);
     const [selected, setSelected] = useState(null);
@@ -625,7 +617,6 @@ window.AppResearch = (function() {
         };
         const onClick = () => {
           setSelected(el.gid);
-          if (onElementClick) onElementClick(el);
         };
         node.addEventListener('mouseenter', onEnter);
         node.addEventListener('mousemove', onMove);
@@ -641,18 +632,13 @@ window.AppResearch = (function() {
           h.node.removeEventListener('click', h.onClick);
         });
       };
-    }, [meta, getTooltip, onElementClick]);
+    }, [meta, getTooltip]);
 
     const selectedEl = selected && meta ? meta.elements.find(e => e.gid === selected) : null;
 
     return (
       <>
-        <div ref={containerRef} style={{ width: '100%', position: 'relative' }}>
-          {/* Fallback shown until the SVG fetch resolves; replaced on inject. */}
-          <noscript>
-            <img src={fallbackSvg} alt={fallbackAlt} style={{ width: '100%', display: 'block' }} />
-          </noscript>
-        </div>
+        <div ref={containerRef} style={{ width: '100%', position: 'relative' }} />
         {tooltip && (
           <div
             className="fixed pointer-events-none bg-slate-900 text-white text-xs rounded px-2 py-1 shadow-lg z-50"
@@ -681,7 +667,7 @@ window.AppResearch = (function() {
 
   // ─── Question taxonomy figures (data: taxonomy_figures.json) ─────────
 
-  // Figure 8: stacked area of question type volume per year. Absolute
+  // Figure 1: stacked area of question type volume per year. Absolute
   // counts show both the volume surge and the mix; hover carries the
   // within-year share of each type.
   function TaxonomyTrendChart({ data }) {
@@ -718,7 +704,7 @@ window.AppResearch = (function() {
     return <div ref={divRef} style={{ width: '100%', height: 460 }} />;
   }
 
-  // Figure 9: knowledge-gap quadrant. One bubble per question family
+  // Figure 2: knowledge-gap quadrant. One bubble per question family
   // (20 or more member questions): x answer rate among replied, y share
   // never replied, bubble area member count, color question type. Dashed
   // lines mark the corpus averages, so the upper-left region is the
@@ -754,6 +740,26 @@ window.AppResearch = (function() {
       }));
       const vline = meta ? meta.corpusAnswerRate : 70;
       const hline = meta ? meta.corpusNeverShare : 60;
+      // Leader-line callouts for the three extreme families, located by their
+      // exact label strings in the loaded data so text and position stay in
+      // sync with the figure data.
+      const calloutFor = (label, text, ax, ay) => {
+        const f = data.find((d) => d.label === label);
+        if (!f) return null;
+        return {
+          x: f.answerRate, y: f.neverShare, text: text(f),
+          showarrow: true, arrowwidth: 1, arrowcolor: '#64748b', ax, ay,
+          font: { size: 10, color: '#334155' },
+        };
+      };
+      const callouts = [
+        calloutFor('Tools Workmanship and Techniques',
+          (f) => `${f.label}: ${f.neverShare}% never replied`, -10, -30),
+        calloutFor('Industrial Controls And Automation',
+          (f) => `${f.label}: ${f.answerRate}% answered when replied`, 30, -36),
+        calloutFor('Batteries Solar and Inverters',
+          (f) => `${f.label}: ${f.answerRate}% answered when replied`, -60, 34),
+      ].filter(Boolean);
       Plotly.newPlot(el, traces, {
         margin: { l: 56, r: 8, t: 8, b: 44 },
         font: { family: 'Inter, system-ui, sans-serif', size: 11, color: '#334155' },
@@ -770,6 +776,13 @@ window.AppResearch = (function() {
             showarrow: false, font: { size: 10, color: '#b91c1c' } },
           { xref: 'paper', yref: 'paper', x: 0.99, y: 0.01, text: 'Well covered',
             showarrow: false, font: { size: 10, color: '#047857' }, xanchor: 'right' },
+          // Corpus-average labels pinned to the dashed reference lines; the
+          // values come from taxonomy_figures.json meta, not hardcoded copy.
+          { x: vline, yref: 'paper', y: 0.99, text: `corpus average ${vline}% answered when replied`,
+            showarrow: false, xanchor: 'left', xshift: 6, font: { size: 10, color: '#64748b' } },
+          { xref: 'paper', x: 0.99, y: hline, text: `corpus average ${hline}% never replied`,
+            showarrow: false, xanchor: 'right', yshift: 10, font: { size: 10, color: '#64748b' } },
+          ...callouts,
         ],
         hoverlabel: { font: { size: 11 } },
         legend: { orientation: 'h', y: -0.16, font: { size: 10.5 } },
@@ -782,7 +795,7 @@ window.AppResearch = (function() {
     return <div ref={divRef} style={{ width: '100%', height: 520 }} />;
   }
 
-  // Figure 10: Sankey from question type to what its questions received:
+  // Figure 3: Sankey from question type to what its questions received:
   // one of the ten answer mechanisms, an untyped reply, or no reply at
   // all. Flow width is the number of questions; the answer mechanism is
   // the primary (first-listed) type on each question's replies.
@@ -840,26 +853,34 @@ window.AppResearch = (function() {
     }, [selectedCat, state.comments]);
 
     // Stat card definitions. Each entry carries the raw value plus the
-    // formatter used to render it, so the card can animate a count-up.
+    // formatter used to render it, so the card can animate a count-up. The
+    // two percentage cards read taxonomy_figures.json meta and render as
+    // preformatted strings (no count-up) so the decimal survives.
+    const taxMeta = taxFigs.meta || {};
     const statCards = [
       { label: 'Videos analyzed',      value: stats.totalVideos,   format: formatNumber,  hint: `${formatNumber(stats.videosWithQa)} with Q&A comments` },
       { label: 'Comments processed',   value: stats.totalComments, format: formatNumber },
       { label: 'Unique themes',        value: stats.uniqueThemes,  format: formatNumber },
-      { label: 'Questions classified', value: kbMeta.questions,    format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} question families` },
+      { label: 'Questions classified', value: kbMeta.questions,    format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} families among 12,933 substantive questions` },
       { label: 'Total video views',    value: stats.totalViews,    format: formatCompact },
+      { label: 'Never replied',        value: taxMeta.corpusNeverShare != null ? `${taxMeta.corpusNeverShare}%` : undefined, hint: '7,784 of 12,933 substantive questions' },
+      { label: 'Answered when replied', value: taxMeta.corpusAnswerRate != null ? `${taxMeta.corpusAnswerRate}%` : undefined, hint: '3,667 of 5,149 replied questions' },
     ];
 
     return (
       <div className="space-y-12 animate-fade py-8">
 
-        {/* Findings intro: section heading and overview paragraph. */}
+        {/* Findings intro: section heading and overview paragraphs. */}
         <section className="max-w-3xl">
           <h2 className="serif text-2xl sm:text-3xl font-semibold text-slate-900 leading-tight tracking-tight">
-            Where electrical field knowledge accumulates and where it stalls
+            Practitioner Knowledge Base for Electrical Construction
           </h2>
           <div className="text-slate-700 mt-5 leading-relaxed text-base space-y-4">
             <p>
-              The Electrical Field Q&amp;A Knowledge Base mines practitioner discussion on YouTube to identify knowledge bottlenecks in electrical construction, the topics where field practitioners ask the most questions but peer answers are hardest to find. Transcripts from 794 videos across the trade were collected, and every viewer question-and-answer comment thread was extracted and labeled to locate where practitioner demand outpaces peer resolution. Each comment is classified into a ten-category schema spanning the major areas of the electrical trade. GPT-5-mini performs a first-pass classification, and trained human annotators validate a balanced subset through Qualtrics surveys, which measures where the model agrees with practitioners and where it does not. On top of the subject labels, every extracted practitioner question is classified into an eleven-type question taxonomy and consolidated into 263 recurring question families, and every reply is typed by how it delivers (or fails to deliver) a solution. This site presents the study figures, an explorer for the labeled comment threads, the annotated validation set, and an assistant grounded in a knowledge base compiled from that question taxonomy.
+              The Practitioner Knowledge Base for Electrical Construction (ElectriAI for short) mines practitioner discussion on YouTube to identify knowledge bottlenecks in electrical construction: the kinds of questions field practitioners ask most but for which peer answers are hardest to find. GPT-5-mini classified 16,862 YouTube comment threads into question and answer structure; GPT-5.6 Luna (medium reasoning effort) then re-read all 14,980 detected questions and classified them into a literature-grounded question taxonomy of ten substantive question types (a residual class, Q11 social or rhetorical, is excluded from the gap analysis) and ten answer mechanisms (A1 to A10), plus a small untyped bucket for replied rows with no classified mechanism. The 12,933 substantive questions were consolidated into 263 recurring question families.
+            </p>
+            <p>
+              The headline finding: 60.2 percent of substantive questions never received any reply, and when someone did reply, 71.2 percent of questions got a substantive answer. The dominant knowledge gap is silence, not wrong answers. This site presents the study figures, an explorer for the labeled comment threads, the annotated validation set, and an assistant grounded in a knowledge base compiled from the question taxonomy.
             </p>
           </div>
         </section>
@@ -867,11 +888,105 @@ window.AppResearch = (function() {
         {/* Headline statistics grid. */}
         <section>
           <h3 className="serif text-xl font-semibold text-slate-900 mb-4">By the numbers</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {statCards.map((s) => (
               <StatCard key={s.label} label={s.label} value={s.value} hint={s.hint} format={s.format} />
             ))}
           </div>
+        </section>
+
+        {/* Methods at a glance: the two-stage pipeline in four labeled lines. */}
+        <section>
+          <div className="bg-white border border-slate-200 rounded-lg p-6">
+            <h3 className="serif text-lg font-semibold text-slate-900 mb-3">Methods at a glance</h3>
+            <dl className="space-y-3 text-sm text-slate-700 leading-relaxed">
+              <div>
+                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Corpus</dt>
+                <dd>16,862 comment threads from 794 collected YouTube videos (404 with Q&amp;A content; 398 distinct videos appear in the taxonomy database); comments span 2011 to 2025; scrape cutoff October 2025.</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Stage 1</dt>
+                <dd>GPT-5-mini classified every thread into question and answer structure and a ten-category subject schema; a balanced subset was human-validated through Qualtrics surveys (Table 1).</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Stage 2</dt>
+                <dd>GPT-5.6 Luna at medium reasoning effort re-read all 14,980 detected questions (1,882 rows with no question present were skipped upstream) and classified them under a frozen taxonomy instrument (taxonomy v0); a consolidation pass (v1) grouped the 12,933 substantive questions into 263 families and the 3,667 answered questions into 204 answer families.</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Limitations</dt>
+                <dd>Taxonomy labels are single-model and provisional pending human validation; answer types were judged from the GPT-5-mini reply summaries, not the raw replies; the v0 instrument is frozen but preliminary.</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+
+        {/* Question taxonomy section: what gets asked, how the mix shifted,
+            and how questions get resolved. Data: taxonomy_figures.json. */}
+        <div className="space-y-4">
+          <section>
+            <h3 className="serif text-xl font-semibold text-slate-900 mb-2">The question taxonomy</h3>
+            <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
+              Every extracted practitioner question ({kbMeta.questions ? formatNumber(kbMeta.questions) : '14,980'} in
+              total) was classified into ten substantive question types (a residual class, Q11 social or rhetorical,
+              is excluded from the gap analysis) and ten answer mechanisms (A1 to A10), plus a small untyped bucket
+              for replied rows with no classified mechanism. The 12,933 substantive questions were consolidated
+              into {kbMeta.questionFamilies || 263} recurring question families. Across the corpus, 60.2 percent of
+              substantive questions never received any reply, and 71.2 percent of replied questions got a substantive
+              answer. The three figures below summarize what practitioners ask, how the mix has shifted over the
+              years, and how (or whether) their questions get resolved. Labels and family consolidation come from a
+              single-model pilot (GPT-5.6 Luna at medium reasoning effort; taxonomy v0, consolidation v1) and are
+              provisional pending human validation.
+            </p>
+            <ol className="list-decimal pl-5 mt-3 space-y-1 text-sm text-slate-600 max-w-3xl leading-relaxed">
+              <li>Practice-justification questions (Q6) are the most ignored type: 67.4 percent never replied, and their answer rate when replied is second lowest at 61.2 percent.</li>
+              <li>Sourcing questions (Q9) are the largest type (17.6 percent) and second most ignored (66.8 percent never replied), yet answered 79.0 percent of the time when replied.</li>
+              <li>Content requests (Q10) have the worst answer rate among replied at 48.2 percent.</li>
+              <li>Permissibility and compliance questions (Q1) are best served at 81.3 percent answered when replied.</li>
+            </ol>
+            <p className="text-sm text-slate-600 max-w-3xl leading-relaxed mt-3">
+              The taxonomy labels themselves have not yet been human-validated; Table 1 in the foundation section
+              covers the first-stage subject classification.
+            </p>
+          </section>
+
+          <FigureCard
+            number={1}
+            title="Question type mix by year"
+            caption="Stacked question volume per year, split by primary question type. Dates are the publication dates of the question comments; the scrape cutoff is October 2025, so 2025 is a partial year. Hover any year for each type's count and its share of that year's questions. Resource identification and sourcing, conceptual, and permissibility questions are the largest substantive types overall, with practice-justification questions spiking in 2022. The gray band is the social or rhetorical residual (Q11), which is excluded from Figures 2 and 3. The chart covers 2018 through 2025 (14,834 of the 14,980 classified questions); 146 earlier comments dating back to 2011 are omitted."
+            dataSource="taxonomy_figures.json, built by src/web/build_web_taxonomy_figures.py from the GPT-5.6 Luna taxonomy database (v0) and consolidation (v1)"
+          >
+            <TaxonomyTrendChart data={taxFigs.typeYear} />
+          </FigureCard>
+        </div>
+
+        <FigureCard
+          number={2}
+          title="Knowledge gaps across question families"
+          caption="One bubble per question family with at least 20 member questions. Horizontal position is the share of replied questions that actually got answered; vertical position is the share of the family's questions that never received any reply; bubble area scales with the number of member questions, and color marks the question type. Dotted lines mark the corpus averages: 71.2 percent of replied questions get a substantive answer, and 60.2 percent of substantive questions never receive any reply. Families in the upper-left region are the knowledge bottleneck: heavily ignored and, even when engaged, poorly resolved. Hover any bubble for the family's counts."
+          dataSource="taxonomy_figures.json, built by src/web/build_web_taxonomy_figures.py from the GPT-5.6 Luna taxonomy database (v0) and consolidation (v1)"
+        >
+          <GapQuadrantChart data={taxFigs.quadrant} meta={taxFigs.meta} />
+        </FigureCard>
+
+        <FigureCard
+          number={3}
+          title="How questions get resolved, from question type to answer mechanism"
+          caption="Flow from each substantive question type (left) to what its questions received (right): one of the ten answer mechanisms of the answer taxonomy, a reply without a classified type, or no reply at all. Flow width is the number of questions; where a question drew several answer mechanisms, the primary (first-listed) one is counted. Mechanisms are grouped here for readability into resolving (A1 to A5: prescription, explanation, experience, code citation, correction, in blue) and engaging without resolving (A6 to A10: counter-question, referral, meta-response, speculation, social, in gray); the split is a presentation grouping, and the codebook defines the ten mechanisms without ranking them. All 12,933 substantive questions are shown; the largest destination, Never replied, absorbs 7,784 of them."
+          dataSource="taxonomy_figures.json, built by src/web/build_web_taxonomy_figures.py from the GPT-5.6 Luna taxonomy database (v0) and consolidation (v1)"
+        >
+          <QAFlowChart data={taxFigs.flow} />
+        </FigureCard>
+
+        {/* Foundation section: the prior stage the taxonomy builds on. */}
+        <section className="max-w-3xl">
+          <h3 className="serif text-xl font-semibold text-slate-900 mb-2">
+            Foundation: the corpus and the first-stage subject classification
+          </h3>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            The taxonomy above is built on this earlier stage: GPT-5-mini's first-pass classification of every
+            comment thread into question and answer structure and a ten-category subject schema, human-validated on
+            a balanced subset through Qualtrics surveys (Table 1).
+          </p>
         </section>
 
         {/* 10-class schema cards. */}
@@ -923,31 +1038,33 @@ window.AppResearch = (function() {
           )}
         </section>
 
-        {/* Section divider into the paper figures. The intro and the first figure are
-            grouped so the paragraph sits directly above the chart with no large gap. */}
+        {/* Section divider into the foundation figures. The intro and the first
+            figure are grouped so the paragraph sits directly above the chart. */}
         <div className="space-y-4">
           <section>
             <h3 className="serif text-xl font-semibold text-slate-900 mb-2">Figures from the paper</h3>
             <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
-              The first chart is an interactive Plotly visualization (hover or click any
-              bubble to inspect a theme); the second is an interactive 3D knowledge-demand
-              terrain you can drag and zoom.
+              Figures 4 through 10 come from this foundation stage. Figure 4 is an interactive
+              Plotly visualization (hover or click any bubble to inspect a subject category);
+              Figure 5 is an interactive 3D knowledge-demand terrain you can drag and zoom.
             </p>
           </section>
 
           <FigureCard
-            number={1}
+            number={4}
             title="Knowledge bottleneck across the 10-class schema"
-            caption="Each bubble represents a topic theme. Horizontal position encodes the share of comments that asked questions on that theme; vertical position encodes the share of comments that received useful answers. Bubble area scales with the total number of comments. Themes far below the diagonal are knowledge bottlenecks: high demand, low answer rate."
+            caption="Each bubble is one of the ten subject categories. Horizontal position is the total number of questions asked in that category; vertical position is its overall resolution rate: the share of all its questions, including the majority that never received a reply, that ended with a substantive answer. Bubble area scales with the category's total comments, and color with the average view count of its videos. Dashed lines mark the mean resolution rate (26.5 percent) and the median question count, splitting the plot into four quadrants; quadrant IV (high volume, low resolution) is the knowledge bottleneck. Resolution rates here look low because the denominator is every question asked; Figure 2 separates the two stages, showing that most of the gap is questions that never get a reply at all, while replied questions are answered 71.2 percent of the time."
+            dataSource="web_app/data/knowledge_bottleneck.json"
           >
             <BottleneckChart bottleneck={state.bottleneck} comments={state.comments} />
           </FigureCard>
         </div>
 
         <FigureCard
-          number={2}
+          number={5}
           title="Knowledge-demand terrain across the theme map"
-          caption="A three-dimensional landscape built over the same theme co-occurrence map as Figure 3. Each theme raises a peak whose height scales with how often electricians ask about it, and the surface is colored by how often those questions actually get answered: warm terrain marks the knowledge bottleneck (high demand, few answers) while cool terrain marks well-covered themes. The tall, isolated warm peak is battery storage: heavily asked, rarely answered, and semantically distant from everything else. Drag to orbit, scroll to zoom, and hover any summit for its theme, question volume, and answer rate."
+          caption="A three-dimensional landscape built over the same theme co-occurrence map as Figure 6. Each theme raises a peak whose height scales with how often electricians ask about it, and the surface is colored by how often those questions actually get answered: warm terrain marks the knowledge bottleneck (high demand, few answers) while cool terrain marks well-covered themes. Two of the tallest warm peaks are conductor terminations and splicing and jobsite workflow, tools, and best practices: heavily asked but answered several points below the corpus average (26 percent in the figure hover text, the same mean drawn at 26.5 percent in Figure 4). Drag to orbit, scroll to zoom, and hover any summit for its theme, question volume, and answer rate; the question volume shown is a relevance-weighted score, not a count of questions."
+          dataSource="web_app/figures/theme_terrain_3d_interactive.html"
         >
           <iframe
             src="figures/theme_terrain_3d_interactive.html"
@@ -958,17 +1075,19 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={3}
+          number={6}
           title="Theme co-occurrence network"
           caption="Network of how themes co-occur across the dataset. Each node is a theme, sized by its prominence: how much the theme appears across all videos and comments, weighted by how strongly it applies. Node color marks the cluster a theme belongs to: themes are grouped using VOSviewer's modularity-based clustering (the smart local moving algorithm), so themes that frequently co-occur share a color. A link joins two themes that appear together, and its thickness shows the co-occurrence strength: how often they turn up in the same video or comment. Drag to rotate and scroll to zoom; hover a node for its theme, or click it to see its prominence, connections, and strongest co-occurrences."
+          dataSource="web_app/data/theme_network_graph.json, built by src/web/build_vos_network.py"
         >
           <ThemeNetworkChart />
         </FigureCard>
 
         <FigureCard
-          number={4}
+          number={7}
           title="Per-video question demand, reach, and engagement"
           caption="One bubble per video in the labeled corpus. Horizontal position is the video's reach (total views, log scale) and vertical position is its question demand (number of question comments, log scale), so videos drift up and to the right as they draw more viewers and more questions. Bubble size scales with likes on the video, and color shows the share of that video's questions that were answered on the same warm-to-cool bottleneck scale used elsewhere: warm bubbles are high-demand, low-answer hotspots, cool bubbles are well-covered, and videos with fewer than five questions stay gray because their answered share is too noisy to trust. Hover any bubble for its views, question count, and answered rate; click any bubble to open the video on YouTube and read a few of the actual questions viewers asked on it."
+          dataSource="web_app/figures/video_demand_map_interactive.html"
         >
           <iframe
             src="figures/video_demand_map_interactive.html"
@@ -979,15 +1098,16 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={5}
+          number={8}
           title="Frequency of canonical themes across the dataset"
-          caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. Hover any bar for its count; click to see sample comments tagged with that theme. The long tail captures niche topics that surface in fewer than ten comments each, while the head is dominated by code, sizing, and grounding questions."
+          caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. Hover any bar for its count; click to see sample comments tagged with that theme. The head is dominated by grounding, bonding, raceway, and conductor sizing themes, while the long tail thins out to niche low-voltage topics with only a handful of comments each."
+          dataSource="web_app/figures/theme_dictionary_frequency_interactive.svg with web_app/data/theme_dictionary_frequency_interactive.json"
         >
           <MplInlineChart
             svgUrl="figures/theme_dictionary_frequency_interactive.svg"
             metaUrl="data/theme_dictionary_frequency_interactive.json"
             fallbackSvg="figures/theme_dictionary_frequency.svg"
-            fallbackAlt="Horizontal bar chart of canonical themes ranked by comment count, with code interpretation and sizing themes at the top."
+            fallbackAlt="Horizontal bar chart of canonical themes ranked by comment count, with grounding and bonding themes at the top."
             getTooltip={(el, meta) => {
               const total = (meta && meta.elements)
                 ? meta.elements.reduce((s, x) => s + (x.count || 0), 0)
@@ -1027,9 +1147,10 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={6}
+          number={9}
           title="Transcript topics treemap, weighted by total video views"
           caption="Treemap of the topics that appear in video transcripts. Tile area scales with the aggregate view count of every video that touches the topic, so larger tiles indicate where the audience is actually spending time. Hover any tile for averages; click to list the top videos in that topic."
+          dataSource="web_app/figures/transcript_topics_treemap_views_interactive.svg with web_app/data/transcript_topics_treemap_views_interactive.json"
         >
           <MplInlineChart
             svgUrl="figures/transcript_topics_treemap_views_interactive.svg"
@@ -1058,9 +1179,10 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={7}
+          number={10}
           title="Data collection and comment analysis pipeline"
           caption="Three-panel summary of how the dataset was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment funnel from collected parent threads through filtering to the LLM-labeled question set. Panel C shows the question versus non-question breakdown of the labeled comment set. Hover any bar for its exact count; click for the stage definition."
+          dataSource="web_app/figures/data_collection_comment_analysis_interactive.svg with web_app/data/data_collection_comment_analysis_interactive.json"
         >
           <MplInlineChart
             svgUrl="figures/data_collection_comment_analysis_interactive.svg"
@@ -1132,10 +1254,10 @@ window.AppResearch = (function() {
                     <div>
                       <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
                       <a
-                        href="#fig-5"
+                        href="#fig-8"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 5, theme frequency across the dataset ↑
+                        See Figure 8, theme frequency across the dataset ↑
                       </a>
                     </div>
                   );
@@ -1145,10 +1267,10 @@ window.AppResearch = (function() {
                     <div>
                       <p className="text-sm text-slate-700 leading-relaxed mb-3">{el.description}</p>
                       <a
-                        href="#fig-6"
+                        href="#fig-9"
                         className="inline-flex items-center gap-1 text-xs text-slate-700 hover:text-slate-900 underline underline-offset-2"
                       >
-                        See Figure 6, transcript topics treemap ↑
+                        See Figure 9, transcript topics treemap ↑
                       </a>
                     </div>
                   );
@@ -1159,46 +1281,6 @@ window.AppResearch = (function() {
           />
         </FigureCard>
 
-        {/* Question taxonomy section: what gets asked, how the mix shifted,
-            and how questions get resolved. Data: taxonomy_figures.json. */}
-        <div className="space-y-4">
-          <section>
-            <h3 className="serif text-xl font-semibold text-slate-900 mb-2">The question taxonomy</h3>
-            <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
-              Every extracted practitioner question ({kbMeta.questions ? formatNumber(kbMeta.questions) : '14,980'} in
-              total) was classified into an eleven-type question taxonomy and consolidated
-              into {kbMeta.questionFamilies || 263} recurring question families; the replies each question received
-              carry a ten-type answer taxonomy. The three figures below summarize what practitioners ask, how the
-              mix has shifted over the years, and how (or whether) their questions get resolved. Labels come from a
-              single-model pilot (GPT-5.6 Luna, taxonomy v0) and are provisional.
-            </p>
-          </section>
-
-          <FigureCard
-            number={8}
-            title="Question type mix by year"
-            caption="Stacked question volume per year, split by primary question type. Dates are the publication dates of the question comments; the scrape cutoff is October 2025, so 2025 is a partial year. Hover any year for each type's count and its share of that year's questions. Resource identification and sourcing, conceptual, and permissibility questions dominate throughout, while the overall volume tracks the corpus comment surge into 2023."
-          >
-            <TaxonomyTrendChart data={taxFigs.typeYear} />
-          </FigureCard>
-        </div>
-
-        <FigureCard
-          number={9}
-          title="Knowledge gaps across question families"
-          caption="One bubble per question family with at least 20 member questions. Horizontal position is the share of replied questions that actually got answered; vertical position is the share of the family's questions that never received any reply; bubble area scales with the number of member questions, and color marks the question type. Dotted lines mark the corpus averages, so families in the upper-left region are the knowledge bottleneck: heavily ignored and, even when engaged, poorly resolved. Hover any bubble for the family's counts."
-        >
-          <GapQuadrantChart data={taxFigs.quadrant} meta={taxFigs.meta} />
-        </FigureCard>
-
-        <FigureCard
-          number={10}
-          title="How questions get resolved, from question type to answer mechanism"
-          caption="Flow from each substantive question type (left) to what its questions received (right): one of the ten answer mechanisms of the answer taxonomy, a reply without a classified type, or no reply at all. Flow width is the number of questions; where a question drew several answer mechanisms, the primary (first-listed) one is counted. Blue mechanisms resolve questions (prescription, explanation, experience, code citation, correction); gray ones engage without resolving (counter-question, referral, meta-response, speculation, social)."
-        >
-          <QAFlowChart data={taxFigs.flow} />
-        </FigureCard>
-
         {/* Table 1, per-category classification metrics on consensus subset. */}
         <figure className="bg-white border border-slate-200 rounded-lg overflow-hidden mt-8">
           <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-2">
@@ -1206,7 +1288,7 @@ window.AppResearch = (function() {
               Table 1
             </div>
             <h4 className="serif text-lg font-semibold text-slate-900">
-              Per-category LLM classification metrics on consensus comments
+              Per-category GPT-5-mini subject-classification metrics on consensus comments
             </h4>
             <p className="text-sm text-slate-700 leading-relaxed serif">
               Per-category precision, recall, and F1 scores for LLM classification evaluated on consensus comments only (N = 67 comments where a student majority label was established independently of the LLM).
@@ -1229,91 +1311,91 @@ window.AppResearch = (function() {
                   <td className="text-right py-2 px-3">0.889</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">0.941</td>
-                  <td className="text-right py-2 pl-3">8.000</td>
+                  <td className="text-right py-2 pl-3">8</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Motors, HVAC, and Specialized Power Loads*</td>
                   <td className="text-right py-2 px-3">0.250</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">0.400</td>
-                  <td className="text-right py-2 pl-3">1.000</td>
+                  <td className="text-right py-2 pl-3">1</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Grounding, Bonding, and Fault Management</td>
                   <td className="text-right py-2 px-3">0.900</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">0.947</td>
-                  <td className="text-right py-2 pl-3">9.000</td>
+                  <td className="text-right py-2 pl-3">9</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Overcurrent, Short-Circuit, and Protective Devices</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 pl-3">9.000</td>
+                  <td className="text-right py-2 pl-3">9</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Renewable Energy, EV, and Energy Management Systems*</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 pl-3">1.000</td>
+                  <td className="text-right py-2 pl-3">1</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Devices, Lighting, and Utilization Equipment</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">0.909</td>
                   <td className="text-right py-2 px-3">0.952</td>
-                  <td className="text-right py-2 pl-3">11.000</td>
+                  <td className="text-right py-2 pl-3">11</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Conductors, Raceway, and Physical Routing</td>
                   <td className="text-right py-2 px-3">0.889</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">0.941</td>
-                  <td className="text-right py-2 pl-3">8.000</td>
+                  <td className="text-right py-2 pl-3">8</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Code Interpretation, Safety, and Field Operations</td>
                   <td className="text-right py-2 px-3">0.900</td>
                   <td className="text-right py-2 px-3">0.900</td>
                   <td className="text-right py-2 px-3">0.900</td>
-                  <td className="text-right py-2 pl-3">10.000</td>
+                  <td className="text-right py-2 pl-3">10</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Power Distribution and Service Infrastructure</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">0.500</td>
                   <td className="text-right py-2 px-3">0.667</td>
-                  <td className="text-right py-2 pl-3">4.000</td>
+                  <td className="text-right py-2 pl-3">4</td>
                 </tr>
                 <tr>
                   <td className="py-2 pr-4">Other/Unmapped</td>
                   <td className="text-right py-2 px-3">0.333</td>
                   <td className="text-right py-2 px-3">0.167</td>
                   <td className="text-right py-2 px-3">0.222</td>
-                  <td className="text-right py-2 pl-3">6.000</td>
+                  <td className="text-right py-2 pl-3">6</td>
                 </tr>
                 <tr className="border-t-2 border-slate-300">
                   <td className="py-2 pr-4 font-semibold">Macro Avg</td>
                   <td className="text-right py-2 px-3">0.816</td>
                   <td className="text-right py-2 px-3">0.848</td>
                   <td className="text-right py-2 px-3">0.797</td>
-                  <td className="text-right py-2 pl-3">67.000</td>
+                  <td className="text-right py-2 pl-3">67</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4 font-semibold">Weighted Avg</td>
                   <td className="text-right py-2 px-3">0.874</td>
                   <td className="text-right py-2 px-3">0.866</td>
                   <td className="text-right py-2 px-3">0.858</td>
-                  <td className="text-right py-2 pl-3">67.000</td>
+                  <td className="text-right py-2 pl-3">67</td>
                 </tr>
                 <tr>
                   <td className="py-2 pr-4 font-semibold">Accuracy</td>
                   <td className="text-right py-2 px-3 text-slate-400">&middot;</td>
                   <td className="text-right py-2 px-3 text-slate-400">&middot;</td>
                   <td className="text-right py-2 px-3">0.866</td>
-                  <td className="text-right py-2 pl-3">67.000</td>
+                  <td className="text-right py-2 pl-3">67</td>
                 </tr>
               </tbody>
             </table>

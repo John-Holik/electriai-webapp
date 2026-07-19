@@ -1,6 +1,4 @@
-/* Reusable presentational primitives shared across tabs.
-   Borrowed and trimmed from the original paper-components.js scaffold;
-   only the ElectriAI-relevant pieces are kept. */
+/* Reusable presentational primitives shared across tabs. */
 
 window.AppComponents = window.AppComponents || {};
 
@@ -42,11 +40,12 @@ window.AppComponents = window.AppComponents || {};
     </div>
   );
 
-  // Large numeric stat block. `value` is rendered as already-formatted text.
-  // `hint` is optional small supporting text under the label.
-  // Headline statistic tile. When `value` is a number, it counts up from
-  // zero the first time the card scrolls into view; `format` renders each
-  // frame. The card also lifts on hover. A non-numeric `value` renders as-is.
+  // Headline statistic tile. Renders the final value immediately. A card
+  // below the fold at load counts up from zero when it first scrolls into
+  // view; a card already on screen keeps the static value, so the number a
+  // visitor (or a screenshot) sees is always the real one. `format` renders
+  // each animation frame; `hint` is optional small supporting text. The
+  // card lifts on hover. A non-numeric `value` renders as-is, no animation.
   const StatCard = ({ label, value, hint, format }) => {
     const fmt = format || ((n) => Math.round(n).toLocaleString('en-US'));
     const target = Number(value);
@@ -73,8 +72,19 @@ window.AppComponents = window.AppComponents || {};
         num.textContent = fmt(Math.round(target * eased));
         if (p < 1) raf = requestAnimationFrame(step);
       };
+      // The first callback reports the state at mount: a card already on
+      // screen keeps its statically rendered value (animating it would flash
+      // the number back to zero). Only a card that enters the viewport later
+      // runs the count-up.
+      let sawFirstCallback = false;
       const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
+        const visible = entries[0].isIntersecting;
+        if (!sawFirstCallback) {
+          sawFirstCallback = true;
+          if (visible) observer.disconnect();
+          return;
+        }
+        if (visible) {
           raf = requestAnimationFrame(step);
           observer.disconnect();
         }
@@ -89,7 +99,7 @@ window.AppComponents = window.AppComponents || {};
         className="bg-white border border-slate-200 rounded-lg p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300"
       >
         <div ref={numRef} className="serif text-3xl sm:text-4xl font-semibold text-slate-900 tabular-nums leading-none">
-          {animatable ? fmt(0) : value}
+          {animatable ? fmt(target) : value}
         </div>
         <div className="text-[11px] uppercase tracking-wider text-slate-500 mt-2 font-medium">
           {label}

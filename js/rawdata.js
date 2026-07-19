@@ -1,5 +1,5 @@
 /* Videos & Comments tab. Browses the YouTube dataset restricted to videos and
-   comments that survived the GPT classification pipeline (i.e. those
+   comments that survived the GPT-5-mini classification pipeline (i.e. those
    present in Final_Analysis.csv, surfaced via data/raw_videos.json).
    Default view is a grid of video cards topped by a dataset stat strip;
    clicking a card drills into that video's full comment thread, and
@@ -65,17 +65,17 @@ window.AppRawData = (function() {
   const formatDateRange = (first, last) => {
     if (!first) return '';
     const a = monthYear(first), b = monthYear(last);
-    return a === b ? a : `${a} – ${b}`;
+    return a === b ? a : `${a} to ${b}`;
   };
   const yearRange = (first, last) => {
-    if (!first) return '—';
+    if (!first) return 'n/a';
     const a = String(first).slice(0, 4), b = String(last).slice(0, 4);
-    return a === b ? a : `${a}–${b}`;
+    return a === b ? a : `${a} to ${b}`;
   };
 
-  // Null-safe compact number: shows an em-dash placeholder when a video's
+  // Null-safe compact number: shows an 'n/a' placeholder when a video's
   // view/like count was hidden or unavailable at collection time.
-  const compact = (n) => (n == null ? '—' : formatCompact(n));
+  const compact = (n) => (n == null ? 'n/a' : formatCompact(n));
 
   // Small stroke-icon set (no icon library is loaded, so these are inline SVG).
   const IC = {
@@ -364,7 +364,7 @@ window.AppRawData = (function() {
       { value: formatNumber(video.commentCount), label: 'comments' },
       { value: formatNumber(stats.threads), label: 'threads' },
       { value: formatNumber(stats.replies), label: 'replies' },
-      { value: formatDateRange(stats.first, stats.last) || '—', label: 'active' },
+      { value: formatDateRange(stats.first, stats.last) || 'n/a', label: 'active' },
     ];
 
     return (
@@ -480,7 +480,7 @@ window.AppRawData = (function() {
     { id: 'comments', label: 'Most comments' },
     { id: 'likes', label: 'Most likes' },
     { id: 'recent', label: 'Newest' },
-    { id: 'title', label: 'A–Z' },
+    { id: 'title', label: 'A to Z' },
   ];
 
   // Top-level Videos & Comments tab.
@@ -592,9 +592,10 @@ window.AppRawData = (function() {
             Browse {formatNumber(meta.totalVideos)} videos &amp; {formatNumber(meta.totalComments)} comments
           </h2>
           <p className="text-slate-600 mt-3 max-w-2xl leading-relaxed">
-            Every YouTube video and comment that made it through the GPT
-            classification pipeline. Click a video to open its full thread and
-            transcript, then click any comment to expand the full text.
+            The 404 Q&amp;A videos with their 16,872 collected comment threads, of
+            which 16,862 were classified by the GPT-5-mini pipeline. Click a video
+            to open its full thread and transcript, then click any comment to
+            expand the full text.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6">

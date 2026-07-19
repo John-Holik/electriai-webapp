@@ -124,7 +124,7 @@
       "panel": "funnel",
       "label": "Parent Comments Collected",
       "count": 66899,
-      "description": "Top-level parent comment threads collected from the 739 source videos; replies are bundled into their parent thread."
+      "description": "Top-level parent comment threads collected from the 739 of 794 collected videos that had retrievable comments; replies are bundled into their parent thread."
     },
     {
       "gid": "pipeline-qa-0",
@@ -293,7 +293,7 @@
           "videoUrl": "https://www.youtube.com/watch?v=dgmwJWLs084",
           "commentText": "On the point of leaving wire in the wall for vanity lights, whats your solution when center of your cut in box ends up right on the plumbers pipe?",
           "questionExcerpt": "On the point of leaving wire in the wall for vanity lights, whats your solution when center of your cut in box ends up right on the plumbers pipe?",
-          "answerSummary": "Responder recommends relocating/clearing the obstruction\u2014i.e., trim or offset the fixture box or pipe so the vanity box center is usable."
+          "answerSummary": "Responder recommends relocating/clearing the obstruction, i.e., trim or offset the fixture box or pipe so the vanity box center is usable."
         },
         {
           "commentId": "Ugz8dOnYTGtk_mbpjR14AaABAg",

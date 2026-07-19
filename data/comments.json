@@ -1,7 +1,7 @@
 {
   "meta": {
     "total": 200,
-    "generatedAt": "2026-05-13T03:36:16+00:00",
+    "generatedAt": "2026-07-19T02:41:52+00:00",
     "schemaVersion": 1,
     "source": "qualtrics_comments.csv joined with Final_Analysis.csv on CommentID"
   },
@@ -137,7 +137,7 @@
         "Protection coordination and device selection": 20
       },
       "questionExcerpt": "Not complete explanation. Where are the connections for the 3Phase Motor?",
-      "questionSummary": "Asks for the physical connections of the three-phase motor conductors in the Star-Delta starter — i.e., where motor phases U/V/W connect in the power circuit and how they interface with the contactors.",
+      "questionSummary": "Asks for the physical connections of the three-phase motor conductors in the Star-Delta starter, i.e., where motor phases U/V/W connect in the power circuit and how they interface with the contactors.",
       "answerExcerpt": "Connection to the motor was done during the wiring of the power circuit.",
       "answerSummary": "The reply states the motor leads were connected as part of the power-circuit wiring shown in the video. It does not provide specific terminal-to-phase assignments or detail on motor terminal labeling.",
       "replySummary": "Single reply asserts that the motor connection was completed during the wiring of the power circuit. No further terminal-level mapping or clarification is provided in the replies."
@@ -272,7 +272,7 @@
         "Branch circuit design": 20
       },
       "questionExcerpt": "Sir which is better electrician between industrial or commercial or residential please tell me about it",
-      "questionSummary": "Seeks guidance on which electrician market segment—industrial, commercial, or residential—is preferable, asking about career specialization, risk profile, and trade skills.",
+      "questionSummary": "Seeks guidance on which electrician market segment, industrial, commercial, or residential, is preferable, asking about career specialization, risk profile, and trade skills.",
       "answerExcerpt": "Leaving Resi/Com for industrial was the best decision I've ever made.",
       "answerSummary": "Reply recommends industrial specialization for higher compensation and greater hazard/thrill exposure, implying improved career satisfaction.",
       "replySummary": "Single reply endorses industrial specialization, citing higher pay, increased hazard exposure and excitement, and positive social interactions. No technical NEC or code justification provided."
@@ -830,8 +830,8 @@
       "videoTitle": "Should you pigtail your electrical outlets? The answer might surprise you.",
       "videoUrl": "https://www.youtube.com/watch?v=K3RIjUnrNTQ",
       "commentText": "I was taught to Pig-tail in my training . My recollection is that there was a code reqyirement that removing a device not interupt the neutrual. Reducing the number of conductors to the device makes for easier device instal lation into the box and reduces the number of screw terminals that may loosen over time as well.",
-      "threadText": "Reply 1: I’ve been a licensed electrician for almost four decades and there is no code requirement for pigtails. It’s optional. We pigtail often with industrial work or even in commercial installations but I almost never see pigtails in residential. But like I said in the video there are applications where it makes sense. If you like that method of course stick with it.\nReply 2: Nec 300.13 (B)\nReply 3: That's just for the neutral on multiwire branch circuits. I mentioned that in the video. \n300.13 Mechanical and Electrical Continuity — Conductors\n(A) General\nConductors in raceways shall be continuous between outlets, boxes, devices, and so forth. There shall be no splice or tap within a raceway unless permitted by 300.15, 368.56(A), 376.56, 378.56, 384.56, 386.56, 388.56, or 390.56.\n(B) Device Removal\nIn multiwire branch circuits, the continuity of a grounded conductor shall not depend on device connections such as lampholders, receptacles, and so forth, where the removal of such devices would interrupt the continuity.@@waxphantomscousin8278\nReply 4: So for all 240 volt, or 3 wire Romex where you're running 2 parallel 120V circuits you have to pigtail the neutral, no exceptions? In that case, 240V outlets in garages cannot use the pass through on neutrals?@@BackyardMaine\nReply 5: @@starseeddeluxe A multi-wire branch circuit supplies line to neutral loads only. A 240v circuit supplies line to line loads and often times requires a neutral for line to neutral load on the make equipment. (lights etc.. When you run a three wire to supply 120v receptacles where both hot conductors return on the one neutral thats considered multi-wire and the neutral cannot feed through the device. 300.13 (B) and 210.4",
-      "displayText": "VIDEO TITLE: Should you pigtail your electrical outlets? The answer might surprise you.\nVIDEO URL: https://www.youtube.com/watch?v=K3RIjUnrNTQ\n\nCOMMENT:\nI was taught to Pig-tail in my training . My recollection is that there was a code reqyirement that removing a device not interupt the neutrual. Reducing the number of conductors to the device makes for easier device instal lation into the box and reduces the number of screw terminals that may loosen over time as well.\n\nREPLIES:\nReply 1: I’ve been a licensed electrician for almost four decades and there is no code requirement for pigtails. It’s optional. We pigtail often with industrial work or even in commercial installations but I almost never see pigtails in residential. But like I said in the video there are applications where it makes sense. If you like that method of course stick with it.\nReply 2: Nec 300.13 (B)\nReply 3: That's just for the neutral on multiwire branch circuits. I mentioned that in the video. \n300.13 Mechanical and Electrical Continuity — Conductors\n(A) General\nConductors in raceways shall be continuous between outlets, boxes, devices, and so forth. There shall be no splice or tap within a raceway unless permitted by 300.15, 368.56(A), 376.56, 378.56, 384.56, 386.56, 388.56, or 390.56.\n(B) Device Removal\nIn multiwire branch circuits, the continuity of a grounded conductor shall not depend on device connections such as lampholders, receptacles, and so forth, where the removal of such devices would interrupt the continuity.@@waxphantomscousin8278\nReply 4: So for all 240 volt, or 3 wire Romex where you're running 2 parallel 120V circuits you have to pigtail the neutral, no exceptions? In that case, 240V outlets in garages cannot use the pass through on neutrals?@@BackyardMaine\nReply 5: @@starseeddeluxe A multi-wire branch circuit supplies line to neutral loads only. A 240v circuit supplies line to line loads and often times requires a neutral for line to neutral load on the make equipment. (lights etc.. When you run a three wire to supply 120v receptacles where both hot conductors return on the one neutral thats considered multi-wire and the neutral cannot feed through the device. 300.13 (B) and 210.4",
+      "threadText": "Reply 1: I’ve been a licensed electrician for almost four decades and there is no code requirement for pigtails. It’s optional. We pigtail often with industrial work or even in commercial installations but I almost never see pigtails in residential. But like I said in the video there are applications where it makes sense. If you like that method of course stick with it.\nReply 2: Nec 300.13 (B)\nReply 3: That's just for the neutral on multiwire branch circuits. I mentioned that in the video. \n300.13 Mechanical and Electrical Continuity, Conductors\n(A) General\nConductors in raceways shall be continuous between outlets, boxes, devices, and so forth. There shall be no splice or tap within a raceway unless permitted by 300.15, 368.56(A), 376.56, 378.56, 384.56, 386.56, 388.56, or 390.56.\n(B) Device Removal\nIn multiwire branch circuits, the continuity of a grounded conductor shall not depend on device connections such as lampholders, receptacles, and so forth, where the removal of such devices would interrupt the continuity.@@waxphantomscousin8278\nReply 4: So for all 240 volt, or 3 wire Romex where you're running 2 parallel 120V circuits you have to pigtail the neutral, no exceptions? In that case, 240V outlets in garages cannot use the pass through on neutrals?@@BackyardMaine\nReply 5: @@starseeddeluxe A multi-wire branch circuit supplies line to neutral loads only. A 240v circuit supplies line to line loads and often times requires a neutral for line to neutral load on the make equipment. (lights etc.. When you run a three wire to supply 120v receptacles where both hot conductors return on the one neutral thats considered multi-wire and the neutral cannot feed through the device. 300.13 (B) and 210.4",
+      "displayText": "VIDEO TITLE: Should you pigtail your electrical outlets? The answer might surprise you.\nVIDEO URL: https://www.youtube.com/watch?v=K3RIjUnrNTQ\n\nCOMMENT:\nI was taught to Pig-tail in my training . My recollection is that there was a code reqyirement that removing a device not interupt the neutrual. Reducing the number of conductors to the device makes for easier device instal lation into the box and reduces the number of screw terminals that may loosen over time as well.\n\nREPLIES:\nReply 1: I’ve been a licensed electrician for almost four decades and there is no code requirement for pigtails. It’s optional. We pigtail often with industrial work or even in commercial installations but I almost never see pigtails in residential. But like I said in the video there are applications where it makes sense. If you like that method of course stick with it.\nReply 2: Nec 300.13 (B)\nReply 3: That's just for the neutral on multiwire branch circuits. I mentioned that in the video. \n300.13 Mechanical and Electrical Continuity, Conductors\n(A) General\nConductors in raceways shall be continuous between outlets, boxes, devices, and so forth. There shall be no splice or tap within a raceway unless permitted by 300.15, 368.56(A), 376.56, 378.56, 384.56, 386.56, 388.56, or 390.56.\n(B) Device Removal\nIn multiwire branch circuits, the continuity of a grounded conductor shall not depend on device connections such as lampholders, receptacles, and so forth, where the removal of such devices would interrupt the continuity.@@waxphantomscousin8278\nReply 4: So for all 240 volt, or 3 wire Romex where you're running 2 parallel 120V circuits you have to pigtail the neutral, no exceptions? In that case, 240V outlets in garages cannot use the pass through on neutrals?@@BackyardMaine\nReply 5: @@starseeddeluxe A multi-wire branch circuit supplies line to neutral loads only. A 240v circuit supplies line to line loads and often times requires a neutral for line to neutral load on the make equipment. (lights etc.. When you run a three wire to supply 120v receptacles where both hot conductors return on the one neutral thats considered multi-wire and the neutral cannot feed through the device. 300.13 (B) and 210.4",
       "replyCount": 5,
       "hasReplies": true,
       "charCount": 2208,
@@ -2070,7 +2070,7 @@
       "questionExcerpt": "Could you maybe do a video about magnetic and manual motor starters with ladder diagrams? I’m doing motor controls in school and having a hard time understand ladder diagrams for motor starts. Like how do you figure out where auxiliary contacts, overload contacts ect are on diagrams and motor starters. Love your content man. Thanks.",
       "questionSummary": "Requests a video on magnetic and manual motor starters with ladder diagrams and help identifying auxiliary and overload contacts on diagrams and starters.",
       "answerExcerpt": "jared thompson Youtuber \"Watch Wes Work\" video called \"CNC Machine Stuck in Emergency Stop\" will help you out.",
-      "answerSummary": "The reply points the asker to an external video ('Watch Wes Work — CNC Machine Stuck in Emergency Stop') as a practical resource for understanding motor starter ladder diagrams.",
+      "answerSummary": "The reply points the asker to an external video ('Watch Wes Work, CNC Machine Stuck in Emergency Stop') as a practical resource for understanding motor starter ladder diagrams.",
       "replySummary": "One reply recommends watching the YouTuber 'Watch Wes Work' video 'CNC Machine Stuck in Emergency Stop' as a helpful resource for motor control ladder diagrams."
     },
     {
@@ -2175,7 +2175,7 @@
         "Overcurrent protection": 20
       },
       "questionExcerpt": "Just a question, why did you connect the batteries furtherest from the fuse holder?",
-      "questionSummary": "Asking why battery terminals/battery bank were connected at the far end relative to the main fuse holder—implications for charge/discharge distribution and bank balancing.",
+      "questionSummary": "Asking why battery terminals/battery bank were connected at the far end relative to the main fuse holder, implications for charge/discharge distribution and bank balancing.",
       "answerExcerpt": "The way I wired the batteries allows for even charge and discharge of the battery bank to keep everything synchronized",
       "answerSummary": "The installer wired the battery bank to equalize current distribution so each battery charges and discharges evenly, maintaining state-of-charge synchronization across the bank.",
       "replySummary": "Single reply states the batteries were wired to provide even charge and discharge across the battery bank to keep cells synchronized. No debate; a direct explanation was given."
@@ -2882,7 +2882,7 @@
       "questionExcerpt": "Do you use a trickle charger to re charge the batteries?",
       "questionSummary": "Asks whether a trickle charger is used to recharge the boat's battery bank.",
       "answerExcerpt": "Yes, just a cheap Harbor Freight one.",
-      "answerSummary": "Affirmative — the poster uses a Harbor Freight trickle charger to recharge the batteries.",
+      "answerSummary": "Affirmative, the poster uses a Harbor Freight trickle charger to recharge the batteries.",
       "replySummary": "Responder confirms use of a trickle charger and specifies it is a low-cost Harbor Freight unit."
     },
     {
@@ -3069,7 +3069,7 @@
         "Conductor terminations and splicing": 20
       },
       "questionExcerpt": "I didn't see where the third earth coming from 😢",
-      "questionSummary": "Asking where the third earth conductor connects in the meter box — origin of the third protective earth.",
+      "questionSummary": "Asking where the third earth conductor connects in the meter box, origin of the third protective earth.",
       "answerExcerpt": "The first is from the neutral connection, the second is from the consumer unit and the third is connected to the earth rod.",
       "answerSummary": "The reply states the three protective earths: the neutral-to-earth bond, the earth conductor from the consumer unit, and the earth electrode (earth rod) bonded to the meter box.",
       "replySummary": "A respondent explains the three earth conductors as the neutral bond, the consumer-unit earth conductor, and the earth-rod connection; the OP acknowledges and thanks them. There is agreement and no further technical dispute."
@@ -4044,7 +4044,7 @@
       "charCount": 513,
       "category": "Low-Voltage, Communications, and Control Systems",
       "categoryCode": "LV",
-      "topic": "microphone transducer:35%; loudspeaker / audio output:25%; line-level signal coupling (auxiliary input):20%; human-machine interface (HMI) — captions/subtitles:20%",
+      "topic": "microphone transducer:35%; loudspeaker / audio output:25%; line-level signal coupling (auxiliary input):20%; human-machine interface (HMI), captions/subtitles:20%",
       "subTopic": "signal-to-noise ratio (SNR) / speech intelligibility:40%; impedance matching for auxiliary connection:20%; near-field handset coupling / ear-piece proximity:20%; visual display / caption decoding:20%",
       "themes": {
         "Audio/visual system wiring": 60,
@@ -4491,7 +4491,7 @@
       "questionExcerpt": "Sir can't some one use only the panel controller and battery only?",
       "questionSummary": "Asks whether a system can consist solely of the PV panel, charge controller, and battery without connecting loads or additional protection.",
       "answerExcerpt": "if no lights were turned on, your batteries would charge up just fine.",
-      "answerSummary": "Yes — a PV array connected to a charge controller and battery will charge the battery without loads connected. Connecting loads to the controller provides telemetry and load-management benefits and helps identify parasitic draws.",
+      "answerSummary": "Yes, a PV array connected to a charge controller and battery will charge the battery without loads connected. Connecting loads to the controller provides telemetry and load-management benefits and helps identify parasitic draws.",
       "replySummary": "Replies state it is not mandatory to connect load circuits to the controller; the PV array plus controller and battery will charge the battery. They recommend routing loads through the controller for monitoring/measurement and note practical inverter and DC powering considerations."
     },
     {
@@ -4961,11 +4961,11 @@
       "recordId": 183,
       "commentId": "UgyvIBQJ4ShSsrv8H5x4AaABAg",
       "videoId": "dpyvYfU2JLk",
-      "videoTitle": "Residential electrical rough-in and walk through ðŸ•µï¸",
+      "videoTitle": "Residential electrical rough-in and walk through 🕵️",
       "videoUrl": "https://www.youtube.com/watch?v=dpyvYfU2JLk",
       "commentText": "Great video. Did you get all plans before hand? And how long did it take you to complete the rough in for a house this size?",
       "threadText": "Reply 1: Thanks for watching Tanik. No, the contractor I'm working for did not provide prints for this house. Doing the house by myself. Took me about a 1½ weeks to complete.",
-      "displayText": "VIDEO TITLE: Residential electrical rough-in and walk through ðŸ•µï¸\nVIDEO URL: https://www.youtube.com/watch?v=dpyvYfU2JLk\n\nCOMMENT:\nGreat video. Did you get all plans before hand? And how long did it take you to complete the rough in for a house this size?\n\nREPLIES:\nReply 1: Thanks for watching Tanik. No, the contractor I'm working for did not provide prints for this house. Doing the house by myself. Took me about a 1½ weeks to complete.",
+      "displayText": "VIDEO TITLE: Residential electrical rough-in and walk through 🕵️\nVIDEO URL: https://www.youtube.com/watch?v=dpyvYfU2JLk\n\nCOMMENT:\nGreat video. Did you get all plans before hand? And how long did it take you to complete the rough in for a house this size?\n\nREPLIES:\nReply 1: Thanks for watching Tanik. No, the contractor I'm working for did not provide prints for this house. Doing the house by myself. Took me about a 1½ weeks to complete.",
       "replyCount": 1,
       "hasReplies": true,
       "charCount": 444,
@@ -5393,9 +5393,9 @@
       "videoId": "VHNRHKVVClw",
       "videoTitle": "Best wire pulling head that DOESN’T fall off #electrical #electrician #electricity",
       "videoUrl": "https://www.youtube.com/watch?v=VHNRHKVVClw",
-      "commentText": "Enough with the short videos! If you’re serious about the trade, don’t miss the full 30-minute job site videos. Master Electrician POV series — only on the channel.",
+      "commentText": "Enough with the short videos! If you’re serious about the trade, don’t miss the full 30-minute job site videos. Master Electrician POV series, only on the channel.",
       "threadText": "Reply 1: Everything looks good. We would add a length of pull string tied to the head. Tape the other end to just past where you plan on ending your tape. Tape your bundle as usual, including the string.\nWhen done with your pull, use the string by pulling to cut thru your tape with one motion.\nReply 2: @@bradleywheaton4921 That’s a great idea! Thanks for the input!\nReply 3: A great time saver for apprentices, that's who we have doing the tape. @landerselectric\nReply 4: @@bradleywheaton4921 makes sense.\nReply 5: Horrifying, no pre twist ,makes it larger and gard to navigate bends",
-      "displayText": "VIDEO TITLE: Best wire pulling head that DOESN’T fall off #electrical #electrician #electricity\nVIDEO URL: https://www.youtube.com/watch?v=VHNRHKVVClw\n\nCOMMENT:\nEnough with the short videos! If you’re serious about the trade, don’t miss the full 30-minute job site videos. Master Electrician POV series — only on the channel.\n\nREPLIES:\nReply 1: Everything looks good. We would add a length of pull string tied to the head. Tape the other end to just past where you plan on ending your tape. Tape your bundle as usual, including the string.\nWhen done with your pull, use the string by pulling to cut thru your tape with one motion.\nReply 2: @@bradleywheaton4921 That’s a great idea! Thanks for the input!\nReply 3: A great time saver for apprentices, that's who we have doing the tape. @landerselectric\nReply 4: @@bradleywheaton4921 makes sense.\nReply 5: Horrifying, no pre twist ,makes it larger and gard to navigate bends",
+      "displayText": "VIDEO TITLE: Best wire pulling head that DOESN’T fall off #electrical #electrician #electricity\nVIDEO URL: https://www.youtube.com/watch?v=VHNRHKVVClw\n\nCOMMENT:\nEnough with the short videos! If you’re serious about the trade, don’t miss the full 30-minute job site videos. Master Electrician POV series, only on the channel.\n\nREPLIES:\nReply 1: Everything looks good. We would add a length of pull string tied to the head. Tape the other end to just past where you plan on ending your tape. Tape your bundle as usual, including the string.\nWhen done with your pull, use the string by pulling to cut thru your tape with one motion.\nReply 2: @@bradleywheaton4921 That’s a great idea! Thanks for the input!\nReply 3: A great time saver for apprentices, that's who we have doing the tape. @landerselectric\nReply 4: @@bradleywheaton4921 makes sense.\nReply 5: Horrifying, no pre twist ,makes it larger and gard to navigate bends",
       "replyCount": 5,
       "hasReplies": true,
       "charCount": 923,

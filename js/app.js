@@ -1,12 +1,14 @@
 /* ElectriAI Research companion webapp, root shell.
 
    Responsibilities:
-     - Load the five eager JSON datasets exported by src/web/export_data.py.
+     - Load the seven eager JSON datasets exported by the src/web builders
+       (export_data.py, export_qa_data.py, build_web_taxonomy_figures.py,
+       build_kb_wiki.py).
      - Lazy-load the wiki embeddings and chunks the first time the user
        opens the Ask ElectriAI tab (they are ~3 MB combined).
-     - Render the header + four-tab navigation and dispatch to the
-       per-tab root components registered on window.AppOverview /
-       AppFindings / AppComments / AppChat.
+     - Render the header + six-tab navigation and dispatch to the
+       per-tab root components registered on window.AppResearch /
+       AppQA / AppChat / AppRawData / AppComments / AppAbout.
      - Surface a single Gemini dev key from localStorage, but only when
        running on localhost so the key cannot leak in production. */
 
@@ -261,7 +263,7 @@
               <h1 className="serif text-base sm:text-lg font-semibold text-slate-900 leading-tight whitespace-nowrap">
                 Practitioner Knowledge Base for Electrical Construction
               </h1>
-              <p className="text-[11px] sm:text-xs text-slate-500 leading-tight mt-0.5">
+              <p className="text-[11px] sm:text-xs text-slate-500 leading-tight mt-0.5 max-w-2xl">
                 Identifying knowledge bottlenecks in electrical construction from practitioner discussion on YouTube using large language models
               </p>
             </div>
@@ -309,7 +311,7 @@
         <footer className="border-t border-slate-200 mt-12 py-6">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 text-xs text-slate-500 flex flex-col gap-2">
             <span>Companion site for the study "Identifying Knowledge Bottlenecks in Electrical Construction from Practitioner Discussion on YouTube Using Large Language Models"</span>
-            <span>Manuscript under review · React and Tailwind single-page application served over a global CDN with a serverless API gateway · Data generated May 2026</span>
+            <span>Manuscript in preparation · React and Tailwind single-page application served over a global CDN with a serverless API gateway · Data generated July 2026</span>
           </div>
         </footer>
 

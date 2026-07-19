@@ -205,7 +205,8 @@ window.AppQA = (function() {
               {tiers(s.consolidatedQuestions, 'Questions', 'individual comments')}
             </div>
             <p className="text-[11px] text-slate-400">
-              The reply side mirrors it: {qa.answerTypes.length} answer types, {formatNumber(s.answerFamilies)} families,
+              The reply side mirrors it: ten answer mechanisms (A1 to A10), plus a small untyped
+              bucket for replied rows with no classified mechanism, {formatNumber(s.answerFamilies)} families,
               and {formatNumber(s.answerPatterns)} patterns consolidate the {formatNumber(s.consolidatedAnswers)} replies
               that actually answered a question. Every tier traces back to real, linkable comments.
             </p>
@@ -259,14 +260,15 @@ window.AppQA = (function() {
         </div>
         <div className="grid md:grid-cols-2 gap-3 text-xs leading-relaxed">
           <div className="border-l-4 rounded-r-md bg-rose-50/60 border-rose-400 px-4 py-3 text-slate-700">
-            <span className="font-semibold text-rose-700">The bottleneck is attention, not expertise. </span>
-            {pctNever}% of substantive questions die silently: no reply of any kind. That is the
-            single largest loss of knowledge transfer in the corpus.
+            <span className="font-semibold text-rose-700">Silence is the dominant failure mode. </span>
+            {pctNever}% of substantive questions never receive a single reply of any kind. That is
+            the largest observed loss of knowledge transfer in the corpus.
           </div>
           <div className="border-l-4 rounded-r-md bg-emerald-50/60 border-emerald-400 px-4 py-3 text-slate-700">
-            <span className="font-semibold text-emerald-700">When someone engages, answers follow. </span>
+            <span className="font-semibold text-emerald-700">When someone engages, answers usually follow. </span>
             Among questions that got any reply at all, {s.answerRateReplied}% received a genuine
-            answer. The expertise exists in the community; it simply never reaches most askers.
+            answer. The observed gap sits in questions that never draw a response, not in replies
+            that fail to answer.
           </div>
         </div>
       </div>
@@ -383,8 +385,8 @@ window.AppQA = (function() {
         <p className="text-[11px] text-slate-400 leading-relaxed">
           Bars show the share of each type&rsquo;s questions in each reply outcome. The right column is the
           type&rsquo;s question count and its answer rate among questions that received at least one reply.
-          A question counts as answered when a reply in its thread actually resolves it, as judged by
-          the classifier.
+          A question counts as answered when a reply in its thread actually resolves it, as judged in
+          the original GPT-5-mini pass that extracted the question and answer structure.
         </p>
       </div>
     );
@@ -402,11 +404,13 @@ window.AppQA = (function() {
           const meta = A_META[code] || {};
           const pct = Math.max(1, Math.round((100 * t.count) / max));
           const share = Math.round((1000 * t.count) / total) / 10;
+          // A0 is a web-export residual, not a codebook mechanism; spell that out.
+          const label = code === 'A0' ? 'Untyped (no classified mechanism; not a codebook type)' : t.name;
           return (
             <div key={code} className="space-y-1">
               <div className="flex items-baseline gap-2">
                 <CategoryBadge code={code} color={meta.color} />
-                <span className="text-xs font-medium text-slate-800">{t.name}</span>
+                <span className="text-xs font-medium text-slate-800">{label}</span>
                 <span className="ml-auto text-[11px] text-slate-500 tabular-nums flex-shrink-0">
                   {formatNumber(t.count)} · {share}%
                 </span>
@@ -508,7 +512,7 @@ window.AppQA = (function() {
                 <span className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden inline-block">
                   <span className="block h-full rounded-full" style={{ width: Math.min(100, family.answerRate) + '%', backgroundColor: TIER.answered.color }} />
                 </span>
-                <span className="text-[10px] text-slate-400 tabular-nums">{family.answerRate}% answered</span>
+                <span className="text-[10px] text-slate-400 tabular-nums">{family.answerRate}% answered when replied</span>
               </span>
             )}
           </span>
@@ -557,15 +561,21 @@ window.AppQA = (function() {
       scrollTo(dictRef);
     };
 
-    // Convert the column-array record rows into objects once.
+    // Convert the column-array record rows into objects once, then keep only the
+    // eligible (substantive) population the rest of the tab reports on: primary
+    // type is not Q11 and the canonical restatement is non-blank. This is the
+    // same 12,933-row predicate behind the funnel; the excluded Q11 rows stay in
+    // the downloadable database.
     const records = useMemo(() => {
       if (!recordsDoc) return null;
       const cols = recordsDoc.columns;
-      return recordsDoc.rows.map((row) => {
-        const r = {};
-        cols.forEach((c, i) => { r[c] = row[i]; });
-        return r;
-      });
+      return recordsDoc.rows
+        .map((row) => {
+          const r = {};
+          cols.forEach((c, i) => { r[c] = row[i]; });
+          return r;
+        })
+        .filter((r) => r.primaryType !== 'Q11' && String(r.canonical || '').trim() !== '');
     }, [recordsDoc]);
 
     // Counts for the record status filter chips.
@@ -637,11 +647,13 @@ window.AppQA = (function() {
         {/* Provenance banner: these numbers come from the new analysis generation */}
         <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-900 leading-relaxed">
           <span className="font-semibold">Preliminary results. </span>
-          Questions and answers were extracted by an earlier analysis pass, classified into the
-          question and answer taxonomy by GPT-5.6 Luna (taxonomy {qa.meta.taxonomyVersion}), and
-          consolidated into patterns and families by a second GPT-5.6 Luna pass
-          (consolidation {qa.meta.consolidationVersion}). Single-model results; human validation is
-          in progress. Other tabs on this site still reflect the earlier analysis generation.
+          Questions and answers were extracted from the comment corpus by the GPT-5-mini
+          classification pass, classified into the question and answer taxonomy by GPT-5.6 Luna
+          (taxonomy {qa.meta.taxonomyVersion}), and consolidated into patterns and families by a
+          second GPT-5.6 Luna pass (consolidation {qa.meta.consolidationVersion}). Single-model
+          results; human validation is in progress. The foundation figures on the Findings tab and
+          the Videos &amp; Comments and Validation Set tabs cover the earlier GPT-5-mini analysis
+          generation.
           {partial && <span className="font-semibold"> The consolidation currently covers a subset of the data (pilot run).</span>}
         </div>
 
@@ -661,9 +673,9 @@ window.AppQA = (function() {
         {/* Headline numbers */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <StatCard label="Questions extracted" value={s.extractedQuestions} />
-          <StatCard label="Never receive a reply" value={s.eligibleQuestions ? Math.round(100 * s.neverReplied / s.eligibleQuestions) : 0}
-                    format={(n) => n + '%'} hint={`${formatNumber(s.neverReplied)} of ${formatNumber(s.eligibleQuestions)} substantive questions`} />
-          <StatCard label="Answered when replied" value={s.answerRateReplied || 0} format={(n) => n + '%'}
+          <StatCard label="Never receive a reply" value={s.eligibleQuestions ? (100 * s.neverReplied / s.eligibleQuestions).toFixed(1) + '%' : '0%'}
+                    hint={`${formatNumber(s.neverReplied)} of ${formatNumber(s.eligibleQuestions)} substantive questions`} />
+          <StatCard label="Answered when replied" value={`${s.answerRateReplied || 0}%`}
                     hint={`${formatNumber(s.answered)} answered of ${formatNumber(s.replied)} replied`} />
           <StatCard label="Question patterns" value={s.questionPatterns} hint={`${formatNumber(s.questionFamilies)} families`} />
           <StatCard label="Answer patterns" value={s.answerPatterns} hint={`${formatNumber(s.answerFamilies)} families`} />
@@ -712,14 +724,14 @@ window.AppQA = (function() {
           <SectionHeader
             eyebrow="The reply side"
             title="How the crowd answers"
-            subtitle={`How the ${formatNumber(s.consolidatedAnswers)} answered questions got their answers: the primary mechanism of the best answering reply. The taxonomy also defines five engagement forms (A6 to A10) that respond to a question without resolving it; their rarity here shows that when a question does get answered, the answer is almost always substantive.`}
+            subtitle={`How the ${formatNumber(s.consolidatedAnswers)} answered questions got their answers: the primary mechanism of the best answering reply. The taxonomy also defines five engagement forms (A6 to A10) that respond to a question without resolving it; their rarity here shows that when a question does get answered, the answer is almost always substantive. Each answered question is counted once, by its primary (first-listed) answer type; the totals sum to the ${formatNumber(s.consolidatedAnswers)} answered questions.`}
           />
           <div className="grid md:grid-cols-2 gap-4">
             <Card title="Resolution mechanisms" subtitle="Answer types A1 to A5: replies that substantively answer the question">
               <AnswerTypeRows codes={['A1', 'A2', 'A3', 'A4', 'A5']} answerTypes={qa.answerTypes}
                               max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
             </Card>
-            <Card title="Engagement without resolution" subtitle="Answer types A6 to A10: reply forms that engage a question without resolving it">
+            <Card title="Engagement without resolution" subtitle="Answer types A6 to A10, plus a small Untyped residual: reply forms that engage a question without resolving it">
               <AnswerTypeRows codes={['A6', 'A7', 'A8', 'A9', 'A10', 'A0']} answerTypes={qa.answerTypes}
                               max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
             </Card>
@@ -756,7 +768,7 @@ window.AppQA = (function() {
           {/* Answer-rate contrast */}
           {(contrast.mostAnswered || []).length > 0 && (
             <Card title="Which questions get answered, and which get ignored"
-                  subtitle="Question families with at least 30 member questions; answer rate measured among questions that received replies">
+                  subtitle="Question families with at least 30 member questions (the two answer-rate columns additionally require at least 10 replied questions); answer rate measured among questions that received replies.">
               <div className="grid md:grid-cols-3 gap-6 text-xs">
                 <div>
                   <h4 className="font-semibold text-emerald-700 mb-3 flex items-center gap-1.5">
@@ -892,8 +904,8 @@ window.AppQA = (function() {
         <div ref={recRef} className="scroll-mt-20 space-y-4">
           <SectionHeader
             eyebrow="Row-level data"
-            title="Every extracted question"
-            subtitle="Each question the extraction pass found, with its canonical restatement, its reply outcome, and the best answering reply where one exists."
+            title="Every substantive question"
+            subtitle="Each question the extraction pass found, with its canonical restatement, its reply outcome, and the best answering reply where one exists. Shows the 12,933 substantive questions used in the gap analysis; the 2,047 social or rhetorical (Q11) records remain in the downloadable database."
           />
           <Card>
             {!records ? (
@@ -915,8 +927,8 @@ window.AppQA = (function() {
                     className="ml-auto text-xs border border-slate-200 rounded-md px-2 py-1.5 text-slate-700"
                   >
                     <option value="all">All question types</option>
-                    {Object.entries(qTypeNames).map(([code, name]) => (
-                      <option key={code} value={code}>{code} · {name}</option>
+                    {qa.questionTypes.map((t) => (
+                      <option key={t.code} value={t.code}>{t.code} · {t.name || qTypeNames[t.code]}</option>
                     ))}
                   </select>
                 </div>

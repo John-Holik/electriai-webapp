@@ -917,7 +917,9 @@ Rules for your response:
               <p className="text-slate-600 mt-2.5 leading-relaxed">
                 Ask about electrical construction, knowledge gaps, question trends over time, or how
                 practitioners answer each other. Answers come only from passages retrieved from the
-                taxonomy knowledge base, so every claim stays traceable. Citations:
+                taxonomy knowledge base, so every claim stays traceable. The taxonomy behind it is a
+                single-model pilot (GPT-5.6 Luna, taxonomy v0), provisional pending human
+                validation. Citations:
                 <span className="inline-flex items-center px-1.5 rounded bg-red-50 text-red-700 text-[11px] font-medium ml-1">▶ video</span> links the source YouTube video,
                 <span className="inline-flex items-center px-1.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium ml-1">comment</span> marks a Q&amp;A comment.
               </p>

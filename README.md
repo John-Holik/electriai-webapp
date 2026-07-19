@@ -1,4 +1,4 @@
-# ElectriAI, YouTube Q&A Knowledge for Electrical Contractors
+# ElectriAI: Practitioner Knowledge Base for Electrical Construction
 
 Companion website for the ElectriAI Research paper analyzing **794 YouTube videos** and **16,862 viewer comment threads** about electrical-construction topics. The site exposes the dataset, the figures, and a chatbot grounded in a 288-page knowledge base compiled from the question taxonomy.
 

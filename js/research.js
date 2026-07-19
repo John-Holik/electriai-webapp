@@ -1147,9 +1147,10 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={6}
+          number={9}
           title="Transcript topics treemap, weighted by total video views"
           caption="Treemap of the topics that appear in video transcripts. Tile area scales with the aggregate view count of every video that touches the topic, so larger tiles indicate where the audience is actually spending time. Hover any tile for averages; click to list the top videos in that topic."
+          dataSource="web_app/figures/transcript_topics_treemap_views_interactive.svg with web_app/data/transcript_topics_treemap_views_interactive.json"
         >
           <MplInlineChart
             svgUrl="figures/transcript_topics_treemap_views_interactive.svg"

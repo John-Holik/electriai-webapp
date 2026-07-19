@@ -632,7 +632,7 @@ window.AppResearch = (function() {
           h.node.removeEventListener('click', h.onClick);
         });
       };
-    }, [meta, getTooltip, onElementClick]);
+    }, [meta, getTooltip]);
 
     const selectedEl = selected && meta ? meta.elements.find(e => e.gid === selected) : null;
 

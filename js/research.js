@@ -1087,6 +1087,7 @@ window.AppResearch = (function() {
           number={7}
           title="Per-video question demand, reach, and engagement"
           caption="One bubble per video in the labeled corpus. Horizontal position is the video's reach (total views, log scale) and vertical position is its question demand (number of question comments, log scale), so videos drift up and to the right as they draw more viewers and more questions. Bubble size scales with likes on the video, and color shows the share of that video's questions that were answered on the same warm-to-cool bottleneck scale used elsewhere: warm bubbles are high-demand, low-answer hotspots, cool bubbles are well-covered, and videos with fewer than five questions stay gray because their answered share is too noisy to trust. Hover any bubble for its views, question count, and answered rate; click any bubble to open the video on YouTube and read a few of the actual questions viewers asked on it."
+          dataSource="web_app/figures/video_demand_map_interactive.html"
         >
           <iframe
             src="figures/video_demand_map_interactive.html"

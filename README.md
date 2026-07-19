@@ -40,9 +40,11 @@ web_app/
 ├── js/
 │   ├── utils.js                  # Small shared helpers
 │   ├── components.js             # Shared UI primitives (Chip, Card, modal overlay)
-│   ├── research.js               # Research Results tab (intro, stats, schema, 4 figures)
-│   ├── comments.js               # Raw Data tab (comment explorer)
-│   ├── chat.js                   # Ask ElectriAI (RAG)
+│   ├── research.js               # Findings tab (taxonomy + legacy figures, schema)
+│   ├── qa.js                     # Questions & Answers tab (taxonomy explorer)
+│   ├── chat.js                   # Ask the Knowledge Base (RAG)
+│   ├── rawdata.js                # Videos & Comments tab
+│   ├── comments.js               # Validation Set tab (comment explorer)
 │   ├── about.js                  # About tab
 │   └── app.js                    # Root component, tab routing, data loaders
 └── worker/

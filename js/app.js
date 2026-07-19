@@ -261,7 +261,7 @@
               <h1 className="serif text-base sm:text-lg font-semibold text-slate-900 leading-tight whitespace-nowrap">
                 Practitioner Knowledge Base for Electrical Construction
               </h1>
-              <p className="text-[11px] sm:text-xs text-slate-500 leading-tight mt-0.5">
+              <p className="text-[11px] sm:text-xs text-slate-500 leading-tight mt-0.5 max-w-2xl">
                 Identifying knowledge bottlenecks in electrical construction from practitioner discussion on YouTube using large language models
               </p>
             </div>

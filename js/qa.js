@@ -383,8 +383,8 @@ window.AppQA = (function() {
         <p className="text-[11px] text-slate-400 leading-relaxed">
           Bars show the share of each type&rsquo;s questions in each reply outcome. The right column is the
           type&rsquo;s question count and its answer rate among questions that received at least one reply.
-          A question counts as answered when a reply in its thread actually resolves it, as judged by
-          the classifier.
+          A question counts as answered when a reply in its thread actually resolves it, as judged in
+          the original GPT-5-mini pass that extracted the question and answer structure.
         </p>
       </div>
     );

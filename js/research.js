@@ -704,7 +704,7 @@ window.AppResearch = (function() {
     return <div ref={divRef} style={{ width: '100%', height: 460 }} />;
   }
 
-  // Figure 9: knowledge-gap quadrant. One bubble per question family
+  // Figure 2: knowledge-gap quadrant. One bubble per question family
   // (20 or more member questions): x answer rate among replied, y share
   // never replied, bubble area member count, color question type. Dashed
   // lines mark the corpus averages, so the upper-left region is the

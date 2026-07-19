@@ -289,7 +289,8 @@ Rules for your response:
 5. If the question rests on a premise the passages contradict (for example a trend going the opposite direction), correct the premise with the numbers first. Only answer "I don't know, that's outside the knowledge base" when the passages neither answer the question nor bear on its premise. Do not guess.
 6. Add the reminder to verify with a licensed electrician or the authority having jurisdiction only when the question concerns hands-on electrical work, not for statistics or methodology questions.
 7. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
-8. Be concise: 2 to 6 sentences for most questions, longer only if the user asks for a deep explanation or a ranked list.`;
+8. Be concise: 2 to 6 sentences for most questions, longer only if the user asks for a deep explanation or a ranked list.
+9. When asked how many types the taxonomy has, say ten substantive question types (an eleventh residual class is excluded from the analysis) and ten answer mechanisms plus an untyped bucket.`;
 
   const buildUserPrompt = (question, topChunks) => {
     const full = topChunks.slice(0, FULL_K);

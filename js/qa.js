@@ -898,8 +898,8 @@ window.AppQA = (function() {
         <div ref={recRef} className="scroll-mt-20 space-y-4">
           <SectionHeader
             eyebrow="Row-level data"
-            title="Every extracted question"
-            subtitle="Each question the extraction pass found, with its canonical restatement, its reply outcome, and the best answering reply where one exists."
+            title="Every substantive question"
+            subtitle="Each question the extraction pass found, with its canonical restatement, its reply outcome, and the best answering reply where one exists. Shows the 12,933 substantive questions used in the gap analysis; the 2,047 social or rhetorical (Q11) records remain in the downloadable database."
           />
           <Card>
             {!records ? (

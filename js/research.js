@@ -667,7 +667,7 @@ window.AppResearch = (function() {
 
   // ─── Question taxonomy figures (data: taxonomy_figures.json) ─────────
 
-  // Figure 8: stacked area of question type volume per year. Absolute
+  // Figure 1: stacked area of question type volume per year. Absolute
   // counts show both the volume surge and the mix; hover carries the
   // within-year share of each type.
   function TaxonomyTrendChart({ data }) {

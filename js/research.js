@@ -1098,15 +1098,16 @@ window.AppResearch = (function() {
         </FigureCard>
 
         <FigureCard
-          number={5}
+          number={8}
           title="Frequency of canonical themes across the dataset"
-          caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. Hover any bar for its count; click to see sample comments tagged with that theme. The long tail captures niche topics that surface in fewer than ten comments each, while the head is dominated by code, sizing, and grounding questions."
+          caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. Hover any bar for its count; click to see sample comments tagged with that theme. The head is dominated by grounding, bonding, raceway, and conductor sizing themes, while the long tail thins out to niche low-voltage topics with only a handful of comments each."
+          dataSource="web_app/figures/theme_dictionary_frequency_interactive.svg with web_app/data/theme_dictionary_frequency_interactive.json"
         >
           <MplInlineChart
             svgUrl="figures/theme_dictionary_frequency_interactive.svg"
             metaUrl="data/theme_dictionary_frequency_interactive.json"
             fallbackSvg="figures/theme_dictionary_frequency.svg"
-            fallbackAlt="Horizontal bar chart of canonical themes ranked by comment count, with code interpretation and sizing themes at the top."
+            fallbackAlt="Horizontal bar chart of canonical themes ranked by comment count, with grounding and bonding themes at the top."
             getTooltip={(el, meta) => {
               const total = (meta && meta.elements)
                 ? meta.elements.reduce((s, x) => s + (x.count || 0), 0)

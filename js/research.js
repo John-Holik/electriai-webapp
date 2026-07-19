@@ -1367,7 +1367,7 @@ window.AppResearch = (function() {
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">0.500</td>
                   <td className="text-right py-2 px-3">0.667</td>
-                  <td className="text-right py-2 pl-3">4.000</td>
+                  <td className="text-right py-2 pl-3">4</td>
                 </tr>
                 <tr>
                   <td className="py-2 pr-4">Other/Unmapped</td>

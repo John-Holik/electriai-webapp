@@ -864,7 +864,12 @@ Rules for your response:
           return next;
         });
       } catch (e) {
-        setError(e.message || String(e));
+        const msg = e.message || String(e);
+        // A 429 that survived the retry means the per-minute quota is
+        // exhausted; tell the user to wait rather than dumping raw JSON.
+        setError(/\(429\)/.test(msg)
+          ? 'The AI service is briefly rate limited. Wait about a minute and ask again.'
+          : msg);
         setMessages((m) => {
           const next = m.slice();
           if (next.length && next[next.length - 1].role === 'assistant') next.pop();

@@ -592,7 +592,7 @@ Rules for your response:
           <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Under the hood</div>
           <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">How Ask ElectriAI answers</h3>
           <p className="text-sm text-slate-600 serif">
-            Retrieval-augmented generation grounds every answer in retrieved knowledge-base passages, and each claim carries a citation back to its source.
+            The assistant composes answers from passages retrieved from the knowledge base, with instructions to cite its sources and to say so when the passages do not contain an answer.
           </p>
         </header>
         <div className="p-6 bg-stone-50">

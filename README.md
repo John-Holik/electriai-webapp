@@ -1,13 +1,15 @@
 # ElectriAI, YouTube Q&A Knowledge for Electrical Contractors
 
-Companion website for the ElectriAI Research paper analyzing **794 YouTube videos** and **~18,000 viewer comments** about electrical-construction topics. The site exposes the dataset, the figures, and a chatbot grounded in the project's markdown knowledge base.
+Companion website for the ElectriAI Research paper analyzing **794 YouTube videos** and **16,862 viewer comment threads** about electrical-construction topics. The site exposes the dataset, the figures, and a chatbot grounded in a 288-page knowledge base compiled from the question taxonomy.
 
-The site has four tabs:
+The site has six tabs:
 
-- **Research Results**, Project summary, top-line stats, the 10-class category schema (LV, HVAC, GBF, OCP, RE, DL, CRR, CISF, PDS, OTH), and the four paper visualizations from `notebooks/05_Visualizations.ipynb`: the knowledge-bottleneck bubble chart (interactive Plotly with an SVG fallback), theme dictionary frequency, transcript topics treemap, and a data-collection / comment-analysis panel.
-- **Ask ElectriAI**, RAG chatbot grounded in the question-taxonomy knowledge base (`data/kb_pages.json`, built by `src/web/build_kb_wiki.py` from the gpt-5-mini comment corpus and the taxonomy consolidation). Uses `gemini-embedding-001` (build-time) and `gemini-3.5-flash` (generation). Retrieval is hybrid: cosine similarity plus keyword and intent boosts, running fully in the browser. Production routes through the Cloudflare Worker proxy; on localhost a dev key in `localStorage` calls the Gemini API directly. Cites video IDs and comment IDs from the underlying corpus.
-- **Raw Data**, Searchable, filterable browser over the 200-comment curated set (20 per category × 10, sourced from `data/processed/qualtrics_comments.csv`) with every label attached: category, themes, topic / sub-topic, Q&A excerpts and summaries, reply counts, and video metadata.
-- **About**, Static page with authors, citation, code & data links, acknowledgments, and contact.
+- **Findings**, the taxonomy bottleneck figures (question-type reply and answer rates, family-level gaps, activity over time) plus the first-generation research figures: the knowledge-bottleneck bubble chart (interactive Plotly with an SVG fallback), theme dictionary frequency, transcript topics treemap, and a data-collection / comment-analysis panel, and the 10-class category schema (LV, HVAC, GBF, OCP, RE, DL, CRR, CISF, PDS, OTH).
+- **Questions & Answers**, explorer over the question taxonomy: ten substantive question types, ten answer mechanisms plus an untyped bucket, 263 question and 204 answer families, row-level records and downloads.
+- **Ask the Knowledge Base**, RAG chat over the 288-page taxonomy knowledge base (`data/kb_pages.json`, built by `src/web/build_kb_wiki.py` from the GPT-5-mini comment corpus and the GPT-5.6 Luna taxonomy consolidation). Uses `gemini-embedding-001` (build-time) and `gemini-3.5-flash` (generation). Retrieval is hybrid: cosine similarity plus keyword and intent boosts, running fully in the browser. Production routes through the Cloudflare Worker proxy; on localhost a dev key in `localStorage` calls the Gemini API directly. Cites video IDs and comment IDs from the underlying corpus.
+- **Videos & Comments**, searchable, filterable browser over the 404 Q&A videos and their 16,872 collected comment threads from `data/raw_videos.json`, with video metadata and full comment threads.
+- **Validation Set**, the 200-comment human-annotated subset (20 per category), validating the original GPT-5-mini classification, sourced from `data/processed/qualtrics_comments.csv`, with every label attached: category, themes, topic / sub-topic, Q&A excerpts and summaries, and reply counts.
+- **About**, static page with authors, citation, code & data links, acknowledgments, and contact.
 
 ## Architecture
 

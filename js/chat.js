@@ -124,7 +124,7 @@ window.AppChat = (function() {
     }
     if (!res.ok) {
       const errText = await res.text();
-      throw new Error(`generate (${res.status}): ${errText.slice(0, 240)}`);
+      throw new Error(`generate (${res.status}): ${errText.slice(0, 800)}`);
     }
     const reader = res.body.getReader();
     const decoder = new TextDecoder('utf-8');

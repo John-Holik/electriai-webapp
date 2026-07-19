@@ -1325,14 +1325,14 @@ window.AppResearch = (function() {
                   <td className="text-right py-2 px-3">0.900</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">0.947</td>
-                  <td className="text-right py-2 pl-3">9.000</td>
+                  <td className="text-right py-2 pl-3">9</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Overcurrent, Short-Circuit, and Protective Devices</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">1.000</td>
                   <td className="text-right py-2 px-3">1.000</td>
-                  <td className="text-right py-2 pl-3">9.000</td>
+                  <td className="text-right py-2 pl-3">9</td>
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="py-2 pr-4">Renewable Energy, EV, and Energy Management Systems*</td>

@@ -248,13 +248,6 @@ window.AppResearch = (function() {
           </p>
         )}
         <div ref={divRef} style={{ width: '100%', height: '640px' }} />
-        <noscript>
-          <img
-            src="figures/knowledge_bottleneck_bubble.svg"
-            alt="Static fallback bubble chart showing demand and answer rate per electrical theme."
-            style={{ width: '100%', display: 'block' }}
-          />
-        </noscript>
         {selected && (
           <div className="mt-4 bg-slate-100 rounded-lg p-4 border border-slate-200">
             <div className="flex items-baseline justify-between mb-3">

@@ -19,15 +19,18 @@ Vanilla React 18 (CDN) + Tailwind CSS (CDN) + Babel standalone for in-browser JS
 web_app/
 ├── index.html                    # Shell, tab nav, root mount, CDN script tags
 ├── README.md                     # This file
-├── data/                         # JSON exports built by src/web/export_data.py
+├── data/                         # JSON exports built by the src/web builders
 │   ├── comments.json
 │   ├── categories.json
 │   ├── summary_stats.json
 │   ├── theme_dictionary.json
+│   ├── qa_taxonomy.json          # taxonomy summary stats (src/web/export_qa_data.py)
+│   ├── qa_records.json           # row-level taxonomy records (src/web/export_qa_data.py)
+│   ├── raw_videos.json           # 404 Q&A videos + comment threads (src/web/build_web_raw_videos.py)
 │   ├── kb_pages.json             # taxonomy knowledge base (src/web/build_kb_wiki.py)
 │   ├── kb_embeddings.json        # (src/web/compute_kb_embeddings.py)
-│   ├── kb_chunks.json
-│   └── taxonomy_figures.json     # Findings Figures 8-10 (src/web/build_web_taxonomy_figures.py)
+│   ├── kb_chunks.json            # embedded chunks (src/web/compute_kb_embeddings.py)
+│   └── taxonomy_figures.json     # Findings taxonomy figures (src/web/build_web_taxonomy_figures.py)
 ├── figures/                      # PNG/SVG/HTML figure artifacts copied from notebooks
 │   ├── knowledge_bottleneck_bubble.html
 │   ├── knowledge_bottleneck_bubble.svg

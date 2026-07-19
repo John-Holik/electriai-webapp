@@ -205,7 +205,8 @@ window.AppQA = (function() {
               {tiers(s.consolidatedQuestions, 'Questions', 'individual comments')}
             </div>
             <p className="text-[11px] text-slate-400">
-              The reply side mirrors it: {qa.answerTypes.length} answer types, {formatNumber(s.answerFamilies)} families,
+              The reply side mirrors it: ten answer mechanisms (A1 to A10), plus a small untyped
+              bucket for replied rows with no classified mechanism, {formatNumber(s.answerFamilies)} families,
               and {formatNumber(s.answerPatterns)} patterns consolidate the {formatNumber(s.consolidatedAnswers)} replies
               that actually answered a question. Every tier traces back to real, linkable comments.
             </p>

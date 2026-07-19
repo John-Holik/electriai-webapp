@@ -1,7 +1,7 @@
-/* Research Results tab. Single landing tab that merges the old Overview
-   (project intro, headline stats, 10-class schema) with the old Findings
-   (four paper figures). The bottom "Where to next" CTA grid was dropped
-   when the tab count shrank to four. */
+/* Findings tab. Landing tab for the study: the question-taxonomy results
+   lead (headline gap numbers, methods summary, Figures 1 to 3), followed by
+   the foundation stage (10-class subject schema, legacy Figures 4 to 10,
+   and the Table 1 classification metrics). */
 
 window.AppResearch = (function() {
   const { useState, useEffect, useRef, useMemo } = React;

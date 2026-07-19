@@ -888,11 +888,105 @@ window.AppResearch = (function() {
         {/* Headline statistics grid. */}
         <section>
           <h3 className="serif text-xl font-semibold text-slate-900 mb-4">By the numbers</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {statCards.map((s) => (
               <StatCard key={s.label} label={s.label} value={s.value} hint={s.hint} format={s.format} />
             ))}
           </div>
+        </section>
+
+        {/* Methods at a glance: the two-stage pipeline in four labeled lines. */}
+        <section>
+          <div className="bg-white border border-slate-200 rounded-lg p-6">
+            <h3 className="serif text-lg font-semibold text-slate-900 mb-3">Methods at a glance</h3>
+            <dl className="space-y-3 text-sm text-slate-700 leading-relaxed">
+              <div>
+                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Corpus</dt>
+                <dd>16,862 comment threads from 794 collected YouTube videos (404 with Q&amp;A content; 398 distinct videos appear in the taxonomy database); comments span 2011 to 2025; scrape cutoff October 2025.</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Stage 1</dt>
+                <dd>GPT-5-mini classified every thread into question and answer structure and a ten-category subject schema; a balanced subset was human-validated through Qualtrics surveys (Table 1).</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Stage 2</dt>
+                <dd>GPT-5.6 Luna at medium reasoning effort re-read all 14,980 detected questions (1,882 rows with no question present were skipped upstream) and classified them under a frozen taxonomy instrument (taxonomy v0); a consolidation pass (v1) grouped the 12,933 substantive questions into 263 families and the 3,667 answered questions into 204 answer families.</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Limitations</dt>
+                <dd>Taxonomy labels are single-model and provisional pending human validation; answer types were judged from the GPT-5-mini reply summaries, not the raw replies; the v0 instrument is frozen but preliminary.</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+
+        {/* Question taxonomy section: what gets asked, how the mix shifted,
+            and how questions get resolved. Data: taxonomy_figures.json. */}
+        <div className="space-y-4">
+          <section>
+            <h3 className="serif text-xl font-semibold text-slate-900 mb-2">The question taxonomy</h3>
+            <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
+              Every extracted practitioner question ({kbMeta.questions ? formatNumber(kbMeta.questions) : '14,980'} in
+              total) was classified into ten substantive question types (a residual class, Q11 social or rhetorical,
+              is excluded from the gap analysis) and ten answer mechanisms (A1 to A10), plus a small untyped bucket
+              for replied rows with no classified mechanism. The 12,933 substantive questions were consolidated
+              into {kbMeta.questionFamilies || 263} recurring question families. Across the corpus, 60.2 percent of
+              substantive questions never received any reply, and 71.2 percent of replied questions got a substantive
+              answer. The three figures below summarize what practitioners ask, how the mix has shifted over the
+              years, and how (or whether) their questions get resolved. Labels and family consolidation come from a
+              single-model pilot (GPT-5.6 Luna at medium reasoning effort; taxonomy v0, consolidation v1) and are
+              provisional pending human validation.
+            </p>
+            <ol className="list-decimal pl-5 mt-3 space-y-1 text-sm text-slate-600 max-w-3xl leading-relaxed">
+              <li>Practice-justification questions (Q6) are the most ignored type: 67.4 percent never replied, and their answer rate when replied is second lowest at 61.2 percent.</li>
+              <li>Sourcing questions (Q9) are the largest type (17.6 percent) and second most ignored (66.8 percent never replied), yet answered 79.0 percent of the time when replied.</li>
+              <li>Content requests (Q10) have the worst answer rate among replied at 48.2 percent.</li>
+              <li>Permissibility and compliance questions (Q1) are best served at 81.3 percent answered when replied.</li>
+            </ol>
+            <p className="text-sm text-slate-600 max-w-3xl leading-relaxed mt-3">
+              The taxonomy labels themselves have not yet been human-validated; Table 1 in the foundation section
+              covers the first-stage subject classification.
+            </p>
+          </section>
+
+          <FigureCard
+            number={1}
+            title="Question type mix by year"
+            caption="Stacked question volume per year, split by primary question type. Dates are the publication dates of the question comments; the scrape cutoff is October 2025, so 2025 is a partial year. Hover any year for each type's count and its share of that year's questions. Resource identification and sourcing, conceptual, and permissibility questions are the largest substantive types overall, with practice-justification questions spiking in 2022. The gray band is the social or rhetorical residual (Q11), which is excluded from Figures 2 and 3. The chart covers 2018 through 2025 (14,834 of the 14,980 classified questions); 146 earlier comments dating back to 2011 are omitted."
+            dataSource="taxonomy_figures.json, built by src/web/build_web_taxonomy_figures.py from the GPT-5.6 Luna taxonomy database (v0) and consolidation (v1)"
+          >
+            <TaxonomyTrendChart data={taxFigs.typeYear} />
+          </FigureCard>
+        </div>
+
+        <FigureCard
+          number={2}
+          title="Knowledge gaps across question families"
+          caption="One bubble per question family with at least 20 member questions. Horizontal position is the share of replied questions that actually got answered; vertical position is the share of the family's questions that never received any reply; bubble area scales with the number of member questions, and color marks the question type. Dotted lines mark the corpus averages, so families in the upper-left region are the knowledge bottleneck: heavily ignored and, even when engaged, poorly resolved. Hover any bubble for the family's counts. Dotted lines mark the corpus averages: 71.2 percent of replied questions get a substantive answer, and 60.2 percent of substantive questions never receive any reply."
+          dataSource="taxonomy_figures.json, built by src/web/build_web_taxonomy_figures.py from the GPT-5.6 Luna taxonomy database (v0) and consolidation (v1)"
+        >
+          <GapQuadrantChart data={taxFigs.quadrant} meta={taxFigs.meta} />
+        </FigureCard>
+
+        <FigureCard
+          number={3}
+          title="How questions get resolved, from question type to answer mechanism"
+          caption="Flow from each substantive question type (left) to what its questions received (right): one of the ten answer mechanisms of the answer taxonomy, a reply without a classified type, or no reply at all. Flow width is the number of questions; where a question drew several answer mechanisms, the primary (first-listed) one is counted. Blue mechanisms resolve questions (prescription, explanation, experience, code citation, correction); gray ones engage without resolving (counter-question, referral, meta-response, speculation, social). All 12,933 substantive questions are shown; the largest single flow, 7,784 questions, ends at Never replied."
+          dataSource="taxonomy_figures.json, built by src/web/build_web_taxonomy_figures.py from the GPT-5.6 Luna taxonomy database (v0) and consolidation (v1)"
+        >
+          <QAFlowChart data={taxFigs.flow} />
+        </FigureCard>
+
+        {/* Foundation section: the prior stage the taxonomy builds on. */}
+        <section className="max-w-3xl">
+          <h3 className="serif text-xl font-semibold text-slate-900 mb-2">
+            Foundation: the corpus and the first-stage subject classification
+          </h3>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            The taxonomy above is built on this earlier stage: GPT-5-mini's first-pass classification of every
+            comment thread into question and answer structure and a ten-category subject schema, human-validated on
+            a balanced subset through Qualtrics surveys (Table 1).
+          </p>
         </section>
 
         {/* 10-class schema cards. */}

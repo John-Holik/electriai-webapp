@@ -52,12 +52,23 @@ window.AppChat = (function() {
   };
 
   // ─── Gemini API calls ──────────────────────────────────
+  // Free-tier Gemini quotas are per-minute, so a burst of questions can
+  // return 429. Read the retryDelay Gemini suggests in the error body,
+  // wait it out (capped at 25 s), and retry the request once.
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const retryAfter429 = async (res) => {
+    const body = await res.text();
+    const m = body.match(/"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"/);
+    const ms = Math.min(m ? parseFloat(m[1]) * 1000 : 10000, 25000);
+    await sleep(ms);
+  };
+
   // Embeds the user query and returns the 768-d vector.
   const embedQuery = async (apiKey, text, workerBase) => {
     const url = workerBase
       ? `${workerBase}/api/embed`
       : `${GEMINI_EMBED_URL}?key=${encodeURIComponent(apiKey)}`;
-    const res = await fetch(url, {
+    const post = () => fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -66,6 +77,11 @@ window.AppChat = (function() {
         outputDimensionality: 768,
       }),
     });
+    let res = await post();
+    if (res.status === 429) {
+      await retryAfter429(res);
+      res = await post();
+    }
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(`embed (${res.status}): ${errText.slice(0, 240)}`);

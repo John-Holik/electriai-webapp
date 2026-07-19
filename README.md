@@ -32,7 +32,6 @@ web_app/
 │   ├── kb_chunks.json            # embedded chunks (src/web/compute_kb_embeddings.py)
 │   └── taxonomy_figures.json     # Findings taxonomy figures (src/web/build_web_taxonomy_figures.py)
 ├── figures/                      # PNG/SVG/HTML figure artifacts copied from notebooks
-│   ├── knowledge_bottleneck_bubble.html
 │   ├── knowledge_bottleneck_bubble.svg
 │   ├── theme_dictionary_frequency.svg
 │   ├── transcript_topics_treemap_views.svg

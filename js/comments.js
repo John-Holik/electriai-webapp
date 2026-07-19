@@ -365,11 +365,18 @@ window.AppComments = (function() {
       <div className="animate-fade py-8">
 
         <section className="mb-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">Raw data</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">Validation set</p>
           <h2 className="serif text-3xl sm:text-4xl font-semibold text-slate-900 leading-tight">
             Browse {formatNumber(comments.length)} labeled comments
           </h2>
           <p className="text-slate-600 mt-3 max-w-2xl leading-relaxed">
+            200 category-balanced comments (20 per category) sampled for human
+            annotation. Set A (records 1 to 100) was independently labeled by ten
+            trained annotators through Qualtrics surveys; the 67 comments where the
+            annotators reached a majority consensus are the evaluation set behind the
+            GPT-5-mini classification metrics in Table 1 on the Findings tab. Set B
+            (records 101 to 200) is reserved for a future round. This set validates
+            the original GPT-5-mini subject classification, not the question taxonomy.
             Filter by the 10-class category, search across comment text and video
             title, narrow to a specific theme or video, then click any comment
             for the full label set and Q&amp;A summaries.

@@ -865,14 +865,17 @@ window.AppResearch = (function() {
     return (
       <div className="space-y-12 animate-fade py-8">
 
-        {/* Findings intro: section heading and overview paragraph. */}
+        {/* Findings intro: section heading and overview paragraphs. */}
         <section className="max-w-3xl">
           <h2 className="serif text-2xl sm:text-3xl font-semibold text-slate-900 leading-tight tracking-tight">
-            Where electrical field knowledge accumulates and where it stalls
+            Practitioner Knowledge Base for Electrical Construction
           </h2>
           <div className="text-slate-700 mt-5 leading-relaxed text-base space-y-4">
             <p>
-              The Electrical Field Q&amp;A Knowledge Base mines practitioner discussion on YouTube to identify knowledge bottlenecks in electrical construction, the topics where field practitioners ask the most questions but peer answers are hardest to find. Transcripts from 794 videos across the trade were collected, and every viewer question-and-answer comment thread was extracted and labeled to locate where practitioner demand outpaces peer resolution. Each comment is classified into a ten-category schema spanning the major areas of the electrical trade. GPT-5-mini performs a first-pass classification, and trained human annotators validate a balanced subset through Qualtrics surveys, which measures where the model agrees with practitioners and where it does not. On top of the subject labels, every extracted practitioner question is classified into an eleven-type question taxonomy and consolidated into 263 recurring question families, and every reply is typed by how it delivers (or fails to deliver) a solution. This site presents the study figures, an explorer for the labeled comment threads, the annotated validation set, and an assistant grounded in a knowledge base compiled from that question taxonomy.
+              The Practitioner Knowledge Base for Electrical Construction (ElectriAI for short) mines practitioner discussion on YouTube to identify knowledge bottlenecks in electrical construction: the topics where field practitioners ask the most questions but peer answers are hardest to find. GPT-5-mini classified 16,862 YouTube comment threads into question and answer structure; GPT-5.6 Luna (medium reasoning effort) then re-read all 14,980 detected questions and classified them into a literature-grounded question taxonomy of ten substantive question types (a residual class, Q11 social or rhetorical, is excluded from the gap analysis) and ten answer mechanisms (A1 to A10), plus a small untyped bucket for replied rows with no classified mechanism. The 12,933 substantive questions were consolidated into 263 recurring question families.
+            </p>
+            <p>
+              The headline finding: 60.2 percent of substantive questions never received any reply, and when someone did reply, 71.2 percent of questions got a substantive answer. The dominant knowledge gap is silence, not wrong answers. This site presents the study figures, an explorer for the labeled comment threads, the annotated validation set, and an assistant grounded in a knowledge base compiled from the question taxonomy.
             </p>
           </div>
         </section>

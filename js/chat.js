@@ -117,6 +117,11 @@ window.AppChat = (function() {
     });
     let res = await post(makeBody(false));
     if (res.status === 400) res = await post(makeBody(true));
+    if (res.status === 429) {
+      await retryAfter429(res);
+      res = await post(makeBody(false));
+      if (res.status === 400) res = await post(makeBody(true));
+    }
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(`generate (${res.status}): ${errText.slice(0, 240)}`);

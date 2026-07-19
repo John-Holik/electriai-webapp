@@ -853,13 +853,18 @@ window.AppResearch = (function() {
     }, [selectedCat, state.comments]);
 
     // Stat card definitions. Each entry carries the raw value plus the
-    // formatter used to render it, so the card can animate a count-up.
+    // formatter used to render it, so the card can animate a count-up. The
+    // two percentage cards read taxonomy_figures.json meta and render as
+    // preformatted strings (no count-up) so the decimal survives.
+    const taxMeta = taxFigs.meta || {};
     const statCards = [
       { label: 'Videos analyzed',      value: stats.totalVideos,   format: formatNumber,  hint: `${formatNumber(stats.videosWithQa)} with Q&A comments` },
       { label: 'Comments processed',   value: stats.totalComments, format: formatNumber },
       { label: 'Unique themes',        value: stats.uniqueThemes,  format: formatNumber },
-      { label: 'Questions classified', value: kbMeta.questions,    format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} question families` },
+      { label: 'Questions classified', value: kbMeta.questions,    format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} families among 12,933 substantive questions` },
       { label: 'Total video views',    value: stats.totalViews,    format: formatCompact },
+      { label: 'Never replied',        value: taxMeta.corpusNeverShare != null ? `${taxMeta.corpusNeverShare}%` : undefined, hint: '7,784 of 12,933 substantive questions' },
+      { label: 'Answered when replied', value: taxMeta.corpusAnswerRate != null ? `${taxMeta.corpusAnswerRate}%` : undefined, hint: '3,667 of 5,149 replied questions' },
     ];
 
     return (

@@ -350,7 +350,7 @@ window.AppResearch = (function() {
             .nodeId('id')
             .nodeLabel(n => `<div style="color:#000000;font-family:Arial,sans-serif;font-weight:bold;">${n.label}</div>`)
             .nodeVal('val')
-            // Color the links by their source theme's cluster color (was flat gray).
+            // Links render flat black at low opacity; weight drives width only.
             .linkColor(() => '#000000')
             .linkWidth(l => 0.3 + norm(l.weight) * 2.4)
             .linkOpacity(0.18)

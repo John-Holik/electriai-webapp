@@ -552,7 +552,7 @@ window.AppResearch = (function() {
   // The SVG file carries id="<prefix>-N" attributes (set via Artist.set_gid in
   // build_web_interactive_svgs.py); the sidecar JSON tells us what each gid
   // represents. Visual is pixel-identical to the original paper figure.
-  function MplInlineChart({ svgUrl, metaUrl, fallbackSvg, fallbackAlt, onElementClick, getTooltip, gidPrefix, renderDrilldown }) {
+  function MplInlineChart({ svgUrl, metaUrl, fallbackSvg, fallbackAlt, getTooltip, renderDrilldown }) {
     const containerRef = useRef(null);
     const [meta, setMeta]       = useState(null);
     const [selected, setSelected] = useState(null);

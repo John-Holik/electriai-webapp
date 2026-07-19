@@ -768,7 +768,7 @@ window.AppResearch = (function() {
     return <div ref={divRef} style={{ width: '100%', height: 520 }} />;
   }
 
-  // Figure 10: Sankey from question type to what its questions received:
+  // Figure 3: Sankey from question type to what its questions received:
   // one of the ten answer mechanisms, an untyped reply, or no reply at
   // all. Flow width is the number of questions; the answer mechanism is
   // the primary (first-listed) type on each question's replies.

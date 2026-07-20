@@ -1140,7 +1140,7 @@ window.AppResearch = (function() {
         <FigureCard
           number={2}
           title="Knowledge gaps across question families"
-          caption="One bubble per question family with at least 20 member questions. Horizontal position is the share of replied questions that actually got answered; vertical position is the share of the family's questions that never received any reply; bubble area scales with the number of member questions, and color marks the question type. Dotted lines mark the corpus averages: 71.2 percent of replied questions get a substantive answer, and 60.2 percent of substantive questions never receive any reply. Families in the upper-left region are the knowledge bottleneck: heavily ignored and, even when engaged, poorly resolved. Hover any bubble for the family's counts."
+          caption="One bubble per question family with at least 20 member questions. Horizontal position is the share of replied questions that actually got answered; vertical position is the share of the family's questions that never received any reply; bubble area scales with the number of member questions, and color marks the question type. Dotted lines mark the overall averages: 71.2 percent of replied questions get a substantive answer, and 60.2 percent of substantive questions never receive any reply. Families in the upper-left region are the knowledge bottleneck: heavily ignored and, even when engaged, poorly resolved. Hover any bubble for the family's counts."
           dataSource="taxonomy_figures.json, built by src/web/build_web_taxonomy_figures.py from the GPT-5.6 Luna taxonomy database (v0) and consolidation (v1)"
         >
           <GapQuadrantChart data={taxFigs.quadrant} meta={taxFigs.meta} />

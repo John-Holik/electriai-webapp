@@ -1158,7 +1158,7 @@ window.AppResearch = (function() {
         {/* Foundation section: the prior stage the taxonomy builds on. */}
         <section className="max-w-3xl">
           <h3 className="serif text-xl font-semibold text-slate-900 mb-2">
-            Foundation: the corpus and the first-stage subject classification
+            Foundation: the dataset and the first-stage subject classification
           </h3>
           <p className="text-sm text-slate-600 leading-relaxed">
             The taxonomy above is built on this earlier stage: GPT-5-mini's first-pass classification of every

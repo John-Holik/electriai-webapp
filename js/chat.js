@@ -1,6 +1,6 @@
 /* Ask ElectriAI tab. Retrieves the most relevant chunks from
    kb_embeddings.json + kb_chunks.json (the taxonomy knowledge base built
-   from the gpt-5-mini comment corpus and the question taxonomy) for a
+   from the gpt-5-mini comment dataset and the question taxonomy) for a
    user question, then asks Gemini to answer using only those chunks.
    Retrieval is hybrid: cosine similarity plus a light keyword overlap
    boost and intent routing that steers gap/trend/answering questions
@@ -203,7 +203,7 @@ window.AppChat = (function() {
   // ─── Retrieval ──────────────────────────────────────────
   // Intent routing: questions about gaps, trends, or answering behavior get
   // their matching analytics page boosted so the retriever reliably surfaces
-  // the corpus-level statistics pages, not just topically similar families.
+  // the dataset-level statistics pages, not just topically similar families.
   const INTENT_ROUTES = [
     { re: /\b(gap|gaps|unanswered|ignored|no answers?|never answered|least answered|bottleneck|underserved|missing knowledge|opportunit)/i,
       slugs: ['knowledge-gaps'] },
@@ -211,7 +211,7 @@ window.AppChat = (function() {
       slugs: ['trends-over-time'] },
     { re: /\b(how (do|are|does|often).*(answer|answered|solutions?|replie[sd]|respond)|answer types?|answer mechanisms?|solutions? (are )?(provided|delivered|given)|who answers|referral|kinds? of (answers?|replies))/i,
       slugs: ['how-solutions-are-provided'] },
-    { re: /\b(how many|corpus|dataset|data set|whole|overall|what (is|can) (this|the) (knowledge base|chatbot|assistant)|taxonomy)\b/i,
+    { re: /\b(how many|dataset|data set|whole|overall|what (is|can) (this|the) (knowledge base|chatbot|assistant)|taxonomy)\b/i,
       slugs: ['overview'] },
   ];
   const INTENT_BOOST = 0.08;
@@ -291,7 +291,22 @@ Rules for your response:
 7. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
 8. Be concise: 2 to 6 sentences for most questions, longer only if the user asks for a deep explanation or a ranked list.
 9. When asked how many types the taxonomy has, say ten substantive question types (an eleventh residual class is excluded from the analysis) and ten answer mechanisms plus an untyped bucket.
-10. When asked about the methodology, the models, or how reliable the statistics are, state that the taxonomy labels come from a single-model pilot (GPT-5.6 Luna, taxonomy v0, consolidation v1) and are provisional pending human validation.`;
+10. When asked about the methodology, the models, or how reliable the statistics are, state that the taxonomy labels come from a single-model pilot (GPT-5.6 Luna, taxonomy v0, consolidation v1) and are provisional pending human validation.
+11. Every number you state must appear verbatim in the passages. Never supply a code value, threshold, or measurement from your own knowledge, even when you are certain of the real-world figure. Typical violations to avoid: stating the 25 ohm ground-rod resistance threshold, a conduit burial depth, or a conductor ampacity when the passage does not spell that number out. If the passage says only that a code requirement exists without giving the figure, describe the requirement without the figure.
+12. When a rate or percentage in the passages is computed from fewer than 5 replied questions, state the tiny sample alongside it (for example "0% answered, but only 1 question was replied to") instead of quoting the rate alone.
+13. Some pages count replied questions of all types (5,609) while others count only replied substantive questions (5,149, excluding the social or rhetorical class). If figures you report use both bases, say the pages use these two different bases; do not present them as a contradiction or list both without explanation.
+14. Never use em dashes in your answers; use commas, parentheses, or separate sentences instead.`;
+
+  // Numbers in the answer that do not appear in the passages. Commas are
+  // stripped on both sides; matches require digit boundaries so "25" does
+  // not pass because "250.148" is present.
+  const ungroundedNumbers = (text, passages) => {
+    const hay = passages.replace(/,/g, '');
+    return [...new Set(text.match(/\d[\d,]*(?:\.\d+)?/g) || [])].filter((n) => {
+      const tok = n.replace(/,/g, '').replace(/\./g, '\\.');
+      return !new RegExp('(^|[^0-9.])' + tok + '(?![0-9])').test(hay);
+    });
+  };
 
   const buildUserPrompt = (question, topChunks) => {
     const full = topChunks.slice(0, FULL_K);
@@ -306,7 +321,7 @@ Rules for your response:
       const snippet = (ch.chunkText || '').slice(0, COMPACT_CHARS).trim();
       return `[Passage ${FULL_K + i + 1}, score=${c.score.toFixed(3)}] ${ch.title}${ch.sectionTitle ? ', ' + ch.sectionTitle : ''}\n${snippet}${ch.chunkText.length > COMPACT_CHARS ? '…' : ''}`;
     }).join('\n\n');
-    return `Retrieved passages from the ElectriAI knowledge base:\n\n${fullBlocks}${compactBlocks ? '\n\n---\n\n' + compactBlocks : ''}\n\n---\n\nUser question: ${question}\n\nAnswer using only the passages above. Preserve any (V:...) and (Q:...) citations exactly as they appear.`;
+    return `Retrieved passages from the ElectriAI knowledge base:\n\n${fullBlocks}${compactBlocks ? '\n\n---\n\n' + compactBlocks : ''}\n\n---\n\nUser question: ${question}\n\nAnswer using only the passages above. Preserve any (V:...) and (Q:...) citations exactly as they appear. Every number in your answer must appear in the passages above; if a code value or threshold is not spelled out there, describe the requirement without the number.`;
   };
 
   // ─── Citation rendering ────────────────────────────────
@@ -625,7 +640,7 @@ Rules for your response:
 
   // ─── Knowledge-base coverage figure ────────────────────
   // Left: a conic-gradient donut splitting the knowledge-base pages by
-  // page kind (question families, question types, answer types, corpus
+  // page kind (question families, question types, answer types, dataset
   // analytics). Right: the largest question families by member questions,
   // as animated bars.
   function CoverageFigure({ wikiPages, meta }) {
@@ -659,7 +674,7 @@ Rules for your response:
           <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Coverage</div>
           <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">What the knowledge base covers</h3>
           <p className="text-sm text-slate-600 serif">
-            {total} pages compiled from the question taxonomy{meta ? `: ${formatNumber(meta.questions)} classified practitioner questions across ${formatNumber(meta.videos)} videos, with per-family statistics, real question and answer pairs, yearly activity, and corpus analytics for knowledge gaps, trends, and answering behavior` : ''}.
+            {total} pages compiled from the question taxonomy{meta ? `: ${formatNumber(meta.questions)} classified practitioner questions across ${formatNumber(meta.videos)} videos, with per-family statistics, real question and answer pairs, yearly activity, and dataset analytics for knowledge gaps, trends, and answering behavior` : ''}.
           </p>
         </header>
         <div className="p-6 grid md:grid-cols-[minmax(0,220px)_1fr] gap-8 items-center">
@@ -847,14 +862,31 @@ Rules for your response:
 
         // 4. Build the prompt and stream the answer.
         const userPrompt = buildUserPrompt(question, topChunks);
-        const result = await streamGenerate(apiKey, SYSTEM_PROMPT, userPrompt, (partial) => {
+        const onPartial = (partial) => {
           setMessages((m) => {
             const next = m.slice();
             const last = next[next.length - 1];
             next[next.length - 1] = { ...last, text: partial };
             return next;
           });
-        }, workerBase);
+        };
+        let result = await streamGenerate(apiKey, SYSTEM_PROMPT, userPrompt, onPartial, workerBase);
+
+        // 4b. Numeric provenance check. Any number in the answer that does
+        // not appear in the retrieved passages (digit-boundary match, commas
+        // stripped) triggers one corrective regeneration naming the
+        // offending numbers.
+        const bad = ungroundedNumbers(result.text || '', userPrompt);
+        if (bad.length) {
+          const fixPrompt = userPrompt
+            + `
+
+Your previous draft contained the number(s) ${bad.join(', ')}, which do not appear `
+            + 'in the passages above. Rewrite the answer using only numbers that appear in the passages; '
+            + 'if a code value or threshold is not spelled out there, describe the requirement without the number.';
+          const retry = await streamGenerate(apiKey, SYSTEM_PROMPT, fixPrompt, onPartial, workerBase);
+          if (retry.text) result = retry;
+        }
 
         // 5. Mark assistant message complete and attach references. Surface a
         // friendly error if the model returned nothing.

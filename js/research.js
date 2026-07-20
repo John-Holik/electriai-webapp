@@ -707,7 +707,7 @@ window.AppResearch = (function() {
   // Figure 2: knowledge-gap quadrant. One bubble per question family
   // (20 or more member questions): x answer rate among replied, y share
   // never replied, bubble area member count, color question type. Dashed
-  // lines mark the corpus averages, so the upper-left region is the
+  // lines mark the overall averages, so the upper-left region is the
   // bottleneck: heavily ignored and poorly resolved.
   function GapQuadrantChart({ data, meta }) {
     const divRef = useRef(null);
@@ -738,8 +738,8 @@ window.AppResearch = (function() {
         hovertemplate: '<b>%{customdata[0]}</b><br>%{customdata[1]:,} questions, %{customdata[2]:,} answered'
           + '<br>answer rate among replied: %{x}%<br>never replied: %{y}%<extra>' + g.name + '</extra>',
       }));
-      const vline = meta ? meta.corpusAnswerRate : 70;
-      const hline = meta ? meta.corpusNeverShare : 60;
+      const vline = meta ? meta.overallAnswerRate : 70;
+      const hline = meta ? meta.overallNeverShare : 60;
       // Leader-line callouts for the three extreme families, located by their
       // exact label strings in the loaded data so text and position stay in
       // sync with the figure data.
@@ -776,11 +776,11 @@ window.AppResearch = (function() {
             showarrow: false, font: { size: 10, color: '#b91c1c' } },
           { xref: 'paper', yref: 'paper', x: 0.99, y: 0.01, text: 'Well covered',
             showarrow: false, font: { size: 10, color: '#047857' }, xanchor: 'right' },
-          // Corpus-average labels pinned to the dashed reference lines; the
+          // Overall-average labels pinned to the dashed reference lines; the
           // values come from taxonomy_figures.json meta, not hardcoded copy.
-          { x: vline, yref: 'paper', y: 0.99, text: `corpus average ${vline}% answered when replied`,
+          { x: vline, yref: 'paper', y: 0.99, text: `overall average ${vline}% answered when replied`,
             showarrow: false, xanchor: 'left', xshift: 6, font: { size: 10, color: '#64748b' } },
-          { xref: 'paper', x: 0.99, y: hline, text: `corpus average ${hline}% never replied`,
+          { xref: 'paper', x: 0.99, y: hline, text: `overall average ${hline}% never replied`,
             showarrow: false, xanchor: 'right', yshift: 10, font: { size: 10, color: '#64748b' } },
           ...callouts,
         ],
@@ -839,6 +839,203 @@ window.AppResearch = (function() {
     return <div ref={divRef} style={{ width: '100%', height: 560 }} />;
   }
 
+  // Methods pipeline figure. Replaces the prose methods summary with a
+  // visual flow: four stage cards (dataset, stage 1, stage 2, consolidation)
+  // joined by arrows, a record-flow funnel showing where rows drop out, an
+  // outcome bar splitting the substantive questions by what they received,
+  // and a limitations footnote. Counts are fixed values from the frozen
+  // GPT-5.6 Luna taxonomy database (v0) and consolidation (v1).
+  function MethodsPipeline() {
+    // Stage cards. Full Tailwind class strings are stored per card so the
+    // CDN build sees every class name verbatim in the rendered DOM. The
+    // pipeline uses cool hues (sky, indigo, violet, fuchsia) only; warm
+    // traffic-light colors are reserved for the outcome bar below so the
+    // two color systems never overlap.
+    const stages = [
+      {
+        step: '1',
+        label: 'Dataset',
+        headline: '794',
+        unit: 'YouTube videos collected',
+        lines: [
+          '404 videos have Q&A comment threads; 398 of them contribute at least one detected question to the taxonomy database',
+          '16,862 viewer comment threads',
+          'Comments span 2011 to 2025; scrape cutoff October 2025',
+        ],
+        card: 'bg-sky-50 border-sky-200',
+        badge: 'bg-sky-500',
+        accent: 'text-sky-700',
+      },
+      {
+        step: '2',
+        label: 'Stage 1 · GPT-5-mini',
+        headline: '16,862',
+        unit: 'comment threads classified',
+        lines: [
+          'Question and answer structure plus a ten-category subject schema per thread',
+          'Balanced 100-comment subset human-validated through Qualtrics surveys (agreement metrics in Table 1)',
+          'Output: 14,980 detected questions',
+        ],
+        card: 'bg-indigo-50 border-indigo-200',
+        badge: 'bg-indigo-500',
+        accent: 'text-indigo-700',
+      },
+      {
+        step: '3',
+        label: 'Stage 2 · GPT-5.6 Luna',
+        headline: '14,980',
+        unit: 'questions re-read and classified',
+        lines: [
+          'Medium reasoning effort under the frozen taxonomy instrument (v0)',
+          'Ten substantive question types (Q1 to Q10) plus a social or rhetorical residual (Q11)',
+          'Ten answer mechanisms (A1 to A10) for replied questions',
+        ],
+        card: 'bg-violet-50 border-violet-200',
+        badge: 'bg-violet-500',
+        accent: 'text-violet-700',
+      },
+      {
+        step: '4',
+        label: 'Consolidation (v1)',
+        headline: '263',
+        unit: 'recurring question families',
+        lines: [
+          'Grouped from the 12,933 substantive questions',
+          '3,667 answered questions (of 5,149 replied) grouped into 204 answer families',
+        ],
+        card: 'bg-fuchsia-50 border-fuchsia-200',
+        badge: 'bg-fuchsia-500',
+        accent: 'text-fuchsia-700',
+      },
+    ];
+
+    // Record-flow funnel. Bar width is proportional to the count that
+    // survives each step; the drop line above a bar explains what was
+    // removed between it and the bar before, and the right-hand label
+    // gives the share of the original 16,862 threads that remains.
+    const funnel = [
+      { count: 16862, label: '16,862 comment threads (one candidate question each) enter Stage 1', bar: 'bg-sky-300' },
+      { count: 14980, label: '14,980 detected questions enter Stage 2', drop: '1,882 threads with no question present are skipped', bar: 'bg-indigo-300' },
+      { count: 12933, label: '12,933 substantive questions enter the gap analysis', drop: '2,047 social or rhetorical questions (Q11) are excluded', bar: 'bg-violet-300' },
+    ];
+
+    // Outcome split of the 12,933 substantive questions, worst outcome
+    // first to match the headline finding that silence dominates. Fill
+    // shades are chosen so the in-segment text meets contrast guidelines.
+    // Percentages are rounded to one decimal, so they can sum to slightly
+    // over 100.
+    const outcomes = [
+      { pct: 60.2, label: 'Never replied', detail: '7,784 questions (60.2% of substantive)', seg: 'bg-rose-600 text-white', dot: 'bg-rose-600' },
+      { pct: 11.5, label: 'Replied without a substantive answer', detail: '1,482 questions (11.5% of substantive)', seg: 'bg-amber-400 text-slate-900', dot: 'bg-amber-400' },
+      { pct: 28.4, label: 'Replied and answered', detail: '3,667 questions (28.4% of substantive; 71.2% of the 5,149 replied)', seg: 'bg-emerald-700 text-white', dot: 'bg-emerald-700' },
+    ];
+
+    return (
+      <div className="bg-white border border-slate-200 rounded-lg p-6">
+        <h3 className="serif text-lg font-semibold text-slate-900">Methods at a glance</h3>
+        <p className="text-xs text-slate-500 mt-1 max-w-3xl leading-relaxed">
+          Two model stages take 794 collected videos to 263 recurring question families. The funnel shows where
+          records drop out along the way, and the outcome bar shows what the substantive questions received.
+        </p>
+
+        {/* Stage cards joined by arrows: horizontal on desktop, stacked on mobile. */}
+        <div className="mt-5 flex flex-col md:flex-row items-stretch gap-2">
+          {stages.map((s, i) => (
+            <React.Fragment key={s.label}>
+              {i > 0 && (
+                <div className="flex items-center justify-center text-slate-300 shrink-0">
+                  <svg className="w-5 h-5 rotate-90 md:rotate-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )}
+              <div className={`flex-1 min-w-0 border rounded-lg p-4 ${s.card}`}>
+                <div className="flex items-center gap-2">
+                  <span className={`w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center shrink-0 ${s.badge}`}>{s.step}</span>
+                  <span className="text-[11px] uppercase tracking-wider font-semibold text-slate-500">{s.label}</span>
+                </div>
+                <div className={`mt-2 text-2xl font-semibold tabular-nums ${s.accent}`}>{s.headline}</div>
+                <div className="text-xs text-slate-500">{s.unit}</div>
+                <ul className="mt-2 space-y-1 text-xs text-slate-600 leading-relaxed">
+                  {s.lines.map((line) => (
+                    <li key={line} className="flex gap-1.5">
+                      <span className="text-slate-400 shrink-0">·</span>
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Record-flow funnel. */}
+        <div className="mt-6">
+          <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2">Record flow</div>
+          <div className="space-y-1">
+            {funnel.map((f) => (
+              <div key={f.label}>
+                {f.drop && (
+                  <div className="flex items-center gap-1.5 py-1 pl-1 text-[11px] text-rose-600">
+                    <svg className="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z" clipRule="evenodd" />
+                    </svg>
+                    <span>{f.drop}</span>
+                  </div>
+                )}
+                <div className="relative h-6 bg-slate-100 rounded overflow-hidden">
+                  <div className={`h-full rounded ${f.bar}`} style={{ width: `${(f.count / 16862 * 100).toFixed(1)}%` }} />
+                  <div className="absolute inset-y-0 left-2 flex items-center text-[11px] font-medium text-slate-900 whitespace-nowrap">{f.label}</div>
+                  {f.drop && (
+                    <div className="absolute inset-y-0 right-2 hidden sm:flex items-center text-[10px] text-slate-500 whitespace-nowrap">
+                      {(f.count / 16862 * 100).toFixed(1)}% of threads remain
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Outcome bar for the substantive questions. */}
+        <div className="mt-6">
+          <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2">
+            Outcomes for the 12,933 substantive questions
+          </div>
+          <div className="flex h-7 rounded overflow-hidden">
+            {outcomes.map((o) => (
+              <div key={o.label} className={`flex items-center justify-center text-[11px] font-medium ${o.seg}`} style={{ width: `${o.pct}%` }}>
+                {o.pct}%
+              </div>
+            ))}
+          </div>
+          <div className="mt-2 flex flex-col sm:flex-row sm:flex-wrap gap-x-6 gap-y-1">
+            {outcomes.map((o) => (
+              <div key={o.label} className="flex items-start gap-1.5 text-[11px] text-slate-600 leading-relaxed">
+                <span className={`w-2.5 h-2.5 rounded-sm mt-0.5 shrink-0 ${o.dot}`} />
+                <span><span className="font-semibold text-slate-700">{o.label}:</span> {o.detail}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-1.5 text-[10px] text-slate-400">Percentages are rounded to one decimal and may not sum to exactly 100.</p>
+        </div>
+
+        {/* Limitations footnote. */}
+        <div className="mt-6 pt-4 border-t border-slate-200 flex gap-2 text-[11px] text-slate-500 leading-relaxed">
+          <svg className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+          </svg>
+          <p>
+            <span className="font-semibold text-slate-600">Limitations:</span> taxonomy labels are single-model and
+            provisional pending human validation; answer types were judged from the GPT-5-mini reply summaries, not
+            the raw replies; the v0 instrument is frozen but preliminary. Counts come from the GPT-5.6 Luna taxonomy
+            database (v0) and consolidation (v1).
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   function ResearchTab({ state }) {
     const stats = state.stats || {};
     const kbMeta = state.kbMeta || {};
@@ -863,8 +1060,8 @@ window.AppResearch = (function() {
       { label: 'Unique themes',        value: stats.uniqueThemes,  format: formatNumber },
       { label: 'Questions classified', value: kbMeta.questions,    format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} families among 12,933 substantive questions` },
       { label: 'Total video views',    value: stats.totalViews,    format: formatCompact },
-      { label: 'Never replied',        value: taxMeta.corpusNeverShare != null ? `${taxMeta.corpusNeverShare}%` : undefined, hint: '7,784 of 12,933 substantive questions' },
-      { label: 'Answered when replied', value: taxMeta.corpusAnswerRate != null ? `${taxMeta.corpusAnswerRate}%` : undefined, hint: '3,667 of 5,149 replied questions' },
+      { label: 'Never replied',        value: taxMeta.overallNeverShare != null ? `${taxMeta.overallNeverShare}%` : undefined, hint: '7,784 of 12,933 substantive questions' },
+      { label: 'Answered when replied', value: taxMeta.overallAnswerRate != null ? `${taxMeta.overallAnswerRate}%` : undefined, hint: '3,667 of 5,149 replied questions' },
     ];
 
     return (
@@ -895,29 +1092,10 @@ window.AppResearch = (function() {
           </div>
         </section>
 
-        {/* Methods at a glance: the two-stage pipeline in four labeled lines. */}
+        {/* Methods at a glance: the two-stage pipeline as a visual figure
+            (stage cards, record-flow funnel, outcome bar, limitations). */}
         <section>
-          <div className="bg-white border border-slate-200 rounded-lg p-6">
-            <h3 className="serif text-lg font-semibold text-slate-900 mb-3">Methods at a glance</h3>
-            <dl className="space-y-3 text-sm text-slate-700 leading-relaxed">
-              <div>
-                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Corpus</dt>
-                <dd>16,862 comment threads from 794 collected YouTube videos (404 with Q&amp;A content; 398 distinct videos appear in the taxonomy database); comments span 2011 to 2025; scrape cutoff October 2025.</dd>
-              </div>
-              <div>
-                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Stage 1</dt>
-                <dd>GPT-5-mini classified every thread into question and answer structure and a ten-category subject schema; a balanced subset was human-validated through Qualtrics surveys (Table 1).</dd>
-              </div>
-              <div>
-                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Stage 2</dt>
-                <dd>GPT-5.6 Luna at medium reasoning effort re-read all 14,980 detected questions (1,882 rows with no question present were skipped upstream) and classified them under a frozen taxonomy instrument (taxonomy v0); a consolidation pass (v1) grouped the 12,933 substantive questions into 263 families and the 3,667 answered questions into 204 answer families.</dd>
-              </div>
-              <div>
-                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Limitations</dt>
-                <dd>Taxonomy labels are single-model and provisional pending human validation; answer types were judged from the GPT-5-mini reply summaries, not the raw replies; the v0 instrument is frozen but preliminary.</dd>
-              </div>
-            </dl>
-          </div>
+          <MethodsPipeline />
         </section>
 
         {/* Question taxonomy section: what gets asked, how the mix shifted,
@@ -930,7 +1108,7 @@ window.AppResearch = (function() {
               total) was classified into ten substantive question types (a residual class, Q11 social or rhetorical,
               is excluded from the gap analysis) and ten answer mechanisms (A1 to A10), plus a small untyped bucket
               for replied rows with no classified mechanism. The 12,933 substantive questions were consolidated
-              into {kbMeta.questionFamilies || 263} recurring question families. Across the corpus, 60.2 percent of
+              into {kbMeta.questionFamilies || 263} recurring question families. Across the dataset, 60.2 percent of
               substantive questions never received any reply, and 71.2 percent of replied questions got a substantive
               answer. The three figures below summarize what practitioners ask, how the mix has shifted over the
               years, and how (or whether) their questions get resolved. Labels and family consolidation come from a
@@ -962,7 +1140,7 @@ window.AppResearch = (function() {
         <FigureCard
           number={2}
           title="Knowledge gaps across question families"
-          caption="One bubble per question family with at least 20 member questions. Horizontal position is the share of replied questions that actually got answered; vertical position is the share of the family's questions that never received any reply; bubble area scales with the number of member questions, and color marks the question type. Dotted lines mark the corpus averages: 71.2 percent of replied questions get a substantive answer, and 60.2 percent of substantive questions never receive any reply. Families in the upper-left region are the knowledge bottleneck: heavily ignored and, even when engaged, poorly resolved. Hover any bubble for the family's counts."
+          caption="One bubble per question family with at least 20 member questions. Horizontal position is the share of replied questions that actually got answered; vertical position is the share of the family's questions that never received any reply; bubble area scales with the number of member questions, and color marks the question type. Dotted lines mark the overall averages: 71.2 percent of replied questions get a substantive answer, and 60.2 percent of substantive questions never receive any reply. Families in the upper-left region are the knowledge bottleneck: heavily ignored and, even when engaged, poorly resolved. Hover any bubble for the family's counts."
           dataSource="taxonomy_figures.json, built by src/web/build_web_taxonomy_figures.py from the GPT-5.6 Luna taxonomy database (v0) and consolidation (v1)"
         >
           <GapQuadrantChart data={taxFigs.quadrant} meta={taxFigs.meta} />
@@ -980,7 +1158,7 @@ window.AppResearch = (function() {
         {/* Foundation section: the prior stage the taxonomy builds on. */}
         <section className="max-w-3xl">
           <h3 className="serif text-xl font-semibold text-slate-900 mb-2">
-            Foundation: the corpus and the first-stage subject classification
+            Foundation: the dataset and the first-stage subject classification
           </h3>
           <p className="text-sm text-slate-600 leading-relaxed">
             The taxonomy above is built on this earlier stage: GPT-5-mini's first-pass classification of every
@@ -1063,7 +1241,7 @@ window.AppResearch = (function() {
         <FigureCard
           number={5}
           title="Knowledge-demand terrain across the theme map"
-          caption="A three-dimensional landscape built over the same theme co-occurrence map as Figure 6. Each theme raises a peak whose height scales with how often electricians ask about it, and the surface is colored by how often those questions actually get answered: warm terrain marks the knowledge bottleneck (high demand, few answers) while cool terrain marks well-covered themes. Two of the tallest warm peaks are conductor terminations and splicing and jobsite workflow, tools, and best practices: heavily asked but answered several points below the corpus average (26 percent in the figure hover text, the same mean drawn at 26.5 percent in Figure 4). Drag to orbit, scroll to zoom, and hover any summit for its theme, question volume, and answer rate; the question volume shown is a relevance-weighted score, not a count of questions."
+          caption="A three-dimensional landscape built over the same theme co-occurrence map as Figure 6. Each theme raises a peak whose height scales with how often electricians ask about it, and the surface is colored by how often those questions actually get answered: warm terrain marks the knowledge bottleneck (high demand, few answers) while cool terrain marks well-covered themes. Two of the tallest warm peaks are conductor terminations and splicing and jobsite workflow, tools, and best practices: heavily asked but answered several points below the overall average (26 percent in the figure hover text, the same mean drawn at 26.5 percent in Figure 4). Drag to orbit, scroll to zoom, and hover any summit for its theme, question volume, and answer rate; the question volume shown is a relevance-weighted score, not a count of questions."
           dataSource="figures/theme_terrain_3d_interactive.html"
         >
           <iframe
@@ -1086,7 +1264,7 @@ window.AppResearch = (function() {
         <FigureCard
           number={7}
           title="Per-video question demand, reach, and engagement"
-          caption="One bubble per video in the labeled corpus. Horizontal position is the video's reach (total views, log scale) and vertical position is its question demand (number of question comments, log scale), so videos drift up and to the right as they draw more viewers and more questions. Bubble size scales with likes on the video, and color shows the share of that video's questions that were answered on the same warm-to-cool bottleneck scale used elsewhere: warm bubbles are high-demand, low-answer hotspots, cool bubbles are well-covered, and videos with fewer than five questions stay gray because their answered share is too noisy to trust. Hover any bubble for its views, question count, and answered rate; click any bubble to open the video on YouTube and read a few of the actual questions viewers asked on it."
+          caption="One bubble per video in the labeled dataset. Horizontal position is the video's reach (total views, log scale) and vertical position is its question demand (number of question comments, log scale), so videos drift up and to the right as they draw more viewers and more questions. Bubble size scales with likes on the video, and color shows the share of that video's questions that were answered on the same warm-to-cool bottleneck scale used elsewhere: warm bubbles are high-demand, low-answer hotspots, cool bubbles are well-covered, and videos with fewer than five questions stay gray because their answered share is too noisy to trust. Hover any bubble for its views, question count, and answered rate; click any bubble to open the video on YouTube and read a few of the actual questions viewers asked on it."
           dataSource="figures/video_demand_map_interactive.html"
         >
           <iframe

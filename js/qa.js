@@ -262,7 +262,7 @@ window.AppQA = (function() {
           <div className="border-l-4 rounded-r-md bg-rose-50/60 border-rose-400 px-4 py-3 text-slate-700">
             <span className="font-semibold text-rose-700">Silence is the dominant failure mode. </span>
             {pctNever}% of substantive questions never receive a single reply of any kind. That is
-            the largest observed loss of knowledge transfer in the corpus.
+            the largest observed loss of knowledge transfer in the dataset.
           </div>
           <div className="border-l-4 rounded-r-md bg-emerald-50/60 border-emerald-400 px-4 py-3 text-slate-700">
             <span className="font-semibold text-emerald-700">When someone engages, answers usually follow. </span>
@@ -309,7 +309,7 @@ window.AppQA = (function() {
                    title={`Never replied: ${formatNumber(outcome.neverReplied)}`} noLabel />
             </div>
             <div className="flex items-baseline justify-between text-[11px] text-slate-500">
-              <span className="tabular-nums">{formatNumber(outcome.total)} questions · {share}% of corpus</span>
+              <span className="tabular-nums">{formatNumber(outcome.total)} questions · {share}% of dataset</span>
               {outcome.answerRateReplied !== null && (
                 <span className="tabular-nums">{outcome.answerRateReplied}% answered when replied</span>
               )}
@@ -647,7 +647,7 @@ window.AppQA = (function() {
         {/* Provenance banner: these numbers come from the new analysis generation */}
         <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-900 leading-relaxed">
           <span className="font-semibold">Preliminary results. </span>
-          Questions and answers were extracted from the comment corpus by the GPT-5-mini
+          Questions and answers were extracted from the comment dataset by the GPT-5-mini
           classification pass, classified into the question and answer taxonomy by GPT-5.6 Luna
           (taxonomy {qa.meta.taxonomyVersion}), and consolidated into patterns and families by a
           second GPT-5.6 Luna pass (consolidation {qa.meta.consolidationVersion}). Single-model
@@ -743,7 +743,7 @@ window.AppQA = (function() {
           <SectionHeader
             eyebrow="The dictionary's head"
             title="The most common questions and answers"
-            subtitle="The consolidated patterns with the most member comments, across the whole corpus."
+            subtitle="The consolidated patterns with the most member comments, across the whole dataset."
           />
           <div className="grid md:grid-cols-2 gap-4">
             <Card title="Top question patterns" subtitle="Most frequent consolidated questions across the analyzed comments">

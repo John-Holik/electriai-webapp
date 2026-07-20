@@ -839,6 +839,191 @@ window.AppResearch = (function() {
     return <div ref={divRef} style={{ width: '100%', height: 560 }} />;
   }
 
+  // Methods pipeline figure. Replaces the prose methods summary with a
+  // visual flow: four stage cards (corpus, stage 1, stage 2, consolidation)
+  // joined by arrows, a record-flow funnel showing where rows drop out, an
+  // outcome bar splitting the substantive questions by what they received,
+  // and a limitations footnote. Counts are fixed values from the frozen
+  // GPT-5.6 Luna taxonomy database (v0) and consolidation (v1).
+  function MethodsPipeline() {
+    // Stage cards. Full Tailwind class strings are stored per card so the
+    // CDN build sees every class name verbatim in the rendered DOM.
+    const stages = [
+      {
+        step: '1',
+        label: 'Corpus',
+        headline: '794',
+        unit: 'YouTube videos collected',
+        lines: [
+          '404 videos with Q&A content; 398 distinct videos appear in the taxonomy database',
+          '16,862 viewer comment threads',
+          'Comments span 2011 to 2025; scrape cutoff October 2025',
+        ],
+        card: 'bg-sky-50 border-sky-200',
+        badge: 'bg-sky-500',
+        accent: 'text-sky-700',
+      },
+      {
+        step: '2',
+        label: 'Stage 1 · GPT-5-mini',
+        headline: '16,862',
+        unit: 'comment threads classified',
+        lines: [
+          'Question and answer structure plus a ten-category subject schema per thread',
+          'Balanced subset human-validated through Qualtrics surveys (Table 1)',
+          'Output: 14,980 detected questions',
+        ],
+        card: 'bg-amber-50 border-amber-200',
+        badge: 'bg-amber-500',
+        accent: 'text-amber-700',
+      },
+      {
+        step: '3',
+        label: 'Stage 2 · GPT-5.6 Luna',
+        headline: '14,980',
+        unit: 'questions re-read and typed',
+        lines: [
+          'Medium reasoning effort under the frozen taxonomy instrument (v0)',
+          'Ten substantive question types (Q1 to Q10) plus a social or rhetorical residual (Q11)',
+          'Ten answer mechanisms (A1 to A10) for replied questions',
+        ],
+        card: 'bg-violet-50 border-violet-200',
+        badge: 'bg-violet-500',
+        accent: 'text-violet-700',
+      },
+      {
+        step: '4',
+        label: 'Consolidation (v1)',
+        headline: '263',
+        unit: 'recurring question families',
+        lines: [
+          'Grouped from the 12,933 substantive questions',
+          '3,667 answered questions grouped into 204 answer families',
+        ],
+        card: 'bg-emerald-50 border-emerald-200',
+        badge: 'bg-emerald-500',
+        accent: 'text-emerald-700',
+      },
+    ];
+
+    // Record-flow funnel. Bar width is proportional to the count that
+    // survives each step; the drop line above a bar explains what was
+    // removed between it and the bar before.
+    const funnel = [
+      { count: 16862, label: '16,862 comment threads enter Stage 1', bar: 'bg-sky-300' },
+      { count: 14980, label: '14,980 detected questions enter Stage 2', drop: '1,882 rows with no question present are skipped', bar: 'bg-amber-300' },
+      { count: 12933, label: '12,933 substantive questions enter the gap analysis', drop: '2,047 social or rhetorical questions (Q11) are excluded', bar: 'bg-violet-300' },
+    ];
+
+    // Outcome split of the 12,933 substantive questions. Percentages are
+    // rounded to one decimal, so they can sum to slightly over 100.
+    const outcomes = [
+      { pct: 28.4, label: 'Replied and answered', detail: '3,667 questions (28.4% of substantive; 71.2% of the 5,149 replied)', seg: 'bg-emerald-500', dot: 'bg-emerald-500' },
+      { pct: 11.5, label: 'Replied without a substantive answer', detail: '1,482 questions (11.5% of substantive)', seg: 'bg-amber-400', dot: 'bg-amber-400' },
+      { pct: 60.2, label: 'Never replied', detail: '7,784 questions (60.2% of substantive)', seg: 'bg-rose-400', dot: 'bg-rose-400' },
+    ];
+
+    return (
+      <div className="bg-white border border-slate-200 rounded-lg p-6">
+        <h3 className="serif text-lg font-semibold text-slate-900">Methods at a glance</h3>
+        <p className="text-xs text-slate-500 mt-1 max-w-3xl leading-relaxed">
+          Two model stages take 794 collected videos to 263 recurring question families. The funnel shows where
+          records drop out along the way, and the outcome bar shows what the substantive questions received.
+        </p>
+
+        {/* Stage cards joined by arrows: horizontal on desktop, stacked on mobile. */}
+        <div className="mt-5 flex flex-col md:flex-row items-stretch gap-2">
+          {stages.map((s, i) => (
+            <React.Fragment key={s.label}>
+              {i > 0 && (
+                <div className="flex items-center justify-center text-slate-300 shrink-0">
+                  <svg className="w-5 h-5 rotate-90 md:rotate-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )}
+              <div className={`flex-1 min-w-0 border rounded-lg p-4 ${s.card}`}>
+                <div className="flex items-center gap-2">
+                  <span className={`w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center shrink-0 ${s.badge}`}>{s.step}</span>
+                  <span className="text-[11px] uppercase tracking-wider font-semibold text-slate-500">{s.label}</span>
+                </div>
+                <div className={`mt-2 text-2xl font-semibold tabular-nums ${s.accent}`}>{s.headline}</div>
+                <div className="text-xs text-slate-500">{s.unit}</div>
+                <ul className="mt-2 space-y-1 text-xs text-slate-600 leading-relaxed">
+                  {s.lines.map((line) => (
+                    <li key={line} className="flex gap-1.5">
+                      <span className="text-slate-400 shrink-0">·</span>
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Record-flow funnel. */}
+        <div className="mt-6">
+          <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2">Record flow</div>
+          <div className="space-y-1">
+            {funnel.map((f) => (
+              <div key={f.label}>
+                {f.drop && (
+                  <div className="flex items-center gap-1.5 py-1 pl-1 text-[11px] text-rose-600">
+                    <svg className="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z" clipRule="evenodd" />
+                    </svg>
+                    <span>{f.drop}</span>
+                  </div>
+                )}
+                <div className="relative h-6 bg-slate-100 rounded overflow-hidden">
+                  <div className={`h-full rounded ${f.bar}`} style={{ width: `${(f.count / 16862 * 100).toFixed(1)}%` }} />
+                  <div className="absolute inset-y-0 left-2 flex items-center text-[11px] font-medium text-slate-900 whitespace-nowrap">{f.label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Outcome bar for the substantive questions. */}
+        <div className="mt-6">
+          <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2">
+            Outcomes for the 12,933 substantive questions
+          </div>
+          <div className="flex h-7 rounded overflow-hidden">
+            {outcomes.map((o) => (
+              <div key={o.label} className={`flex items-center justify-center text-[11px] font-medium text-white ${o.seg}`} style={{ width: `${o.pct}%` }}>
+                {o.pct}%
+              </div>
+            ))}
+          </div>
+          <div className="mt-2 flex flex-col sm:flex-row sm:flex-wrap gap-x-6 gap-y-1">
+            {outcomes.map((o) => (
+              <div key={o.label} className="flex items-start gap-1.5 text-[11px] text-slate-600 leading-relaxed">
+                <span className={`w-2.5 h-2.5 rounded-sm mt-0.5 shrink-0 ${o.dot}`} />
+                <span><span className="font-semibold text-slate-700">{o.label}:</span> {o.detail}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-1.5 text-[10px] text-slate-400">Percentages are rounded to one decimal and may not sum to exactly 100.</p>
+        </div>
+
+        {/* Limitations footnote. */}
+        <div className="mt-6 pt-4 border-t border-slate-200 flex gap-2 text-[11px] text-slate-500 leading-relaxed">
+          <svg className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+          </svg>
+          <p>
+            <span className="font-semibold text-slate-600">Limitations:</span> taxonomy labels are single-model and
+            provisional pending human validation; answer types were judged from the GPT-5-mini reply summaries, not
+            the raw replies; the v0 instrument is frozen but preliminary. Counts come from the GPT-5.6 Luna taxonomy
+            database (v0) and consolidation (v1).
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   function ResearchTab({ state }) {
     const stats = state.stats || {};
     const kbMeta = state.kbMeta || {};

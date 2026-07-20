@@ -1054,7 +1054,7 @@ window.AppResearch = (function() {
             number={4}
             title="Knowledge bottleneck across the 10-class schema"
             caption="Each bubble is one of the ten subject categories. Horizontal position is the total number of questions asked in that category; vertical position is its overall resolution rate: the share of all its questions, including the majority that never received a reply, that ended with a substantive answer. Bubble area scales with the category's total comments, and color with the average view count of its videos. Dashed lines mark the mean resolution rate (26.5 percent) and the median question count, splitting the plot into four quadrants; quadrant IV (high volume, low resolution) is the knowledge bottleneck. Resolution rates here look low because the denominator is every question asked; Figure 2 separates the two stages, showing that most of the gap is questions that never get a reply at all, while replied questions are answered 71.2 percent of the time."
-            dataSource="web_app/data/knowledge_bottleneck.json"
+            dataSource="data/knowledge_bottleneck.json"
           >
             <BottleneckChart bottleneck={state.bottleneck} comments={state.comments} />
           </FigureCard>
@@ -1064,7 +1064,7 @@ window.AppResearch = (function() {
           number={5}
           title="Knowledge-demand terrain across the theme map"
           caption="A three-dimensional landscape built over the same theme co-occurrence map as Figure 6. Each theme raises a peak whose height scales with how often electricians ask about it, and the surface is colored by how often those questions actually get answered: warm terrain marks the knowledge bottleneck (high demand, few answers) while cool terrain marks well-covered themes. Two of the tallest warm peaks are conductor terminations and splicing and jobsite workflow, tools, and best practices: heavily asked but answered several points below the corpus average (26 percent in the figure hover text, the same mean drawn at 26.5 percent in Figure 4). Drag to orbit, scroll to zoom, and hover any summit for its theme, question volume, and answer rate; the question volume shown is a relevance-weighted score, not a count of questions."
-          dataSource="web_app/figures/theme_terrain_3d_interactive.html"
+          dataSource="figures/theme_terrain_3d_interactive.html"
         >
           <iframe
             src="figures/theme_terrain_3d_interactive.html"
@@ -1078,7 +1078,7 @@ window.AppResearch = (function() {
           number={6}
           title="Theme co-occurrence network"
           caption="Network of how themes co-occur across the dataset. Each node is a theme, sized by its prominence: how much the theme appears across all videos and comments, weighted by how strongly it applies. Node color marks the cluster a theme belongs to: themes are grouped using VOSviewer's modularity-based clustering (the smart local moving algorithm), so themes that frequently co-occur share a color. A link joins two themes that appear together, and its thickness shows the co-occurrence strength: how often they turn up in the same video or comment. Drag to rotate and scroll to zoom; hover a node for its theme, or click it to see its prominence, connections, and strongest co-occurrences."
-          dataSource="web_app/data/theme_network_graph.json, built by src/web/build_vos_network.py"
+          dataSource="data/theme_network_graph.json, built by src/web/build_vos_network.py"
         >
           <ThemeNetworkChart />
         </FigureCard>
@@ -1087,7 +1087,7 @@ window.AppResearch = (function() {
           number={7}
           title="Per-video question demand, reach, and engagement"
           caption="One bubble per video in the labeled corpus. Horizontal position is the video's reach (total views, log scale) and vertical position is its question demand (number of question comments, log scale), so videos drift up and to the right as they draw more viewers and more questions. Bubble size scales with likes on the video, and color shows the share of that video's questions that were answered on the same warm-to-cool bottleneck scale used elsewhere: warm bubbles are high-demand, low-answer hotspots, cool bubbles are well-covered, and videos with fewer than five questions stay gray because their answered share is too noisy to trust. Hover any bubble for its views, question count, and answered rate; click any bubble to open the video on YouTube and read a few of the actual questions viewers asked on it."
-          dataSource="web_app/figures/video_demand_map_interactive.html"
+          dataSource="figures/video_demand_map_interactive.html"
         >
           <iframe
             src="figures/video_demand_map_interactive.html"
@@ -1101,7 +1101,7 @@ window.AppResearch = (function() {
           number={8}
           title="Frequency of canonical themes across the dataset"
           caption="Counts of comments tagged with each canonical theme from the theme dictionary, descending. Hover any bar for its count; click to see sample comments tagged with that theme. The head is dominated by grounding, bonding, raceway, and conductor sizing themes, while the long tail thins out to niche low-voltage topics with only a handful of comments each."
-          dataSource="web_app/figures/theme_dictionary_frequency_interactive.svg with web_app/data/theme_dictionary_frequency_interactive.json"
+          dataSource="figures/theme_dictionary_frequency_interactive.svg with data/theme_dictionary_frequency_interactive.json"
         >
           <MplInlineChart
             svgUrl="figures/theme_dictionary_frequency_interactive.svg"
@@ -1150,7 +1150,7 @@ window.AppResearch = (function() {
           number={9}
           title="Transcript topics treemap, weighted by total video views"
           caption="Treemap of the topics that appear in video transcripts. Tile area scales with the aggregate view count of every video that touches the topic, so larger tiles indicate where the audience is actually spending time. Hover any tile for averages; click to list the top videos in that topic."
-          dataSource="web_app/figures/transcript_topics_treemap_views_interactive.svg with web_app/data/transcript_topics_treemap_views_interactive.json"
+          dataSource="figures/transcript_topics_treemap_views_interactive.svg with data/transcript_topics_treemap_views_interactive.json"
         >
           <MplInlineChart
             svgUrl="figures/transcript_topics_treemap_views_interactive.svg"
@@ -1182,7 +1182,7 @@ window.AppResearch = (function() {
           number={10}
           title="Data collection and comment analysis pipeline"
           caption="Three-panel summary of how the dataset was built. Panel A traces the YouTube search-to-transcript funnel by keyword. Panel B shows the comment funnel from collected parent threads through filtering to the LLM-labeled question set. Panel C shows the question versus non-question breakdown of the labeled comment set. Hover any bar for its exact count; click for the stage definition."
-          dataSource="web_app/figures/data_collection_comment_analysis_interactive.svg with web_app/data/data_collection_comment_analysis_interactive.json"
+          dataSource="figures/data_collection_comment_analysis_interactive.svg with data/data_collection_comment_analysis_interactive.json"
         >
           <MplInlineChart
             svgUrl="figures/data_collection_comment_analysis_interactive.svg"

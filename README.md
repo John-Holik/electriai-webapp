@@ -58,7 +58,7 @@ electriai-webapp/
 The site requires HTTP serving (`file://` breaks `fetch`).
 
 ```powershell
-cd web_app
+cd electriai-webapp
 python -m http.server 8000
 # Open http://localhost:8000
 ```

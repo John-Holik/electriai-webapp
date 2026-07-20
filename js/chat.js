@@ -302,7 +302,7 @@ Rules for your response:
   // not pass because "250.148" is present.
   const ungroundedNumbers = (text, passages) => {
     const hay = passages.replace(/,/g, '');
-    return [...new Set(text.match(/\d[\d,]*\.?\d*/g) || [])].filter((n) => {
+    return [...new Set(text.match(/\d[\d,]*(?:\.\d+)?/g) || [])].filter((n) => {
       const tok = n.replace(/,/g, '').replace(/\./g, '\\.');
       return !new RegExp('(^|[^0-9.])' + tok + '(?![0-9])').test(hay);
     });

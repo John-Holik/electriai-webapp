@@ -2,6 +2,8 @@
 
 Companion website for the ElectriAI Research paper analyzing **794 YouTube videos** and **16,862 viewer comment threads** about electrical-construction topics. The site exposes the dataset, the figures, and a chatbot grounded in a 288-page knowledge base compiled from the question taxonomy.
 
+This repo is self-contained: everything the site serves (HTML, JS, JSON data, figures, Worker code) lives here. The JSON data and figure assets are generated upstream in the separate ElectriAI Research repo (notebooks plus `src/web` builder scripts) and committed here as static files.
+
 The site has six tabs:
 
 - **Findings**, the taxonomy bottleneck figures (question-type reply and answer rates, family-level gaps, activity over time) plus the first-generation research figures: the knowledge-bottleneck bubble chart (interactive Plotly), theme dictionary frequency, transcript topics treemap, and a data-collection / comment-analysis panel, and the 10-class category schema (LV, HVAC, GBF, OCP, RE, DL, CRR, CISF, PDS, OTH).

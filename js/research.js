@@ -854,7 +854,7 @@ window.AppResearch = (function() {
     const stages = [
       {
         step: '1',
-        label: 'Corpus',
+        label: 'Dataset',
         headline: '794',
         unit: 'YouTube videos collected',
         lines: [

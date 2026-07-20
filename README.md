@@ -104,7 +104,7 @@ The site is two pieces: a static front-end (Cloudflare Pages) and a Worker that 
 ```powershell
 npm i -g wrangler
 wrangler login
-cd web_app/worker
+cd worker
 wrangler kv:namespace create ELECTRIAI_RL_KV
 # Paste the returned id into wrangler.toml
 wrangler secret put GEMINI_API_KEY

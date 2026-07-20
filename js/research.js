@@ -738,8 +738,8 @@ window.AppResearch = (function() {
         hovertemplate: '<b>%{customdata[0]}</b><br>%{customdata[1]:,} questions, %{customdata[2]:,} answered'
           + '<br>answer rate among replied: %{x}%<br>never replied: %{y}%<extra>' + g.name + '</extra>',
       }));
-      const vline = meta ? meta.corpusAnswerRate : 70;
-      const hline = meta ? meta.corpusNeverShare : 60;
+      const vline = meta ? meta.overallAnswerRate : 70;
+      const hline = meta ? meta.overallNeverShare : 60;
       // Leader-line callouts for the three extreme families, located by their
       // exact label strings in the loaded data so text and position stay in
       // sync with the figure data.

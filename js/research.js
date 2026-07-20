@@ -1080,29 +1080,10 @@ window.AppResearch = (function() {
           </div>
         </section>
 
-        {/* Methods at a glance: the two-stage pipeline in four labeled lines. */}
+        {/* Methods at a glance: the two-stage pipeline as a visual figure
+            (stage cards, record-flow funnel, outcome bar, limitations). */}
         <section>
-          <div className="bg-white border border-slate-200 rounded-lg p-6">
-            <h3 className="serif text-lg font-semibold text-slate-900 mb-3">Methods at a glance</h3>
-            <dl className="space-y-3 text-sm text-slate-700 leading-relaxed">
-              <div>
-                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Corpus</dt>
-                <dd>16,862 comment threads from 794 collected YouTube videos (404 with Q&amp;A content; 398 distinct videos appear in the taxonomy database); comments span 2011 to 2025; scrape cutoff October 2025.</dd>
-              </div>
-              <div>
-                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Stage 1</dt>
-                <dd>GPT-5-mini classified every thread into question and answer structure and a ten-category subject schema; a balanced subset was human-validated through Qualtrics surveys (Table 1).</dd>
-              </div>
-              <div>
-                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Stage 2</dt>
-                <dd>GPT-5.6 Luna at medium reasoning effort re-read all 14,980 detected questions (1,882 rows with no question present were skipped upstream) and classified them under a frozen taxonomy instrument (taxonomy v0); a consolidation pass (v1) grouped the 12,933 substantive questions into 263 families and the 3,667 answered questions into 204 answer families.</dd>
-              </div>
-              <div>
-                <dt className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Limitations</dt>
-                <dd>Taxonomy labels are single-model and provisional pending human validation; answer types were judged from the GPT-5-mini reply summaries, not the raw replies; the v0 instrument is frozen but preliminary.</dd>
-              </div>
-            </dl>
-          </div>
+          <MethodsPipeline />
         </section>
 
         {/* Question taxonomy section: what gets asked, how the mix shifted,

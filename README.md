@@ -18,10 +18,10 @@ The site has six tabs:
 Vanilla React 18 (CDN) + Tailwind CSS (CDN) + Babel standalone for in-browser JSX. No build step. PapaParse handles CSVs; native `fetch` handles JSON. Embeddings are pre-computed and shipped as a static JSON file; cosine similarity runs in the browser.
 
 ```
-web_app/
+electriai-webapp/
 ├── index.html                    # Shell, tab nav, root mount, CDN script tags
 ├── README.md                     # This file
-├── data/                         # JSON exports built by the src/web builders
+├── data/                         # JSON exports built by the research repo's src/web builders
 │   ├── comments.json
 │   ├── categories.json
 │   ├── summary_stats.json

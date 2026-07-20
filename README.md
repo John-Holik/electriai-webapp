@@ -58,7 +58,7 @@ Vanilla React 18 (CDN) + Tailwind CSS (CDN) + Babel standalone for in-browser JS
 The site requires HTTP serving (`file://` breaks `fetch`).
 
 ```powershell
-cd electriai-webapp
+cd 04_youtube_webapp
 python -m http.server 8000
 # Open http://localhost:8000
 ```

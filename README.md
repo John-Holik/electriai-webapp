@@ -91,7 +91,7 @@ py -3 -m src.web.build_kb_wiki              # taxonomy knowledge base -> kb_page
 py -3 -m src.web.compute_kb_embeddings      # needs the Gemini key or the Worker proxy
 ```
 
-`export_data` writes the legacy JSON in `web_app/data/` and copies figure assets into `web_app/figures/`. `build_web_taxonomy_figures` exports the Findings tab taxonomy figures. `export_qa_data` exports the Questions & Answers taxonomy summary and records. `build_web_raw_videos` exports the 404 Q&A videos and their comment threads. `build_kb_wiki` compiles the 288-page taxonomy knowledge base from `taxonomy/` and `Final_Analysis.csv`. `compute_kb_embeddings` computes one Gemini embedding per page chunk (H2 boundaries) and writes `kb_embeddings.json` + `kb_chunks.json`.
+`export_data` writes the legacy JSON in `data/` and copies figure assets into `figures/`. `build_web_taxonomy_figures` exports the Findings tab taxonomy figures. `export_qa_data` exports the Questions & Answers taxonomy summary and records. `build_web_raw_videos` exports the 404 Q&A videos and their comment threads. `build_kb_wiki` compiles the 288-page taxonomy knowledge base from `taxonomy/` and `Final_Analysis.csv`. `compute_kb_embeddings` computes one Gemini embedding per page chunk (H2 boundaries) and writes `kb_embeddings.json` + `kb_chunks.json`.
 
 Commit the resulting JSON. The site reads everything from static files at load time, so no rebuild is needed beyond a redeploy.
 

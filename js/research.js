@@ -1108,7 +1108,7 @@ window.AppResearch = (function() {
               total) was classified into ten substantive question types (a residual class, Q11 social or rhetorical,
               is excluded from the gap analysis) and ten answer mechanisms (A1 to A10), plus a small untyped bucket
               for replied rows with no classified mechanism. The 12,933 substantive questions were consolidated
-              into {kbMeta.questionFamilies || 263} recurring question families. Across the corpus, 60.2 percent of
+              into {kbMeta.questionFamilies || 263} recurring question families. Across the dataset, 60.2 percent of
               substantive questions never received any reply, and 71.2 percent of replied questions got a substantive
               answer. The three figures below summarize what practitioners ask, how the mix has shifted over the
               years, and how (or whether) their questions get resolved. Labels and family consolidation come from a

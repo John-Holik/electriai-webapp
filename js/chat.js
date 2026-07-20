@@ -599,7 +599,7 @@ Rules for your response:
       { n: 2, title: 'Embed',         detail: 'Gemini maps it to a 768-dimension vector',       ring: 'linear-gradient(135deg,#38bdf8,#0369a1)' },
       { n: 3, title: 'Retrieve',      detail: 'Cosine similarity plus keyword and intent boosts rank the knowledge base; top 8 win', ring: 'linear-gradient(135deg,#34d399,#047857)' },
       { n: 4, title: 'Generate',      detail: 'Gemini 3.5 Flash answers from those passages only', ring: 'linear-gradient(135deg,#a78bfa,#6d28d9)' },
-      { n: 5, title: 'Cited answer',  detail: 'Every claim keeps its ▶ video / comment source', ring: 'linear-gradient(135deg,#fbbf24,#d97706)' },
+      { n: 5, title: 'Cited answer',  detail: 'Technical claims keep their ▶ video / comment sources; statistics name their knowledge-base page', ring: 'linear-gradient(135deg,#fbbf24,#d97706)' },
     ];
     return (
       <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
@@ -607,7 +607,7 @@ Rules for your response:
           <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Under the hood</div>
           <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">How Ask ElectriAI answers</h3>
           <p className="text-sm text-slate-600 serif">
-            The assistant composes answers from passages retrieved from the knowledge base, with instructions to cite its sources and to say so when the passages do not contain an answer.
+            The assistant composes answers from passages retrieved from the knowledge base, with instructions to cite its sources and to say so when the passages do not contain an answer. Numbers in each answer are checked against the retrieved passages, and the answer is regenerated once if any lack support.
           </p>
         </header>
         <div className="p-6 bg-stone-50">

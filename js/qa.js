@@ -647,7 +647,7 @@ window.AppQA = (function() {
         {/* Provenance banner: these numbers come from the new analysis generation */}
         <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-900 leading-relaxed">
           <span className="font-semibold">Preliminary results. </span>
-          Questions and answers were extracted from the comment corpus by the GPT-5-mini
+          Questions and answers were extracted from the comment dataset by the GPT-5-mini
           classification pass, classified into the question and answer taxonomy by GPT-5.6 Luna
           (taxonomy {qa.meta.taxonomyVersion}), and consolidated into patterns and families by a
           second GPT-5.6 Luna pass (consolidation {qa.meta.consolidationVersion}). Single-model

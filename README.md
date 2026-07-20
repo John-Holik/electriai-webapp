@@ -112,7 +112,7 @@ wrangler secret put GEMINI_API_KEY
 wrangler deploy
 ```
 
-Note the deployed URL (e.g. `https://electriai-proxy.<account>.workers.dev`) and ensure it appears as `GEMINI_WORKER_BASE` in `web_app/js/app.js`.
+Note the deployed URL (e.g. `https://electriai-proxy.<account>.workers.dev`) and ensure it appears as `GEMINI_WORKER_BASE` in `js/app.js`.
 
 ### 2. Pages
 

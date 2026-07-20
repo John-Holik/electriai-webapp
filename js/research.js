@@ -847,7 +847,10 @@ window.AppResearch = (function() {
   // GPT-5.6 Luna taxonomy database (v0) and consolidation (v1).
   function MethodsPipeline() {
     // Stage cards. Full Tailwind class strings are stored per card so the
-    // CDN build sees every class name verbatim in the rendered DOM.
+    // CDN build sees every class name verbatim in the rendered DOM. The
+    // pipeline uses cool hues (sky, indigo, violet, fuchsia) only; warm
+    // traffic-light colors are reserved for the outcome bar below so the
+    // two color systems never overlap.
     const stages = [
       {
         step: '1',
@@ -855,7 +858,7 @@ window.AppResearch = (function() {
         headline: '794',
         unit: 'YouTube videos collected',
         lines: [
-          '404 videos with Q&A content; 398 distinct videos appear in the taxonomy database',
+          '404 videos have Q&A comment threads; 398 of them contribute at least one detected question to the taxonomy database',
           '16,862 viewer comment threads',
           'Comments span 2011 to 2025; scrape cutoff October 2025',
         ],
@@ -870,18 +873,18 @@ window.AppResearch = (function() {
         unit: 'comment threads classified',
         lines: [
           'Question and answer structure plus a ten-category subject schema per thread',
-          'Balanced subset human-validated through Qualtrics surveys (Table 1)',
+          'Balanced 100-comment subset human-validated through Qualtrics surveys (agreement metrics in Table 1)',
           'Output: 14,980 detected questions',
         ],
-        card: 'bg-amber-50 border-amber-200',
-        badge: 'bg-amber-500',
-        accent: 'text-amber-700',
+        card: 'bg-indigo-50 border-indigo-200',
+        badge: 'bg-indigo-500',
+        accent: 'text-indigo-700',
       },
       {
         step: '3',
         label: 'Stage 2 · GPT-5.6 Luna',
         headline: '14,980',
-        unit: 'questions re-read and typed',
+        unit: 'questions re-read and classified',
         lines: [
           'Medium reasoning effort under the frozen taxonomy instrument (v0)',
           'Ten substantive question types (Q1 to Q10) plus a social or rhetorical residual (Q11)',
@@ -898,29 +901,33 @@ window.AppResearch = (function() {
         unit: 'recurring question families',
         lines: [
           'Grouped from the 12,933 substantive questions',
-          '3,667 answered questions grouped into 204 answer families',
+          '3,667 answered questions (of 5,149 replied) grouped into 204 answer families',
         ],
-        card: 'bg-emerald-50 border-emerald-200',
-        badge: 'bg-emerald-500',
-        accent: 'text-emerald-700',
+        card: 'bg-fuchsia-50 border-fuchsia-200',
+        badge: 'bg-fuchsia-500',
+        accent: 'text-fuchsia-700',
       },
     ];
 
     // Record-flow funnel. Bar width is proportional to the count that
     // survives each step; the drop line above a bar explains what was
-    // removed between it and the bar before.
+    // removed between it and the bar before, and the right-hand label
+    // gives the share of the original 16,862 threads that remains.
     const funnel = [
-      { count: 16862, label: '16,862 comment threads enter Stage 1', bar: 'bg-sky-300' },
-      { count: 14980, label: '14,980 detected questions enter Stage 2', drop: '1,882 rows with no question present are skipped', bar: 'bg-amber-300' },
+      { count: 16862, label: '16,862 comment threads (one candidate question each) enter Stage 1', bar: 'bg-sky-300' },
+      { count: 14980, label: '14,980 detected questions enter Stage 2', drop: '1,882 threads with no question present are skipped', bar: 'bg-indigo-300' },
       { count: 12933, label: '12,933 substantive questions enter the gap analysis', drop: '2,047 social or rhetorical questions (Q11) are excluded', bar: 'bg-violet-300' },
     ];
 
-    // Outcome split of the 12,933 substantive questions. Percentages are
-    // rounded to one decimal, so they can sum to slightly over 100.
+    // Outcome split of the 12,933 substantive questions, worst outcome
+    // first to match the headline finding that silence dominates. Fill
+    // shades are chosen so the in-segment text meets contrast guidelines.
+    // Percentages are rounded to one decimal, so they can sum to slightly
+    // over 100.
     const outcomes = [
-      { pct: 28.4, label: 'Replied and answered', detail: '3,667 questions (28.4% of substantive; 71.2% of the 5,149 replied)', seg: 'bg-emerald-500', dot: 'bg-emerald-500' },
-      { pct: 11.5, label: 'Replied without a substantive answer', detail: '1,482 questions (11.5% of substantive)', seg: 'bg-amber-400', dot: 'bg-amber-400' },
-      { pct: 60.2, label: 'Never replied', detail: '7,784 questions (60.2% of substantive)', seg: 'bg-rose-400', dot: 'bg-rose-400' },
+      { pct: 60.2, label: 'Never replied', detail: '7,784 questions (60.2% of substantive)', seg: 'bg-rose-600 text-white', dot: 'bg-rose-600' },
+      { pct: 11.5, label: 'Replied without a substantive answer', detail: '1,482 questions (11.5% of substantive)', seg: 'bg-amber-400 text-slate-900', dot: 'bg-amber-400' },
+      { pct: 28.4, label: 'Replied and answered', detail: '3,667 questions (28.4% of substantive; 71.2% of the 5,149 replied)', seg: 'bg-emerald-700 text-white', dot: 'bg-emerald-700' },
     ];
 
     return (

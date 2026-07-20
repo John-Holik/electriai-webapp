@@ -743,7 +743,7 @@ window.AppQA = (function() {
           <SectionHeader
             eyebrow="The dictionary's head"
             title="The most common questions and answers"
-            subtitle="The consolidated patterns with the most member comments, across the whole corpus."
+            subtitle="The consolidated patterns with the most member comments, across the whole dataset."
           />
           <div className="grid md:grid-cols-2 gap-4">
             <Card title="Top question patterns" subtitle="Most frequent consolidated questions across the analyzed comments">

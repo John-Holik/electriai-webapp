@@ -625,7 +625,7 @@ Rules for your response:
 
   // ─── Knowledge-base coverage figure ────────────────────
   // Left: a conic-gradient donut splitting the knowledge-base pages by
-  // page kind (question families, question types, answer types, corpus
+  // page kind (question families, question types, answer types, dataset
   // analytics). Right: the largest question families by member questions,
   // as animated bars.
   function CoverageFigure({ wikiPages, meta }) {

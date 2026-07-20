@@ -1060,8 +1060,8 @@ window.AppResearch = (function() {
       { label: 'Unique themes',        value: stats.uniqueThemes,  format: formatNumber },
       { label: 'Questions classified', value: kbMeta.questions,    format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} families among 12,933 substantive questions` },
       { label: 'Total video views',    value: stats.totalViews,    format: formatCompact },
-      { label: 'Never replied',        value: taxMeta.corpusNeverShare != null ? `${taxMeta.corpusNeverShare}%` : undefined, hint: '7,784 of 12,933 substantive questions' },
-      { label: 'Answered when replied', value: taxMeta.corpusAnswerRate != null ? `${taxMeta.corpusAnswerRate}%` : undefined, hint: '3,667 of 5,149 replied questions' },
+      { label: 'Never replied',        value: taxMeta.overallNeverShare != null ? `${taxMeta.overallNeverShare}%` : undefined, hint: '7,784 of 12,933 substantive questions' },
+      { label: 'Answered when replied', value: taxMeta.overallAnswerRate != null ? `${taxMeta.overallAnswerRate}%` : undefined, hint: '3,667 of 5,149 replied questions' },
     ];
 
     return (

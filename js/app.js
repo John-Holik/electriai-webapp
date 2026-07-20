@@ -245,7 +245,7 @@
             <p className="text-sm text-red-600 mb-2">Could not load ElectriAI data</p>
             <p className="text-xs text-slate-500 break-all">{error}</p>
             <p className="text-xs text-slate-500 mt-3">
-              Make sure the JSON files are in <code>web_app/data/</code> and that
+              Make sure the JSON files are in <code>data/</code> and that
               the page is served over HTTP (use <code>python -m http.server</code>),
               not opened from the filesystem.
             </p>

@@ -1002,7 +1002,7 @@ window.AppResearch = (function() {
           </div>
           <div className="flex h-7 rounded overflow-hidden">
             {outcomes.map((o) => (
-              <div key={o.label} className={`flex items-center justify-center text-[11px] font-medium text-white ${o.seg}`} style={{ width: `${o.pct}%` }}>
+              <div key={o.label} className={`flex items-center justify-center text-[11px] font-medium ${o.seg}`} style={{ width: `${o.pct}%` }}>
                 {o.pct}%
               </div>
             ))}

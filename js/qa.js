@@ -262,7 +262,7 @@ window.AppQA = (function() {
           <div className="border-l-4 rounded-r-md bg-rose-50/60 border-rose-400 px-4 py-3 text-slate-700">
             <span className="font-semibold text-rose-700">Silence is the dominant failure mode. </span>
             {pctNever}% of substantive questions never receive a single reply of any kind. That is
-            the largest observed loss of knowledge transfer in the corpus.
+            the largest observed loss of knowledge transfer in the dataset.
           </div>
           <div className="border-l-4 rounded-r-md bg-emerald-50/60 border-emerald-400 px-4 py-3 text-slate-700">
             <span className="font-semibold text-emerald-700">When someone engages, answers usually follow. </span>

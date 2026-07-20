@@ -776,11 +776,11 @@ window.AppResearch = (function() {
             showarrow: false, font: { size: 10, color: '#b91c1c' } },
           { xref: 'paper', yref: 'paper', x: 0.99, y: 0.01, text: 'Well covered',
             showarrow: false, font: { size: 10, color: '#047857' }, xanchor: 'right' },
-          // Corpus-average labels pinned to the dashed reference lines; the
+          // Overall-average labels pinned to the dashed reference lines; the
           // values come from taxonomy_figures.json meta, not hardcoded copy.
-          { x: vline, yref: 'paper', y: 0.99, text: `corpus average ${vline}% answered when replied`,
+          { x: vline, yref: 'paper', y: 0.99, text: `overall average ${vline}% answered when replied`,
             showarrow: false, xanchor: 'left', xshift: 6, font: { size: 10, color: '#64748b' } },
-          { xref: 'paper', x: 0.99, y: hline, text: `corpus average ${hline}% never replied`,
+          { xref: 'paper', x: 0.99, y: hline, text: `overall average ${hline}% never replied`,
             showarrow: false, xanchor: 'right', yshift: 10, font: { size: 10, color: '#64748b' } },
           ...callouts,
         ],

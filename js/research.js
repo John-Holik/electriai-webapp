@@ -986,6 +986,9 @@ window.AppResearch = (function() {
                 <div className="relative h-6 bg-slate-100 rounded overflow-hidden">
                   <div className={`h-full rounded ${f.bar}`} style={{ width: `${(f.count / 16862 * 100).toFixed(1)}%` }} />
                   <div className="absolute inset-y-0 left-2 flex items-center text-[11px] font-medium text-slate-900 whitespace-nowrap">{f.label}</div>
+                  <div className="absolute inset-y-0 right-2 flex items-center text-[10px] text-slate-500 whitespace-nowrap">
+                    {(f.count / 16862 * 100).toFixed(1)}% of threads remain
+                  </div>
                 </div>
               </div>
             ))}

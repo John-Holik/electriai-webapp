@@ -211,7 +211,7 @@ window.AppChat = (function() {
       slugs: ['trends-over-time'] },
     { re: /\b(how (do|are|does|often).*(answer|answered|solutions?|replie[sd]|respond)|answer types?|answer mechanisms?|solutions? (are )?(provided|delivered|given)|who answers|referral|kinds? of (answers?|replies))/i,
       slugs: ['how-solutions-are-provided'] },
-    { re: /\b(how many|corpus|dataset|data set|whole|overall|what (is|can) (this|the) (knowledge base|chatbot|assistant)|taxonomy)\b/i,
+    { re: /\b(how many|dataset|data set|whole|overall|what (is|can) (this|the) (knowledge base|chatbot|assistant)|taxonomy)\b/i,
       slugs: ['overview'] },
   ];
   const INTENT_BOOST = 0.08;

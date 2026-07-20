@@ -309,7 +309,7 @@ window.AppQA = (function() {
                    title={`Never replied: ${formatNumber(outcome.neverReplied)}`} noLabel />
             </div>
             <div className="flex items-baseline justify-between text-[11px] text-slate-500">
-              <span className="tabular-nums">{formatNumber(outcome.total)} questions · {share}% of corpus</span>
+              <span className="tabular-nums">{formatNumber(outcome.total)} questions · {share}% of dataset</span>
               {outcome.answerRateReplied !== null && (
                 <span className="tabular-nums">{outcome.answerRateReplied}% answered when replied</span>
               )}

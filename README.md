@@ -79,9 +79,10 @@ The frontend will call the Gemini API directly from the browser. The key never l
 
 ## Refreshing the data after notebook updates
 
-All JSON under `web_app/data/` is generated from the upstream notebook outputs. The question taxonomy comes from `notebooks/09_Question_Taxonomy_Extraction.ipynb` and `notebooks/10_Question_Consolidation.ipynb`. After re-running the notebooks, regenerate the webapp data:
+All JSON under `data/` is generated from notebook outputs in the separate ElectriAI Research repo, which lives beside this one during development (`../ElectriAI_Research`). The question taxonomy comes from its `notebooks/09_Question_Taxonomy_Extraction.ipynb` and `notebooks/10_Question_Consolidation.ipynb`. After re-running the notebooks, regenerate the webapp data from the research repo root (the builders locate this repo via `WEB_APP_DIR` in `src/paths.py`):
 
 ```powershell
+cd ..\ElectriAI_Research
 py -3 -m src.web.export_data                # old-pipeline exports
 py -3 -m src.web.build_web_taxonomy_figures
 py -3 -m src.web.export_qa_data

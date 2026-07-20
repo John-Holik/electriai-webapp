@@ -120,9 +120,9 @@ Connect this repo to Cloudflare Pages with:
 
 - Build command: **None**
 - Build output directory: `/`
-- Root directory: `web_app`
+- Root directory: `/` (the repo root is the site root)
 
-Once the Pages domain is final, add it to `ALLOWED_ORIGINS` in `web_app/worker/worker.js` and redeploy the Worker.
+Once the Pages domain is final, add it to `ALLOWED_ORIGINS` in `worker/worker.js` and redeploy the Worker.
 
 ## Citation
 

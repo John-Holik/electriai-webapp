@@ -840,7 +840,7 @@ window.AppResearch = (function() {
   }
 
   // Methods pipeline figure. Replaces the prose methods summary with a
-  // visual flow: four stage cards (corpus, stage 1, stage 2, consolidation)
+  // visual flow: four stage cards (dataset, stage 1, stage 2, consolidation)
   // joined by arrows, a record-flow funnel showing where rows drop out, an
   // outcome bar splitting the substantive questions by what they received,
   // and a limitations footnote. Counts are fixed values from the frozen

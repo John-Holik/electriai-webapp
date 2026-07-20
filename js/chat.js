@@ -203,7 +203,7 @@ window.AppChat = (function() {
   // ─── Retrieval ──────────────────────────────────────────
   // Intent routing: questions about gaps, trends, or answering behavior get
   // their matching analytics page boosted so the retriever reliably surfaces
-  // the corpus-level statistics pages, not just topically similar families.
+  // the dataset-level statistics pages, not just topically similar families.
   const INTENT_ROUTES = [
     { re: /\b(gap|gaps|unanswered|ignored|no answers?|never answered|least answered|bottleneck|underserved|missing knowledge|opportunit)/i,
       slugs: ['knowledge-gaps'] },

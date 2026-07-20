@@ -1,6 +1,6 @@
 /* Ask ElectriAI tab. Retrieves the most relevant chunks from
    kb_embeddings.json + kb_chunks.json (the taxonomy knowledge base built
-   from the gpt-5-mini comment corpus and the question taxonomy) for a
+   from the gpt-5-mini comment dataset and the question taxonomy) for a
    user question, then asks Gemini to answer using only those chunks.
    Retrieval is hybrid: cosine similarity plus a light keyword overlap
    boost and intent routing that steers gap/trend/answering questions

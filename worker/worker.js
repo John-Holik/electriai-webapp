@@ -157,7 +157,7 @@ export default {
     if (url.pathname === '/api/generate') {
       return proxyToGeminiStream(
         request, env,
-        `${GEMINI_BASE}/gemini-3.5-flash:streamGenerateContent`,
+        `${GEMINI_BASE}/gemini-3.6-flash:streamGenerateContent`,
         origin
       );
     }

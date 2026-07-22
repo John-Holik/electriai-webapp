@@ -402,8 +402,7 @@ window.AppQA = (function() {
           const meta = A_META[code] || {};
           const pct = Math.max(1, Math.round((100 * t.count) / max));
           const share = Math.round((1000 * t.count) / total) / 10;
-          // A0 is a web-export residual, not a codebook mechanism; spell that out.
-          const label = code === 'A0' ? 'Untyped (no classified mechanism; not a codebook type)' : t.name;
+          const label = t.name;
           return (
             <div key={code} className="space-y-1">
               <div className="flex items-baseline gap-2">

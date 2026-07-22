@@ -714,8 +714,8 @@ window.AppQA = (function() {
               <AnswerTypeRows codes={['A1', 'A2', 'A3', 'A4', 'A5']} answerTypes={qa.answerTypes}
                               max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
             </Card>
-            <Card title="Engagement without resolution" subtitle="Answer types A6 to A10, plus a small Untyped residual: reply forms that engage a question without resolving it">
-              <AnswerTypeRows codes={['A6', 'A7', 'A8', 'A9', 'A10', 'A0']} answerTypes={qa.answerTypes}
+            <Card title="Engagement without resolution" subtitle="Answer types A6 to A10: reply forms that engage a question without resolving it">
+              <AnswerTypeRows codes={['A6', 'A7', 'A8', 'A9', 'A10']} answerTypes={qa.answerTypes}
                               max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
             </Card>
           </div>

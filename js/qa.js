@@ -65,7 +65,6 @@ window.AppQA = (function() {
     A8:  { color: '#F59E0B', def: 'The creator addresses the video rather than the question.' },
     A9:  { color: '#FBBF24', def: 'Attempts an answer while flagging uncertainty.' },
     A10: { color: '#94A3B8', def: 'Humor, banter, agreement, or promotion with no answer content.' },
-    A0:  { color: '#CBD5E1', def: 'Answered rows whose reply carried no classifiable type.' },
   };
 
   // Reply-outcome tier colors, shared by the funnel, the per-type chart,
@@ -629,7 +628,6 @@ window.AppQA = (function() {
     const maxQ = Math.max(1, ...topQ.map((p) => p.count));
     const maxA = Math.max(1, ...topA.map((p) => p.count));
     const contrast = qa.contrast || {};
-    const partial = s.consolidatedQuestions < s.eligibleQuestions;
     const pageCount = Math.max(1, Math.ceil(filteredRecords.length / PAGE));
     const pageRows = filteredRecords.slice(page * PAGE, page * PAGE + PAGE);
     const maxAnswerTypeCount = Math.max(1, ...qa.answerTypes.map((t) => t.count));
@@ -643,19 +641,6 @@ window.AppQA = (function() {
 
     return (
       <div className="py-8 space-y-10">
-
-        {/* Provenance banner: these numbers come from the new analysis generation */}
-        <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-900 leading-relaxed">
-          <span className="font-semibold">Preliminary results. </span>
-          Questions and answers were extracted from the comment dataset by the GPT-5-mini
-          classification pass, classified into the question and answer taxonomy by GPT-5.6 Luna
-          (taxonomy {qa.meta.taxonomyVersion}), and consolidated into patterns and families by a
-          second GPT-5.6 Luna pass (consolidation {qa.meta.consolidationVersion}). Single-model
-          results; human validation is in progress. The foundation figures on the Findings tab and
-          the Videos &amp; Comments and Validation Set tabs cover the earlier GPT-5-mini analysis
-          generation.
-          {partial && <span className="font-semibold"> The consolidation currently covers a subset of the data (pilot run).</span>}
-        </div>
 
         <Hero qa={qa} />
 
@@ -672,7 +657,7 @@ window.AppQA = (function() {
 
         {/* Headline numbers */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <StatCard label="Questions extracted" value={s.extractedQuestions} />
+          <StatCard label="Substantive questions" value={s.eligibleQuestions} />
           <StatCard label="Never receive a reply" value={s.eligibleQuestions ? (100 * s.neverReplied / s.eligibleQuestions).toFixed(1) + '%' : '0%'}
                     hint={`${formatNumber(s.neverReplied)} of ${formatNumber(s.eligibleQuestions)} substantive questions`} />
           <StatCard label="Answered when replied" value={`${s.answerRateReplied || 0}%`}

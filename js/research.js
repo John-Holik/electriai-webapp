@@ -1094,8 +1094,7 @@ window.AppResearch = (function() {
             <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
               Every extracted practitioner question ({kbMeta.questions ? formatNumber(kbMeta.questions) : '14,980'} in
               total) was classified into ten substantive question types (a residual class, Q11 social or rhetorical,
-              is excluded from the gap analysis) and ten answer mechanisms (A1 to A10), plus a small untyped bucket
-              for replied rows with no classified mechanism. The 12,933 substantive questions were consolidated
+              is excluded from the gap analysis) and ten answer mechanisms (A1 to A10). The 12,933 substantive questions were consolidated
               into {kbMeta.questionFamilies || 263} recurring question families. Across the dataset, 60.2 percent of
               substantive questions never received any reply, and 71.2 percent of replied questions got a substantive
               answer. The three figures below summarize what practitioners ask, how the mix has shifted over the

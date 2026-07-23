@@ -111,8 +111,8 @@ window.AppQA = (function() {
         style={{ width: pct + '%', backgroundColor: color }}
         title={title}
       >
-        {!noLabel && pct >= 11 && (
-          <span className={`text-[10px] tabular-nums font-medium ${darkText ? 'text-slate-600' : 'text-white'}`}>
+        {!noLabel && pct >= 6 && (
+          <span className={`text-[10px] tabular-nums font-medium whitespace-nowrap ${darkText ? 'text-slate-600' : 'text-white'}`}>
             {Math.round(pct)}%
           </span>
         )}

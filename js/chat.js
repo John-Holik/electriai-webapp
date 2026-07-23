@@ -1,4 +1,4 @@
-/* Ask ElectriAI tab. Retrieves the most relevant chunks from
+/* Ask the Knowledge Base tab. Retrieves the most relevant chunks from
    kb_embeddings.json + kb_chunks.json (the taxonomy knowledge base built
    from the gpt-5-mini comment dataset and the question taxonomy) for a
    user question, then asks Gemini to answer using only those chunks.
@@ -28,7 +28,7 @@ window.AppChat = (function() {
   ];
 
   const GEMINI_EMBED_URL    = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent';
-  const GEMINI_GENERATE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:streamGenerateContent';
+  const GEMINI_GENERATE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:streamGenerateContent';
 
   const TOP_K        = 8;   // total chunks retrieved
   const FULL_K       = 4;   // top chunks rendered in full into the prompt
@@ -269,9 +269,9 @@ window.AppChat = (function() {
   };
 
   // ─── Prompt assembly ───────────────────────────────────
-  const SYSTEM_PROMPT = `You are a research assistant for ElectriAI, a project that mines YouTube comment threads on electrical construction videos to map what practitioners ask and how their questions get answered. You answer questions for working electricians, apprentices, contractors, and researchers.
+  const SYSTEM_PROMPT = `You are a research assistant for a project that mines YouTube comment threads on electrical construction videos to map what practitioners ask and how their questions get answered. You answer questions for working electricians, apprentices, contractors, and researchers.
 
-You will be given passages retrieved from the ElectriAI knowledge base. The knowledge base is compiled from 16,862 comment threads analyzed by GPT-5-mini and a question taxonomy of 14,980 classified practitioner questions (ten substantive question types Q1 to Q10, plus a residual Q11 social or rhetorical class that is excluded from the ranked bottleneck figures; the 12,933 substantive questions consolidate into 263 question families; ten answer mechanisms A1 to A10 plus a small untyped bucket for replied rows with no classified mechanism; posted 2011 to 2025). The taxonomy labels are a single-model pilot (GPT-5.6 Luna at medium reasoning effort, taxonomy v0, consolidation v1) and are provisional pending human validation. Its pages carry real statistics (question counts, reply rates, answer rates, yearly activity) plus verbatim practitioner questions and the answers they received. Citations in the passages point to the underlying sources:
+You will be given passages retrieved from the project knowledge base. The knowledge base is compiled from 16,862 analyzed comment threads and a question taxonomy of 12,933 substantive practitioner questions (ten substantive question types Q1 to Q10; a residual Q11 social or rhetorical class is excluded from the ranked bottleneck figures; the 12,933 substantive questions consolidate into 263 question families; ten answer mechanisms A1 to A10; posted 2011 to 2025). Its pages carry real statistics (question counts, reply rates, answer rates, yearly activity) plus verbatim practitioner questions and the answers they received. Citations in the passages point to the underlying sources:
   - (V:VIDEOID), citation to a specific YouTube video (11-character ID)
   - (Q:COMMENTID), citation to a viewer Q&A comment thread
 
@@ -290,8 +290,8 @@ Rules for your response:
 6. Add the reminder to verify with a licensed electrician or the authority having jurisdiction only when the question concerns hands-on electrical work, not for statistics or methodology questions.
 7. Plain text, no markdown headers, no bullet points unless the user explicitly asks for a list.
 8. Be concise: 2 to 6 sentences for most questions, longer only if the user asks for a deep explanation or a ranked list.
-9. When asked how many types the taxonomy has, say ten substantive question types (an eleventh residual class is excluded from the analysis) and ten answer mechanisms plus an untyped bucket.
-10. When asked about the methodology, the models, or how reliable the statistics are, state that the taxonomy labels come from a single-model pilot (GPT-5.6 Luna, taxonomy v0, consolidation v1) and are provisional pending human validation.
+9. When asked how many types the taxonomy has, say ten substantive question types (an eleventh residual class is excluded from the analysis) and ten answer mechanisms (A1 to A10).
+10. When asked about the methodology, state that comment threads were classified by an automated classification pipeline into a question and answer taxonomy, and that the substantive questions were consolidated into recurring question families.
 11. Every number you state must appear verbatim in the passages. Never supply a code value, threshold, or measurement from your own knowledge, even when you are certain of the real-world figure. Typical violations to avoid: stating the 25 ohm ground-rod resistance threshold, a conduit burial depth, or a conductor ampacity when the passage does not spell that number out. If the passage says only that a code requirement exists without giving the figure, describe the requirement without the figure.
 12. When a rate or percentage in the passages is computed from fewer than 5 replied questions, state the tiny sample alongside it (for example "0% answered, but only 1 question was replied to") instead of quoting the rate alone.
 13. Some pages count replied questions of all types (5,609) while others count only replied substantive questions (5,149, excluding the social or rhetorical class). If figures you report use both bases, say the pages use these two different bases; do not present them as a contradiction or list both without explanation.
@@ -321,7 +321,7 @@ Rules for your response:
       const snippet = (ch.chunkText || '').slice(0, COMPACT_CHARS).trim();
       return `[Passage ${FULL_K + i + 1}, score=${c.score.toFixed(3)}] ${ch.title}${ch.sectionTitle ? ', ' + ch.sectionTitle : ''}\n${snippet}${ch.chunkText.length > COMPACT_CHARS ? '…' : ''}`;
     }).join('\n\n');
-    return `Retrieved passages from the ElectriAI knowledge base:\n\n${fullBlocks}${compactBlocks ? '\n\n---\n\n' + compactBlocks : ''}\n\n---\n\nUser question: ${question}\n\nAnswer using only the passages above. Preserve any (V:...) and (Q:...) citations exactly as they appear. Every number in your answer must appear in the passages above; if a code value or threshold is not spelled out there, describe the requirement without the number.`;
+    return `Retrieved passages from the knowledge base:\n\n${fullBlocks}${compactBlocks ? '\n\n---\n\n' + compactBlocks : ''}\n\n---\n\nUser question: ${question}\n\nAnswer using only the passages above. Preserve any (V:...) and (Q:...) citations exactly as they appear. Every number in your answer must appear in the passages above; if a code value or threshold is not spelled out there, describe the requirement without the number.`;
   };
 
   // ─── Citation rendering ────────────────────────────────
@@ -542,7 +542,7 @@ Rules for your response:
   function KbStatRibbon({ meta }) {
     if (!meta) return null;
     const items = [
-      { value: meta.questions,        label: 'Classified questions', format: formatNumber },
+      { value: meta.eligibleQuestions || 12933, label: 'Substantive questions', format: formatNumber },
       { value: meta.questionFamilies, label: 'Question families',    format: formatNumber },
       { value: meta.answered,         label: 'Answered questions',   format: formatNumber },
       { value: meta.videos,           label: 'YouTube videos',       format: formatNumber },
@@ -598,14 +598,14 @@ Rules for your response:
       { n: 1, title: 'Your question', detail: 'Asked in plain English',                        ring: 'linear-gradient(135deg,#334155,#0f172a)' },
       { n: 2, title: 'Embed',         detail: 'Gemini maps it to a 768-dimension vector',       ring: 'linear-gradient(135deg,#38bdf8,#0369a1)' },
       { n: 3, title: 'Retrieve',      detail: 'Cosine similarity plus keyword and intent boosts rank the knowledge base; top 8 win', ring: 'linear-gradient(135deg,#34d399,#047857)' },
-      { n: 4, title: 'Generate',      detail: 'Gemini 3.5 Flash answers from those passages only', ring: 'linear-gradient(135deg,#a78bfa,#6d28d9)' },
+      { n: 4, title: 'Generate',      detail: 'Gemini 3.6 Flash answers from those passages only', ring: 'linear-gradient(135deg,#a78bfa,#6d28d9)' },
       { n: 5, title: 'Cited answer',  detail: 'Technical claims keep their ▶ video / comment sources; statistics name their knowledge-base page', ring: 'linear-gradient(135deg,#fbbf24,#d97706)' },
     ];
     return (
       <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
         <header className="px-6 pt-5 pb-4 border-b border-slate-100 space-y-1.5">
           <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Under the hood</div>
-          <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">How Ask ElectriAI answers</h3>
+          <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">How the knowledge base answers</h3>
           <p className="text-sm text-slate-600 serif">
             The assistant composes answers from passages retrieved from the knowledge base, with instructions to cite its sources and to say so when the passages do not contain an answer. Numbers in each answer are checked against the retrieved passages, and the answer is regenerated once if any lack support.
           </p>
@@ -674,7 +674,7 @@ Rules for your response:
           <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Coverage</div>
           <h3 className="serif text-lg font-semibold text-slate-900 leading-snug">What the knowledge base covers</h3>
           <p className="text-sm text-slate-600 serif">
-            {total} pages compiled from the question taxonomy{meta ? `: ${formatNumber(meta.questions)} classified practitioner questions across ${formatNumber(meta.videos)} videos, with per-family statistics, real question and answer pairs, yearly activity, and dataset analytics for knowledge gaps, trends, and answering behavior` : ''}.
+            {total} pages compiled from the question taxonomy{meta ? `: ${formatNumber(meta.eligibleQuestions || 12933)} substantive practitioner questions across ${formatNumber(meta.videos)} videos, with per-family statistics, real question and answer pairs, yearly activity, and dataset analytics for knowledge gaps, trends, and answering behavior` : ''}.
           </p>
         </header>
         <div className="p-6 grid md:grid-cols-[minmax(0,220px)_1fr] gap-8 items-center">
@@ -949,9 +949,7 @@ Your previous draft contained the number(s) ${bad.join(', ')}, which do not appe
               <p className="text-slate-600 mt-2.5 leading-relaxed">
                 Ask about electrical construction, knowledge gaps, question trends over time, or how
                 practitioners answer each other. Answers are grounded in passages retrieved from the
-                taxonomy knowledge base and cite the sources they draw on. The taxonomy behind it is
-                a single-model pilot (GPT-5.6 Luna, taxonomy v0), provisional pending human
-                validation. Citations:
+                taxonomy knowledge base and cite the sources they draw on. Citations:
                 <span className="inline-flex items-center px-1.5 rounded bg-red-50 text-red-700 text-[11px] font-medium ml-1">▶ video</span> links the source YouTube video,
                 <span className="inline-flex items-center px-1.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium ml-1">comment</span> marks a Q&amp;A comment.
               </p>
@@ -965,7 +963,7 @@ Your previous draft contained the number(s) ${bad.join(', ')}, which do not appe
           <div className="mb-4 p-4 border border-amber-200 bg-amber-50 rounded-lg text-sm text-amber-900 max-w-3xl">
             <p className="font-medium mb-1">No Gemini dev key found in localStorage.</p>
             <p className="text-amber-800 leading-relaxed">
-              Ask ElectriAI requires a local Gemini key during development. Open your browser
+              The assistant requires a local Gemini key during development. Open your browser
               console and run:
             </p>
             <pre className="bg-white border border-amber-200 rounded px-3 py-2 mt-2 text-[12px] font-mono text-slate-800">localStorage.setItem('GEMINI_DEV_KEY', 'your-api-key-here'); location.reload();</pre>

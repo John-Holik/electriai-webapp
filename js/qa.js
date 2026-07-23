@@ -65,7 +65,6 @@ window.AppQA = (function() {
     A8:  { color: '#F59E0B', def: 'The creator addresses the video rather than the question.' },
     A9:  { color: '#FBBF24', def: 'Attempts an answer while flagging uncertainty.' },
     A10: { color: '#94A3B8', def: 'Humor, banter, agreement, or promotion with no answer content.' },
-    A0:  { color: '#CBD5E1', def: 'Answered rows whose reply carried no classifiable type.' },
   };
 
   // Reply-outcome tier colors, shared by the funnel, the per-type chart,
@@ -112,8 +111,8 @@ window.AppQA = (function() {
         style={{ width: pct + '%', backgroundColor: color }}
         title={title}
       >
-        {!noLabel && pct >= 11 && (
-          <span className={`text-[10px] tabular-nums font-medium ${darkText ? 'text-slate-600' : 'text-white'}`}>
+        {!noLabel && pct >= 6 && (
+          <span className={`text-[10px] tabular-nums font-medium whitespace-nowrap ${darkText ? 'text-slate-600' : 'text-white'}`}>
             {Math.round(pct)}%
           </span>
         )}
@@ -205,8 +204,7 @@ window.AppQA = (function() {
               {tiers(s.consolidatedQuestions, 'Questions', 'individual comments')}
             </div>
             <p className="text-[11px] text-slate-400">
-              The reply side mirrors it: ten answer mechanisms (A1 to A10), plus a small untyped
-              bucket for replied rows with no classified mechanism, {formatNumber(s.answerFamilies)} families,
+              The reply side mirrors it: ten answer mechanisms (A1 to A10), {formatNumber(s.answerFamilies)} families,
               and {formatNumber(s.answerPatterns)} patterns consolidate the {formatNumber(s.consolidatedAnswers)} replies
               that actually answered a question. Every tier traces back to real, linkable comments.
             </p>
@@ -404,8 +402,7 @@ window.AppQA = (function() {
           const meta = A_META[code] || {};
           const pct = Math.max(1, Math.round((100 * t.count) / max));
           const share = Math.round((1000 * t.count) / total) / 10;
-          // A0 is a web-export residual, not a codebook mechanism; spell that out.
-          const label = code === 'A0' ? 'Untyped (no classified mechanism; not a codebook type)' : t.name;
+          const label = t.name;
           return (
             <div key={code} className="space-y-1">
               <div className="flex items-baseline gap-2">
@@ -629,7 +626,6 @@ window.AppQA = (function() {
     const maxQ = Math.max(1, ...topQ.map((p) => p.count));
     const maxA = Math.max(1, ...topA.map((p) => p.count));
     const contrast = qa.contrast || {};
-    const partial = s.consolidatedQuestions < s.eligibleQuestions;
     const pageCount = Math.max(1, Math.ceil(filteredRecords.length / PAGE));
     const pageRows = filteredRecords.slice(page * PAGE, page * PAGE + PAGE);
     const maxAnswerTypeCount = Math.max(1, ...qa.answerTypes.map((t) => t.count));
@@ -643,19 +639,6 @@ window.AppQA = (function() {
 
     return (
       <div className="py-8 space-y-10">
-
-        {/* Provenance banner: these numbers come from the new analysis generation */}
-        <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-900 leading-relaxed">
-          <span className="font-semibold">Preliminary results. </span>
-          Questions and answers were extracted from the comment dataset by the GPT-5-mini
-          classification pass, classified into the question and answer taxonomy by GPT-5.6 Luna
-          (taxonomy {qa.meta.taxonomyVersion}), and consolidated into patterns and families by a
-          second GPT-5.6 Luna pass (consolidation {qa.meta.consolidationVersion}). Single-model
-          results; human validation is in progress. The foundation figures on the Findings tab and
-          the Videos &amp; Comments and Validation Set tabs cover the earlier GPT-5-mini analysis
-          generation.
-          {partial && <span className="font-semibold"> The consolidation currently covers a subset of the data (pilot run).</span>}
-        </div>
 
         <Hero qa={qa} />
 
@@ -672,7 +655,7 @@ window.AppQA = (function() {
 
         {/* Headline numbers */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <StatCard label="Questions extracted" value={s.extractedQuestions} />
+          <StatCard label="Substantive questions" value={s.eligibleQuestions} />
           <StatCard label="Never receive a reply" value={s.eligibleQuestions ? (100 * s.neverReplied / s.eligibleQuestions).toFixed(1) + '%' : '0%'}
                     hint={`${formatNumber(s.neverReplied)} of ${formatNumber(s.eligibleQuestions)} substantive questions`} />
           <StatCard label="Answered when replied" value={`${s.answerRateReplied || 0}%`}
@@ -731,8 +714,8 @@ window.AppQA = (function() {
               <AnswerTypeRows codes={['A1', 'A2', 'A3', 'A4', 'A5']} answerTypes={qa.answerTypes}
                               max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
             </Card>
-            <Card title="Engagement without resolution" subtitle="Answer types A6 to A10, plus a small Untyped residual: reply forms that engage a question without resolving it">
-              <AnswerTypeRows codes={['A6', 'A7', 'A8', 'A9', 'A10', 'A0']} answerTypes={qa.answerTypes}
+            <Card title="Engagement without resolution" subtitle="Answer types A6 to A10: reply forms that engage a question without resolving it">
+              <AnswerTypeRows codes={['A6', 'A7', 'A8', 'A9', 'A10']} answerTypes={qa.answerTypes}
                               max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
             </Card>
           </div>

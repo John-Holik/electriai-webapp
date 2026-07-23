@@ -1,11 +1,11 @@
-/* ElectriAI Research companion webapp, root shell.
+/* Companion webapp for the knowledge-bottleneck study, root shell.
 
    Responsibilities:
      - Load the seven eager JSON datasets exported by the src/web builders
        (export_data.py, export_qa_data.py, build_web_taxonomy_figures.py,
        build_kb_wiki.py).
      - Lazy-load the wiki embeddings and chunks the first time the user
-       opens the Ask ElectriAI tab (they are ~3 MB combined).
+       opens the Ask the Knowledge Base tab (they are ~3 MB combined).
      - Render the header + six-tab navigation and dispatch to the
        per-tab root components registered on window.AppResearch /
        AppQA / AppChat / AppRawData / AppComments / AppAbout.
@@ -22,7 +22,7 @@
   const { QATab } = window.AppQA;
 
   // Localhost-only Gemini dev key. In production this stays empty and
-  // the Ask ElectriAI tab will route through the Cloudflare Worker instead.
+  // the Ask the Knowledge Base tab will route through the Cloudflare Worker instead.
   const isLocalhost =
     location.hostname === 'localhost' || location.hostname === '127.0.0.1';
   const GEMINI_DEV_KEY = isLocalhost
@@ -64,7 +64,7 @@
     const [taxonomyFigures, setTaxonomyFigures] = useState(null);
     const [bottleneck, setBottleneck] = useState(null);
 
-    // Lazy-loaded datasets, only fetched once the Ask ElectriAI tab is opened.
+    // Lazy-loaded datasets, only fetched once the Ask the Knowledge Base tab is opened.
     const [wikiEmbeddings, setWikiEmbeddings] = useState(null);
     const [wikiChunks, setWikiChunks]         = useState(null);
     const [embeddingsLoading, setEmbeddingsLoading] = useState(false);
@@ -171,7 +171,7 @@
     }, [tab, wikiEmbeddings, embeddingsLoading]);
 
     // Lazy raw-videos load. Triggered when the user opens Raw Data (the
-    // primary consumer) or Ask ElectriAI (so chat (Q:...) citations can
+    // primary consumer) or Ask the Knowledge Base (so chat (Q:...) citations can
     // resolve to YouTube comment deep-links via the commentId→videoId map).
     useEffect(() => {
       if (tab !== 'rawdata' && tab !== 'chat') return;
@@ -232,7 +232,7 @@
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="inline-block w-6 h-6 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin mb-3"></div>
-            <p className="text-sm text-slate-500">Loading ElectriAI data…</p>
+            <p className="text-sm text-slate-500">Loading data…</p>
           </div>
         </div>
       );
@@ -242,7 +242,7 @@
       return (
         <div className="min-h-screen flex items-center justify-center px-6">
           <div className="max-w-md text-center">
-            <p className="text-sm text-red-600 mb-2">Could not load ElectriAI data</p>
+            <p className="text-sm text-red-600 mb-2">Could not load data</p>
             <p className="text-xs text-slate-500 break-all">{error}</p>
             <p className="text-xs text-slate-500 mt-3">
               Make sure the JSON files are in <code>data/</code> and that
@@ -261,7 +261,7 @@
           <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-8">
             <div className="min-w-0 flex-1">
               <h1 className="serif text-base sm:text-lg font-semibold text-slate-900 leading-tight whitespace-nowrap">
-                Practitioner Knowledge Base for Electrical Construction
+                Knowledge Bottleneck in Electrical Construction
               </h1>
               <p className="text-[11px] sm:text-xs text-slate-500 leading-tight mt-0.5 max-w-2xl">
                 Identifying knowledge bottlenecks in electrical construction from practitioner discussion on YouTube using large language models

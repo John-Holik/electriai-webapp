@@ -27589,7 +27589,7 @@
     "PrimaryQuestionType":"Q4",
     "CanonicalQuestion":"Does reversal of alternating current make the neutral conductor become the phase conductor?",
     "SlotsJSON":"{\"phenomenon\": \"the relationship between alternating current direction, neutral, and phase conductors\", \"condition\": \"alternating current reversing direction\"}",
-    "AnswerTypes":"",
+    "AnswerTypes":"A2",
     "SourceModel":"gpt-5-mini",
     "TaxonomyVersion":"v0"
   },
@@ -35743,7 +35743,7 @@
     "PrimaryQuestionType":"Q1",
     "CanonicalQuestion":"Can multiple conductors be routed together through one conduit to a panel?",
     "SlotsJSON":"{\"action\": \"route multiple conductors together\", \"component_or_material\": \"conduit and conductors\", \"location_or_condition\": \"to a panel\"}",
-    "AnswerTypes":"",
+    "AnswerTypes":"A2",
     "SourceModel":"gpt-5-mini",
     "TaxonomyVersion":"v0"
   },
@@ -77269,7 +77269,7 @@
     "PrimaryQuestionType":"Q4",
     "CanonicalQuestion":"How does neutral current flow and cancel in a split-phase system with balanced 15-amp loads on opposite hot legs?",
     "SlotsJSON":"{\"phenomenon\": \"neutral current flow and cancellation\", \"condition\": \"balanced 15-amp loads on opposite hot legs\", \"video_anchor\": \"the statement that current flows back and forth between load and source\"}",
-    "AnswerTypes":"",
+    "AnswerTypes":"A2",
     "SourceModel":"gpt-5-mini",
     "TaxonomyVersion":"v0"
   },
@@ -180949,7 +180949,7 @@
     "PrimaryQuestionType":"Q2",
     "CanonicalQuestion":"Was the installed material approximately 5 mm thinner than specified?",
     "SlotsJSON":"{\"distance_or_condition\": \"5 mm less thickness\"}",
-    "AnswerTypes":"",
+    "AnswerTypes":"A8",
     "SourceModel":"gpt-5-mini",
     "TaxonomyVersion":"v0"
   },

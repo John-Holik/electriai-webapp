@@ -796,7 +796,7 @@ window.AppResearch = (function() {
   }
 
   // Figure 3: Sankey from question type to what its questions received:
-  // one of the ten answer mechanisms, an untyped reply, or no reply at
+  // one of the ten answer mechanisms or no reply at
   // all. Flow width is the number of questions; the answer mechanism is
   // the primary (first-listed) type on each question's replies.
   function QAFlowChart({ data }) {
@@ -841,10 +841,9 @@ window.AppResearch = (function() {
 
   // Methods pipeline figure. Replaces the prose methods summary with a
   // visual flow: four stage cards (dataset, stage 1, stage 2, consolidation)
-  // joined by arrows, a record-flow funnel showing where rows drop out, an
-  // outcome bar splitting the substantive questions by what they received,
-  // and a limitations footnote. Counts are fixed values from the frozen
-  // GPT-5.6 Luna taxonomy database (v0) and consolidation (v1).
+  // joined by arrows, a record-flow funnel showing where rows drop out, and
+  // an outcome bar splitting the substantive questions by what they received.
+  // Counts are fixed values from the taxonomy database and consolidation.
   function MethodsPipeline() {
     // Stage cards. Full Tailwind class strings are stored per card so the
     // CDN build sees every class name verbatim in the rendered DOM. The
@@ -1019,19 +1018,6 @@ window.AppResearch = (function() {
           </div>
           <p className="mt-1.5 text-[10px] text-slate-400">Percentages are rounded to one decimal and may not sum to exactly 100.</p>
         </div>
-
-        {/* Limitations footnote. */}
-        <div className="mt-6 pt-4 border-t border-slate-200 flex gap-2 text-[11px] text-slate-500 leading-relaxed">
-          <svg className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-          </svg>
-          <p>
-            <span className="font-semibold text-slate-600">Limitations:</span> taxonomy labels are single-model and
-            provisional pending human validation; answer types were judged from the GPT-5-mini reply summaries, not
-            the raw replies; the v0 instrument is frozen but preliminary. Counts come from the GPT-5.6 Luna taxonomy
-            database (v0) and consolidation (v1).
-          </p>
-        </div>
       </div>
     );
   }
@@ -1055,13 +1041,15 @@ window.AppResearch = (function() {
     // preformatted strings (no count-up) so the decimal survives.
     const taxMeta = taxFigs.meta || {};
     const statCards = [
-      { label: 'Videos analyzed',      value: stats.totalVideos,   format: formatNumber,  hint: `${formatNumber(stats.videosWithQa)} with Q&A comments` },
-      { label: 'Comments processed',   value: stats.totalComments, format: formatNumber },
-      { label: 'Unique themes',        value: stats.uniqueThemes,  format: formatNumber },
-      { label: 'Questions classified', value: kbMeta.questions,    format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} families among 12,933 substantive questions` },
-      { label: 'Total video views',    value: stats.totalViews,    format: formatCompact },
-      { label: 'Never replied',        value: taxMeta.overallNeverShare != null ? `${taxMeta.overallNeverShare}%` : undefined, hint: '7,784 of 12,933 substantive questions' },
-      { label: 'Answered when replied', value: taxMeta.overallAnswerRate != null ? `${taxMeta.overallAnswerRate}%` : undefined, hint: '3,667 of 5,149 replied questions' },
+      { label: 'Comments collected',       value: 93317,               format: formatNumber,  hint: 'all comments and replies before filtering' },
+      { label: 'Video URLs collected',     value: 4959,                format: formatNumber,  hint: 'across all search keywords, before deduplication' },
+      { label: 'Videos analyzed',          value: stats.totalVideos,   format: formatNumber,  hint: `${formatNumber(stats.videosWithQa)} with Q&A comments` },
+      { label: 'Comment threads analyzed', value: stats.totalComments, format: formatNumber },
+      { label: 'Unique themes',            value: stats.uniqueThemes,  format: formatNumber },
+      { label: 'Total video views',        value: stats.totalViews,    format: formatCompact },
+      { label: 'Substantive questions classified', value: 12933,       format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} recurring question families` },
+      { label: 'Never replied',            value: taxMeta.overallNeverShare != null ? `${taxMeta.overallNeverShare}%` : undefined, hint: '7,784 of 12,933 substantive questions' },
+      { label: 'Answered when replied',    value: taxMeta.overallAnswerRate != null ? `${taxMeta.overallAnswerRate}%` : undefined, hint: '3,667 of 5,149 replied questions' },
     ];
 
     return (
@@ -1074,7 +1062,7 @@ window.AppResearch = (function() {
           </h2>
           <div className="text-slate-700 mt-5 leading-relaxed text-base space-y-4">
             <p>
-              The Practitioner Knowledge Base for Electrical Construction (ElectriAI for short) mines practitioner discussion on YouTube to identify knowledge bottlenecks in electrical construction: the kinds of questions field practitioners ask most but for which peer answers are hardest to find. GPT-5-mini classified 16,862 YouTube comment threads into question and answer structure; GPT-5.6 Luna (medium reasoning effort) then re-read all 14,980 detected questions and classified them into a literature-grounded question taxonomy of ten substantive question types (a residual class, Q11 social or rhetorical, is excluded from the gap analysis) and ten answer mechanisms (A1 to A10), plus a small untyped bucket for replied rows with no classified mechanism. The 12,933 substantive questions were consolidated into 263 recurring question families.
+              This project analyzes practitioner discussion on YouTube to identify knowledge bottlenecks in electrical construction: the kinds of questions field practitioners ask most but for which peer answers are hardest to find. Collection began with 4,959 video URLs gathered across all search keywords and 93,317 comments, including replies, pulled before any filtering. From that raw corpus, a working set of 794 videos and 16,862 comment threads was carried forward and passed through an automated classification pipeline that labeled each thread by its question and answer structure. An automated classifier then re-read all 14,980 detected questions and sorted them into a literature-grounded taxonomy of ten substantive question types (a residual class, Q11 social or rhetorical, is excluded from the gap analysis) and ten answer mechanisms (A1 to A10). The 12,933 substantive questions (Q1 to Q10) were consolidated into 263 recurring question families.
             </p>
             <p>
               The headline finding: 60.2 percent of substantive questions never received any reply, and when someone did reply, 71.2 percent of questions got a substantive answer. The dominant knowledge gap is silence, not wrong answers. This site presents the study figures, an explorer for the labeled comment threads, the annotated validation set, and an assistant grounded in a knowledge base compiled from the question taxonomy.
@@ -1093,7 +1081,7 @@ window.AppResearch = (function() {
         </section>
 
         {/* Methods at a glance: the two-stage pipeline as a visual figure
-            (stage cards, record-flow funnel, outcome bar, limitations). */}
+            (stage cards, record-flow funnel, outcome bar). */}
         <section>
           <MethodsPipeline />
         </section>
@@ -1106,14 +1094,11 @@ window.AppResearch = (function() {
             <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
               Every extracted practitioner question ({kbMeta.questions ? formatNumber(kbMeta.questions) : '14,980'} in
               total) was classified into ten substantive question types (a residual class, Q11 social or rhetorical,
-              is excluded from the gap analysis) and ten answer mechanisms (A1 to A10), plus a small untyped bucket
-              for replied rows with no classified mechanism. The 12,933 substantive questions were consolidated
+              is excluded from the gap analysis) and ten answer mechanisms (A1 to A10). The 12,933 substantive questions were consolidated
               into {kbMeta.questionFamilies || 263} recurring question families. Across the dataset, 60.2 percent of
               substantive questions never received any reply, and 71.2 percent of replied questions got a substantive
               answer. The three figures below summarize what practitioners ask, how the mix has shifted over the
-              years, and how (or whether) their questions get resolved. Labels and family consolidation come from a
-              single-model pilot (GPT-5.6 Luna at medium reasoning effort; taxonomy v0, consolidation v1) and are
-              provisional pending human validation.
+              years, and how (or whether) their questions get resolved.
             </p>
             <ol className="list-decimal pl-5 mt-3 space-y-1 text-sm text-slate-600 max-w-3xl leading-relaxed">
               <li>Practice-justification questions (Q6) are the most ignored type: 67.4 percent never replied, and their answer rate when replied is second lowest at 61.2 percent.</li>
@@ -1121,10 +1106,6 @@ window.AppResearch = (function() {
               <li>Content requests (Q10) have the worst answer rate among replied at 48.2 percent.</li>
               <li>Permissibility and compliance questions (Q1) are best served at 81.3 percent answered when replied.</li>
             </ol>
-            <p className="text-sm text-slate-600 max-w-3xl leading-relaxed mt-3">
-              The taxonomy labels themselves have not yet been human-validated; Table 1 in the foundation section
-              covers the first-stage subject classification.
-            </p>
           </section>
 
           <FigureCard

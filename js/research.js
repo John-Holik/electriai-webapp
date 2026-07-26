@@ -1098,7 +1098,7 @@ window.AppResearch = (function() {
               into {kbMeta.questionFamilies || 263} recurring question families. Across the dataset, 60.2 percent of
               substantive questions never received any reply, and 71.2 percent of replied questions got a substantive
               answer. The three figures below summarize what practitioners ask, how the mix has shifted over the
-              years, and how (or whether) their questions get resolved.
+              years, and how (or whether) their questions get solved.
             </p>
             <ol className="list-decimal pl-5 mt-3 space-y-1 text-sm text-slate-600 max-w-3xl leading-relaxed">
               <li>Practice-justification questions (Q6) are the most ignored type: 67.4 percent never replied, and their answer rate when replied is second lowest at 61.2 percent.</li>

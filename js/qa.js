@@ -821,18 +821,31 @@ window.AppQA = (function() {
           <SectionHeader
             eyebrow="The reply side"
             title="How the crowd answers"
-            subtitle={`What the ${formatNumber(s.repliedTyped)} replies to substantive questions actually do: the primary mechanism of the best answering reply, counted once per question by its primary (first-listed) answer type. Every reply carries a mechanism whether or not it solves the question, so the five solution mechanisms (A1 to A5) and the five engagement forms (A6 to A10) are both shown at full size; the meter under each row gives the share of that form's replies that carried a solution. ${formatNumber(s.answered)} of the ${formatNumber(s.replied)} replied questions were solved, and ${s.repliedUntyped} replies could not be assigned a mechanism.`}
+            subtitle={`What the ${formatNumber(s.repliedTyped)} replies to substantive questions actually do, counted once per question under the form of its dominant reply. Every reply carries a form whether or not it solves the question, so the five direct answer forms (A1 to A5) and the five indirect reply forms (A6 to A10) are both shown at full size. ${formatNumber(s.answered)} of the ${formatNumber(s.replied)} replied questions were solved, and ${s.repliedUntyped} replies could not be assigned a form. Click a card to open that form in the dictionary.`}
           />
-          <div className="grid md:grid-cols-2 gap-4">
-            <Card title="Solution mechanisms" subtitle="Answer types A1 to A5: reply forms that substantively answer the question">
-              <AnswerTypeRows codes={['A1', 'A2', 'A3', 'A4', 'A5']} answerTypes={qa.answerTypes}
-                              max={maxAnswerTypeCount} total={s.repliedTyped} />
-            </Card>
-            <Card title="Engagement without solution" subtitle="Answer types A6 to A10: reply forms that engage a question without solving it">
-              <AnswerTypeRows codes={['A6', 'A7', 'A8', 'A9', 'A10']} answerTypes={qa.answerTypes}
-                              max={maxAnswerTypeCount} total={s.repliedTyped} />
-            </Card>
+          <div className="grid md:grid-cols-2 gap-x-5 gap-y-4">
+            {A_GROUPS.map((g) => (
+              <div key={g.title} className="space-y-3">
+                <div className="text-center px-2">
+                  <div className="text-xs text-slate-800">
+                    <span className="font-semibold">{g.title} </span>
+                    <span className="text-slate-500">{g.range}:</span>
+                  </div>
+                  <div className="text-[11px] italic text-slate-500 leading-snug">{g.sub}</div>
+                </div>
+                <div className="space-y-3">
+                  {g.codes.map((code) => {
+                    const t = answerTypeByCode[code];
+                    return t ? (
+                      <AnswerFormCard key={code} t={t} total={s.repliedTyped} qTypeNames={qTypeNames}
+                                      onOpen={() => openType(code, 'answer')} />
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
+          <Card><AnswerFormLegend qTypeNames={qTypeNames} /></Card>
         </div>
 
         {/* Top patterns */}

@@ -322,7 +322,7 @@ window.AppQA = (function() {
   /* ── Bottleneck by question type: sorted stacked bars ────────────────── */
 
   function BottleneckChart({ outcomes, stats }) {
-    const [sortKey, setSortKey] = useState('unresolved');
+    const [sortKey, setSortKey] = useState('leastAnswered');
     const sorted = useMemo(() => {
       const rows = [...outcomes];
       if (sortKey === 'volume') rows.sort((a, b) => b.total - a.total);
@@ -372,7 +372,7 @@ window.AppQA = (function() {
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-[11px] text-slate-400 mr-1">Sort by</span>
-            <Chip active={sortKey === 'unresolved'} onClick={() => setSortKey('unresolved')}>Least answered</Chip>
+            <Chip active={sortKey === 'leastAnswered'} onClick={() => setSortKey('leastAnswered')}>Least answered</Chip>
             <Chip active={sortKey === 'replyRate'} onClick={() => setSortKey('replyRate')}>Least replied</Chip>
             <Chip active={sortKey === 'volume'} onClick={() => setSortKey('volume')}>Volume</Chip>
           </div>
@@ -405,7 +405,7 @@ window.AppQA = (function() {
           if (!t) return null;
           const meta = A_META[code] || {};
           const pct = Math.max(1, Math.round((100 * t.replies) / max));
-          const share = Math.round((1000 * t.replies) / total) / 10;
+          const share = ((100 * t.replies) / total).toFixed(1);
           const solvedPct = t.replies ? Math.round((100 * t.solved) / t.replies) : 0;
           const label = t.name;
           return (

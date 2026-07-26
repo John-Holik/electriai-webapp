@@ -259,7 +259,7 @@ window.AppQA = (function() {
               {tiers(s.consolidatedQuestions, 'Questions', 'individual comments')}
             </div>
             <p className="text-[11px] text-slate-400">
-              The reply side mirrors it: ten answer mechanisms (A1 to A10) type all {formatNumber(s.repliedTyped)} replies
+              The reply side mirrors it: ten answer forms (A1 to A10) type all {formatNumber(s.repliedTyped)} replies
               these questions received, and {formatNumber(s.answerFamilies)} families and {formatNumber(s.answerPatterns)} patterns
               consolidate the {formatNumber(s.consolidatedAnswers)} of those replies that carried a solution.
               Every tier traces back to real, linkable comments.

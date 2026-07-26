@@ -912,7 +912,7 @@ window.AppQA = (function() {
           </div>
         )}
 
-        {/* Answer mechanisms */}
+        {/* Answer forms */}
         <div ref={ansRef} className="scroll-mt-20 space-y-4">
           <SectionHeader
             eyebrow="The reply side"

@@ -184,7 +184,7 @@ window.AppResearch = (function() {
           showgrid: true, gridcolor: 'white', zeroline: false, showline: false,
         },
         yaxis: {
-          title: { text: 'Resolution Rate (%)', font: { family: fontFamily, size: fontSize, color: '#000000' } },
+          title: { text: 'Solution Rate (%)', font: { family: fontFamily, size: fontSize, color: '#000000' } },
           range: [0, yCap],
           tickvals: [0, 10, 20, 30, 40, 50],
           tickfont: { family: fontFamily, size: fontSize, color: '#000000' },

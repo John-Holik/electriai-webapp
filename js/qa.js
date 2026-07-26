@@ -771,6 +771,20 @@ window.AppQA = (function() {
         .filter((r) => r.primaryType !== 'Q11' && String(r.canonical || '').trim() !== '');
     }, [recordsDoc]);
 
+    // Records grouped by the answer form of their dominant reply, which is the
+    // first code listed. These are the populations the answer form cards count.
+    const recordsByForm = useMemo(() => {
+      if (!records) return null;
+      const out = {};
+      records.forEach((r) => {
+        if (Number(r.replyCount) <= 0) return;
+        const form = String(r.answerTypes || '').split(';')[0].trim();
+        if (!form) return;
+        (out[form] = out[form] || []).push(r);
+      });
+      return out;
+    }, [records]);
+
     // Counts for the record status filter chips.
     const statusCounts = useMemo(() => {
       if (!records) return null;

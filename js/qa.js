@@ -392,16 +392,20 @@ window.AppQA = (function() {
 
   /* ── Answer mechanism distribution (A1 to A5 vs A6 to A10) ───────────── */
 
+  // One row per answer form: reply count and share, a bar sized against the
+  // largest form, the codebook definition, and a meter for the share of those
+  // replies that carried a solution.
   function AnswerTypeRows({ codes, answerTypes, max, total }) {
     const byCode = Object.fromEntries(answerTypes.map((t) => [t.code, t]));
     return (
-      <div className="space-y-3">
+      <div className="space-y-3.5">
         {codes.map((code) => {
           const t = byCode[code];
           if (!t) return null;
           const meta = A_META[code] || {};
-          const pct = Math.max(1, Math.round((100 * t.count) / max));
-          const share = Math.round((1000 * t.count) / total) / 10;
+          const pct = Math.max(1, Math.round((100 * t.replies) / max));
+          const share = Math.round((1000 * t.replies) / total) / 10;
+          const solvedPct = t.replies ? Math.round((100 * t.solved) / t.replies) : 0;
           const label = t.name;
           return (
             <div key={code} className="space-y-1">
@@ -409,13 +413,19 @@ window.AppQA = (function() {
                 <CategoryBadge code={code} color={meta.color} />
                 <span className="text-xs font-medium text-slate-800">{label}</span>
                 <span className="ml-auto text-[11px] text-slate-500 tabular-nums flex-shrink-0">
-                  {formatNumber(t.count)} · {share}%
+                  {formatNumber(t.replies)} · {share}%
                 </span>
               </div>
               <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full rounded-full" style={{ width: pct + '%', backgroundColor: meta.color }} />
               </div>
               <p className="text-[11px] text-slate-500 leading-snug">{meta.def}</p>
+              <div className="flex items-center gap-2" title={`${formatNumber(t.solved)} of ${formatNumber(t.replies)} replies of this form carried a solution`}>
+                <span className="h-1 w-16 bg-slate-100 rounded-full overflow-hidden flex-shrink-0">
+                  <span className="block h-full rounded-full bg-slate-500" style={{ width: solvedPct + '%' }} />
+                </span>
+                <span className="text-[10px] text-slate-400 tabular-nums">{solvedPct}% carried a solution</span>
+              </div>
             </div>
           );
         })}

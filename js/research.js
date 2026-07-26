@@ -1129,8 +1129,8 @@ window.AppResearch = (function() {
 
         <FigureCard
           number={3}
-          title="How questions get resolved, from question type to answer mechanism"
-          caption="Flow from each substantive question type (left) to what its questions received (right): one of the ten answer mechanisms of the answer taxonomy, a reply without a classified type, or no reply at all. Flow width is the number of questions; where a question drew several answer mechanisms, the primary (first-listed) one is counted. Mechanisms are grouped here for readability into resolving (A1 to A5: prescription, explanation, experience, code citation, correction, in blue) and engaging without resolving (A6 to A10: counter-question, referral, meta-response, speculation, social, in gray); the split is a presentation grouping, and the codebook defines the ten mechanisms without ranking them. All 12,933 substantive questions are shown; the largest destination, Never replied, absorbs 7,784 of them."
+          title="How questions get solved, from question type to answer mechanism"
+          caption="Flow from each substantive question type (left) to what its questions received (right): one of the ten answer mechanisms of the answer taxonomy, a reply without a classified type, or no reply at all. Flow width is the number of questions; where a question drew several answer mechanisms, the primary (first-listed) one is counted. Mechanisms are grouped here for readability into solution mechanisms (A1 to A5: prescription, explanation, experience, code citation, correction, in blue) and engagement without solution (A6 to A10: counter-question, referral, meta-response, speculation, social, in gray); the split is a presentation grouping, and the codebook defines the ten mechanisms without ranking them. All 12,933 substantive questions are shown; the largest destination, Never replied, absorbs 7,784 of them."
           dataSource="taxonomy_figures.json, built by src/web/build_web_taxonomy_figures.py from the GPT-5.6 Luna taxonomy database (v0) and consolidation (v1)"
         >
           <QAFlowChart data={taxFigs.flow} />

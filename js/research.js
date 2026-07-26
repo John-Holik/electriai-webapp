@@ -99,7 +99,7 @@ window.AppResearch = (function() {
       annotations.push({
         x: xMax * 1.05,
         y: meanResolution,
-        text: `Mean Resolution: ${meanResolution.toFixed(1)}%`,
+        text: `Mean Solution Rate: ${meanResolution.toFixed(1)}%`,
         showarrow: false,
         yshift: 12,
         xanchor: 'right',

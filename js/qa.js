@@ -1100,6 +1100,9 @@ window.AppQA = (function() {
                         <FamilyBlock key={f.id || f.label} family={f} isQuestion={kind === 'question'}
                                      accentColor={badgeColor(t.code)} />
                       ))}
+                      {kind === 'answer' && recordsByForm && (recordsByForm[t.code] || []).length > 0 && (
+                        <FormRecords code={t.code} rows={recordsByForm[t.code]} />
+                      )}
                     </div>
                   </div>
                 ))}

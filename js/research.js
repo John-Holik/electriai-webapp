@@ -708,7 +708,7 @@ window.AppResearch = (function() {
   // (20 or more member questions): x answer rate among replied, y share
   // never replied, bubble area member count, color question type. Dashed
   // lines mark the overall averages, so the upper-left region is the
-  // bottleneck: heavily ignored and poorly resolved.
+  // bottleneck: heavily ignored and poorly solved.
   function GapQuadrantChart({ data, meta }) {
     const divRef = useRef(null);
     useEffect(() => {

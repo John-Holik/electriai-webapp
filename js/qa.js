@@ -923,7 +923,8 @@ window.AppQA = (function() {
               fixed rows puts one group per column on wide screens, which pairs
               each direct form with its indirect counterpart on a shared row,
               and falls back to one group after the other on narrow screens. */}
-          <div className="grid gap-x-5 gap-y-3 md:grid-cols-2 md:grid-rows-6 md:grid-flow-col">
+          <div className="grid gap-x-5 gap-y-3 md:grid-cols-2 md:grid-flow-col"
+               style={{ gridTemplateRows: 'repeat(6, auto)' }}>
             {A_GROUPS.map((g) => (
               <React.Fragment key={g.title}>
                 <div className="text-center px-2 pb-1 self-end">

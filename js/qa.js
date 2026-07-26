@@ -61,7 +61,7 @@ window.AppQA = (function() {
     A4:  { color: '#34D399', def: 'Invokes the NEC, local code, a listing, or a manufacturer requirement.' },
     A5:  { color: '#6EE7B7', def: 'Corrects the asker’s premise, practice, or safety error.' },
     A6:  { color: '#B45309', def: 'Requests missing details or clarification instead of answering.' },
-    A7:  { color: '#D97706', def: 'Points somewhere else that plausibly resolves the question.' },
+    A7:  { color: '#D97706', def: 'Points somewhere else that plausibly holds the solution.' },
     A8:  { color: '#F59E0B', def: 'The creator addresses the video rather than the question.' },
     A9:  { color: '#FBBF24', def: 'Attempts an answer while flagging uncertainty.' },
     A10: { color: '#94A3B8', def: 'Humor, banter, agreement, or promotion with no answer content.' },
@@ -204,9 +204,10 @@ window.AppQA = (function() {
               {tiers(s.consolidatedQuestions, 'Questions', 'individual comments')}
             </div>
             <p className="text-[11px] text-slate-400">
-              The reply side mirrors it: ten answer mechanisms (A1 to A10), {formatNumber(s.answerFamilies)} families,
-              and {formatNumber(s.answerPatterns)} patterns consolidate the {formatNumber(s.consolidatedAnswers)} replies
-              that actually answered a question. Every tier traces back to real, linkable comments.
+              The reply side mirrors it: ten answer mechanisms (A1 to A10) type all {formatNumber(s.repliedTyped)} replies
+              these questions received, and {formatNumber(s.answerFamilies)} families and {formatNumber(s.answerPatterns)} patterns
+              consolidate the {formatNumber(s.consolidatedAnswers)} of those replies that carried a solution.
+              Every tier traces back to real, linkable comments.
             </p>
           </div>
         </div>
@@ -321,7 +322,7 @@ window.AppQA = (function() {
   /* ── Bottleneck by question type: sorted stacked bars ────────────────── */
 
   function BottleneckChart({ outcomes, stats }) {
-    const [sortKey, setSortKey] = useState('unresolved');
+    const [sortKey, setSortKey] = useState('leastAnswered');
     const sorted = useMemo(() => {
       const rows = [...outcomes];
       if (sortKey === 'volume') rows.sort((a, b) => b.total - a.total);
@@ -371,7 +372,7 @@ window.AppQA = (function() {
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-[11px] text-slate-400 mr-1">Sort by</span>
-            <Chip active={sortKey === 'unresolved'} onClick={() => setSortKey('unresolved')}>Least answered</Chip>
+            <Chip active={sortKey === 'leastAnswered'} onClick={() => setSortKey('leastAnswered')}>Least answered</Chip>
             <Chip active={sortKey === 'replyRate'} onClick={() => setSortKey('replyRate')}>Least replied</Chip>
             <Chip active={sortKey === 'volume'} onClick={() => setSortKey('volume')}>Volume</Chip>
           </div>
@@ -383,8 +384,8 @@ window.AppQA = (function() {
         <p className="text-[11px] text-slate-400 leading-relaxed">
           Bars show the share of each type&rsquo;s questions in each reply outcome. The right column is the
           type&rsquo;s question count and its answer rate among questions that received at least one reply.
-          A question counts as answered when a reply in its thread actually resolves it, as judged in
-          the original GPT-5-mini pass that extracted the question and answer structure.
+          A question counts as answered when a reply in its thread actually carries a solution, as judged
+          in the original GPT-5-mini pass that extracted the question and answer structure.
         </p>
       </div>
     );
@@ -392,16 +393,20 @@ window.AppQA = (function() {
 
   /* ── Answer mechanism distribution (A1 to A5 vs A6 to A10) ───────────── */
 
+  // One row per answer form: reply count and share, a bar sized against the
+  // largest form, the codebook definition, and a meter for the share of those
+  // replies that carried a solution.
   function AnswerTypeRows({ codes, answerTypes, max, total }) {
     const byCode = Object.fromEntries(answerTypes.map((t) => [t.code, t]));
     return (
-      <div className="space-y-3">
+      <div className="space-y-3.5">
         {codes.map((code) => {
           const t = byCode[code];
           if (!t) return null;
           const meta = A_META[code] || {};
-          const pct = Math.max(1, Math.round((100 * t.count) / max));
-          const share = Math.round((1000 * t.count) / total) / 10;
+          const pct = Math.max(1, Math.round((100 * t.replies) / max));
+          const share = ((100 * t.replies) / total).toFixed(1);
+          const solvedPct = t.replies ? Math.round((100 * t.solved) / t.replies) : 0;
           const label = t.name;
           return (
             <div key={code} className="space-y-1">
@@ -409,13 +414,19 @@ window.AppQA = (function() {
                 <CategoryBadge code={code} color={meta.color} />
                 <span className="text-xs font-medium text-slate-800">{label}</span>
                 <span className="ml-auto text-[11px] text-slate-500 tabular-nums flex-shrink-0">
-                  {formatNumber(t.count)} · {share}%
+                  {formatNumber(t.replies)} · {share}%
                 </span>
               </div>
               <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full rounded-full" style={{ width: pct + '%', backgroundColor: meta.color }} />
               </div>
               <p className="text-[11px] text-slate-500 leading-snug">{meta.def}</p>
+              <div className="flex items-center gap-2" title={`${formatNumber(t.solved)} of ${formatNumber(t.replies)} replies of this form carried a solution`}>
+                <span className="h-1 w-16 bg-slate-100 rounded-full overflow-hidden flex-shrink-0">
+                  <span className="block h-full rounded-full bg-slate-500" style={{ width: solvedPct + '%' }} />
+                </span>
+                <span className="text-[10px] text-slate-400 tabular-nums">{solvedPct}% carried a solution</span>
+              </div>
             </div>
           );
         })}
@@ -628,7 +639,7 @@ window.AppQA = (function() {
     const contrast = qa.contrast || {};
     const pageCount = Math.max(1, Math.ceil(filteredRecords.length / PAGE));
     const pageRows = filteredRecords.slice(page * PAGE, page * PAGE + PAGE);
-    const maxAnswerTypeCount = Math.max(1, ...qa.answerTypes.map((t) => t.count));
+    const maxAnswerTypeCount = Math.max(1, ...qa.answerTypes.map((t) => t.replies));
     const badgeColor = kind === 'question' ? qColor : aColor;
 
     const jump = [
@@ -696,7 +707,7 @@ window.AppQA = (function() {
             <SectionHeader
               eyebrow="Bottleneck localization"
               title="Which question types hit the bottleneck"
-              subtitle="Reply outcomes per question type. The types at the top are where the most asked-and-never-resolved knowledge sits."
+              subtitle="Reply outcomes per question type. The types at the top are where the most asked-and-never-solved knowledge sits."
             />
             <Card><BottleneckChart outcomes={outcomes} stats={s} /></Card>
           </div>
@@ -707,16 +718,16 @@ window.AppQA = (function() {
           <SectionHeader
             eyebrow="The reply side"
             title="How the crowd answers"
-            subtitle={`How the ${formatNumber(s.consolidatedAnswers)} answered questions got their answers: the primary mechanism of the best answering reply. The taxonomy also defines five engagement forms (A6 to A10) that respond to a question without resolving it; their rarity here shows that when a question does get answered, the answer is almost always substantive. Each answered question is counted once, by its primary (first-listed) answer type; the totals sum to the ${formatNumber(s.consolidatedAnswers)} answered questions.`}
+            subtitle={`What the ${formatNumber(s.repliedTyped)} replies to substantive questions actually do: the primary mechanism of the best answering reply, counted once per question by its primary (first-listed) answer type. Every reply carries a mechanism whether or not it solves the question, so the five solution mechanisms (A1 to A5) and the five engagement forms (A6 to A10) are both shown at full size; the meter under each row gives the share of that form's replies that carried a solution. ${formatNumber(s.answered)} of the ${formatNumber(s.replied)} replied questions were solved, and ${s.repliedUntyped} replies could not be assigned a mechanism.`}
           />
           <div className="grid md:grid-cols-2 gap-4">
-            <Card title="Resolution mechanisms" subtitle="Answer types A1 to A5: replies that substantively answer the question">
+            <Card title="Solution mechanisms" subtitle="Answer types A1 to A5: reply forms that substantively answer the question">
               <AnswerTypeRows codes={['A1', 'A2', 'A3', 'A4', 'A5']} answerTypes={qa.answerTypes}
-                              max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
+                              max={maxAnswerTypeCount} total={s.repliedTyped} />
             </Card>
-            <Card title="Engagement without resolution" subtitle="Answer types A6 to A10: reply forms that engage a question without resolving it">
+            <Card title="Engagement without solution" subtitle="Answer types A6 to A10: reply forms that engage a question without solving it">
               <AnswerTypeRows codes={['A6', 'A7', 'A8', 'A9', 'A10']} answerTypes={qa.answerTypes}
-                              max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
+                              max={maxAnswerTypeCount} total={s.repliedTyped} />
             </Card>
           </div>
         </div>
@@ -823,7 +834,7 @@ window.AppQA = (function() {
           <SectionHeader
             eyebrow="Browse the hierarchy"
             title="The question dictionary"
-            subtitle="Taxonomy type, then family, then pattern. Expand a family to see its patterns; expand a pattern to see real example comments, each linked back to YouTube."
+            subtitle="Taxonomy type, then family, then pattern. Expand a family to see its patterns; expand a pattern to see real example comments, each linked back to YouTube. On the answer side a type counts every reply of that form, while the families and patterns beneath it consolidate the replies that carried a solution."
           />
           <Card>
             <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -832,7 +843,8 @@ window.AppQA = (function() {
               <span className="mx-1 text-slate-300">|</span>
               <Chip active={typeCode === null} onClick={() => setTypeCode(null)}>All types</Chip>
               {types.map((t) => (
-                <Chip key={t.code} active={typeCode === t.code} onClick={() => setTypeCode(t.code)} count={formatNumber(t.count)}>
+                <Chip key={t.code} active={typeCode === t.code} onClick={() => setTypeCode(t.code)}
+                      count={formatNumber(kind === 'question' ? t.count : t.replies)}>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full inline-block flex-shrink-0" style={{ backgroundColor: badgeColor(t.code) }} />
                     {t.code}
@@ -866,7 +878,9 @@ window.AppQA = (function() {
                       <CategoryBadge code={t.code} color={badgeColor(t.code)} />
                       <h4 className="text-xs font-semibold text-slate-700">{t.name || qTypeNames[t.code]}</h4>
                       <span className="text-[11px] text-slate-400 tabular-nums">
-                        {formatNumber(t.count)} {kind === 'question' ? 'questions' : 'answers'} · {formatNumber(t.patternCount)} patterns
+                        {kind === 'question'
+                          ? `${formatNumber(t.count)} questions · ${formatNumber(t.patternCount)} patterns`
+                          : `${formatNumber(t.replies)} replies · ${formatNumber(t.solved)} carried a solution, consolidated into ${formatNumber(t.patternCount)} patterns`}
                       </span>
                     </div>
                     <div className="space-y-2">

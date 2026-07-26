@@ -50,7 +50,7 @@ window.AppResearch = (function() {
         hovertemplate: cats.map(c =>
           `<b>${c.category}</b><br>` +
           `Total Questions: ${c.totalQuestions}<br>` +
-          `Resolution Rate: ${(c.resolutionRate * 100).toFixed(1)}%<br>` +
+          `Solution Rate: ${(c.resolutionRate * 100).toFixed(1)}%<br>` +
           `Total Comments: ${c.totalComments.toLocaleString()}<br>` +
           `Average Views: ${Math.round(c.avgViews).toLocaleString()}<extra></extra>`
         ),
@@ -99,7 +99,7 @@ window.AppResearch = (function() {
       annotations.push({
         x: xMax * 1.05,
         y: meanResolution,
-        text: `Mean Resolution: ${meanResolution.toFixed(1)}%`,
+        text: `Mean Solution Rate: ${meanResolution.toFixed(1)}%`,
         showarrow: false,
         yshift: 12,
         xanchor: 'right',
@@ -123,10 +123,10 @@ window.AppResearch = (function() {
         borderwidth: 1,
         borderpad: 4,
       };
-      annotations.push({ ...quadrantBase, x: xMax * 0.73, y: 46, text: 'I. High Volume<br>High Resolution' });
-      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 46, text: 'II. Low Volume<br>High Resolution' });
-      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 8, text: 'III. Low Volume<br>Low Resolution' });
-      annotations.push({ ...quadrantBase, x: xMax * 0.76, y: 8, text: 'IV. High Volume<br>Low Resolution' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.73, y: 46, text: 'I. High Volume<br>High Solution Rate' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 46, text: 'II. Low Volume<br>High Solution Rate' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 8, text: 'III. Low Volume<br>Low Solution Rate' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.76, y: 8, text: 'IV. High Volume<br>Low Solution Rate' });
 
       const legendBoxX0 = xMax * 0.81;
       const legendBoxX1 = xMax * 1.03;
@@ -184,7 +184,7 @@ window.AppResearch = (function() {
           showgrid: true, gridcolor: 'white', zeroline: false, showline: false,
         },
         yaxis: {
-          title: { text: 'Resolution Rate (%)', font: { family: fontFamily, size: fontSize, color: '#000000' } },
+          title: { text: 'Solution Rate (%)', font: { family: fontFamily, size: fontSize, color: '#000000' } },
           range: [0, yCap],
           tickvals: [0, 10, 20, 30, 40, 50],
           tickfont: { family: fontFamily, size: fontSize, color: '#000000' },
@@ -708,7 +708,7 @@ window.AppResearch = (function() {
   // (20 or more member questions): x answer rate among replied, y share
   // never replied, bubble area member count, color question type. Dashed
   // lines mark the overall averages, so the upper-left region is the
-  // bottleneck: heavily ignored and poorly resolved.
+  // bottleneck: heavily ignored and poorly solved.
   function GapQuadrantChart({ data, meta }) {
     const divRef = useRef(null);
     useEffect(() => {
@@ -772,7 +772,7 @@ window.AppResearch = (function() {
             line: { color: '#94a3b8', width: 1, dash: 'dot' } },
         ],
         annotations: [
-          { xref: 'paper', yref: 'paper', x: 0.01, y: 0.99, text: 'Ignored and unresolved',
+          { xref: 'paper', yref: 'paper', x: 0.01, y: 0.99, text: 'Ignored and unsolved',
             showarrow: false, font: { size: 10, color: '#b91c1c' } },
           { xref: 'paper', yref: 'paper', x: 0.99, y: 0.01, text: 'Well covered',
             showarrow: false, font: { size: 10, color: '#047857' }, xanchor: 'right' },
@@ -1087,7 +1087,7 @@ window.AppResearch = (function() {
         </section>
 
         {/* Question taxonomy section: what gets asked, how the mix shifted,
-            and how questions get resolved. Data: taxonomy_figures.json. */}
+            and how questions get solved. Data: taxonomy_figures.json. */}
         <div className="space-y-4">
           <section>
             <h3 className="serif text-xl font-semibold text-slate-900 mb-2">The question taxonomy</h3>
@@ -1098,7 +1098,7 @@ window.AppResearch = (function() {
               into {kbMeta.questionFamilies || 263} recurring question families. Across the dataset, 60.2 percent of
               substantive questions never received any reply, and 71.2 percent of replied questions got a substantive
               answer. The three figures below summarize what practitioners ask, how the mix has shifted over the
-              years, and how (or whether) their questions get resolved.
+              years, and how (or whether) their questions get solved.
             </p>
             <ol className="list-decimal pl-5 mt-3 space-y-1 text-sm text-slate-600 max-w-3xl leading-relaxed">
               <li>Practice-justification questions (Q6) are the most ignored type: 67.4 percent never replied, and their answer rate when replied is second lowest at 61.2 percent.</li>
@@ -1121,7 +1121,7 @@ window.AppResearch = (function() {
         <FigureCard
           number={2}
           title="Knowledge gaps across question families"
-          caption="One bubble per question family with at least 20 member questions. Horizontal position is the share of replied questions that actually got answered; vertical position is the share of the family's questions that never received any reply; bubble area scales with the number of member questions, and color marks the question type. Dotted lines mark the overall averages: 71.2 percent of replied questions get a substantive answer, and 60.2 percent of substantive questions never receive any reply. Families in the upper-left region are the knowledge bottleneck: heavily ignored and, even when engaged, poorly resolved. Hover any bubble for the family's counts."
+          caption="One bubble per question family with at least 20 member questions. Horizontal position is the share of replied questions that actually got answered; vertical position is the share of the family's questions that never received any reply; bubble area scales with the number of member questions, and color marks the question type. Dotted lines mark the overall averages: 71.2 percent of replied questions get a substantive answer, and 60.2 percent of substantive questions never receive any reply. Families in the upper-left region are the knowledge bottleneck: heavily ignored and, even when engaged, poorly solved. Hover any bubble for the family's counts."
           dataSource="taxonomy_figures.json, built by src/web/build_web_taxonomy_figures.py from the GPT-5.6 Luna taxonomy database (v0) and consolidation (v1)"
         >
           <GapQuadrantChart data={taxFigs.quadrant} meta={taxFigs.meta} />
@@ -1129,8 +1129,8 @@ window.AppResearch = (function() {
 
         <FigureCard
           number={3}
-          title="How questions get resolved, from question type to answer mechanism"
-          caption="Flow from each substantive question type (left) to what its questions received (right): one of the ten answer mechanisms of the answer taxonomy, a reply without a classified type, or no reply at all. Flow width is the number of questions; where a question drew several answer mechanisms, the primary (first-listed) one is counted. Mechanisms are grouped here for readability into resolving (A1 to A5: prescription, explanation, experience, code citation, correction, in blue) and engaging without resolving (A6 to A10: counter-question, referral, meta-response, speculation, social, in gray); the split is a presentation grouping, and the codebook defines the ten mechanisms without ranking them. All 12,933 substantive questions are shown; the largest destination, Never replied, absorbs 7,784 of them."
+          title="How questions get solved, from question type to answer mechanism"
+          caption="Flow from each substantive question type (left) to what its questions received (right): one of the ten answer mechanisms of the answer taxonomy, a reply without a classified type, or no reply at all. Flow width is the number of questions; where a question drew several answer mechanisms, the primary (first-listed) one is counted. Mechanisms are grouped here for readability into solution mechanisms (A1 to A5: prescription, explanation, experience, code citation, correction, in blue) and engagement without solution (A6 to A10: counter-question, referral, meta-response, speculation, social, in gray); the split is a presentation grouping, and the codebook defines the ten mechanisms without ranking them. All 12,933 substantive questions are shown; the largest destination, Never replied, absorbs 7,784 of them."
           dataSource="taxonomy_figures.json, built by src/web/build_web_taxonomy_figures.py from the GPT-5.6 Luna taxonomy database (v0) and consolidation (v1)"
         >
           <QAFlowChart data={taxFigs.flow} />
@@ -1212,7 +1212,7 @@ window.AppResearch = (function() {
           <FigureCard
             number={4}
             title="Knowledge bottleneck across the 10-class schema"
-            caption="Each bubble is one of the ten subject categories. Horizontal position is the total number of questions asked in that category; vertical position is its overall resolution rate: the share of all its questions, including the majority that never received a reply, that ended with a substantive answer. Bubble area scales with the category's total comments, and color with the average view count of its videos. Dashed lines mark the mean resolution rate (26.5 percent) and the median question count, splitting the plot into four quadrants; quadrant IV (high volume, low resolution) is the knowledge bottleneck. Resolution rates here look low because the denominator is every question asked; Figure 2 separates the two stages, showing that most of the gap is questions that never get a reply at all, while replied questions are answered 71.2 percent of the time."
+            caption="Each bubble is one of the ten subject categories. Horizontal position is the total number of questions asked in that category; vertical position is its overall solution rate: the share of all its questions, including the majority that never received a reply, that ended with a substantive answer. Bubble area scales with the category's total comments, and color with the average view count of its videos. Dashed lines mark the mean solution rate (26.5 percent) and the median question count, splitting the plot into four quadrants; quadrant IV (high volume, low solution rate) is the knowledge bottleneck. Solution rates here look low because the denominator is every question asked; Figure 2 separates the two stages, showing that most of the gap is questions that never get a reply at all, while replied questions are answered 71.2 percent of the time."
             dataSource="data/knowledge_bottleneck.json"
           >
             <BottleneckChart bottleneck={state.bottleneck} comments={state.comments} />

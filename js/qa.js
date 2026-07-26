@@ -664,9 +664,9 @@ window.AppQA = (function() {
 
     const scrollTo = (ref) => ref.current && ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    // Open one question type in the dictionary browser and scroll to it.
-    const openType = (code) => {
-      setKind('question');
+    // Open one question or answer type in the dictionary browser and scroll to it.
+    const openType = (code, side) => {
+      setKind(side || 'question');
       setTypeCode(code);
       setDictSearch('');
       scrollTo(dictRef);

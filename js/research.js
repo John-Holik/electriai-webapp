@@ -1044,7 +1044,6 @@ window.AppResearch = (function() {
       { label: 'Comments collected',       value: 93317,               format: formatNumber,  hint: 'all comments and replies before filtering' },
       { label: 'Video URLs collected',     value: 4959,                format: formatNumber,  hint: 'across all search keywords, before deduplication' },
       { label: 'Videos analyzed',          value: stats.totalVideos,   format: formatNumber,  hint: `${formatNumber(stats.videosWithQa)} with Q&A comments` },
-      { label: 'Comment threads analyzed', value: stats.totalComments, format: formatNumber },
       { label: 'Unique themes',            value: stats.uniqueThemes,  format: formatNumber },
       { label: 'Total video views',        value: stats.totalViews,    format: formatCompact },
       { label: 'Substantive questions classified', value: 12933,       format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} recurring question families` },

@@ -707,7 +707,7 @@ window.AppQA = (function() {
             <SectionHeader
               eyebrow="Bottleneck localization"
               title="Which question types hit the bottleneck"
-              subtitle="Reply outcomes per question type. The types at the top are where the most asked-and-never-resolved knowledge sits."
+              subtitle="Reply outcomes per question type. The types at the top are where the most asked-and-never-solved knowledge sits."
             />
             <Card><BottleneckChart outcomes={outcomes} stats={s} /></Card>
           </div>

@@ -834,7 +834,7 @@ window.AppQA = (function() {
           <SectionHeader
             eyebrow="Browse the hierarchy"
             title="The question dictionary"
-            subtitle="Taxonomy type, then family, then pattern. Expand a family to see its patterns; expand a pattern to see real example comments, each linked back to YouTube."
+            subtitle="Taxonomy type, then family, then pattern. Expand a family to see its patterns; expand a pattern to see real example comments, each linked back to YouTube. On the answer side a type counts every reply of that form, while the families and patterns beneath it consolidate the replies that carried a solution."
           />
           <Card>
             <div className="flex flex-wrap items-center gap-2 mb-4">

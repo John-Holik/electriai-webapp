@@ -638,7 +638,7 @@ window.AppQA = (function() {
     const contrast = qa.contrast || {};
     const pageCount = Math.max(1, Math.ceil(filteredRecords.length / PAGE));
     const pageRows = filteredRecords.slice(page * PAGE, page * PAGE + PAGE);
-    const maxAnswerTypeCount = Math.max(1, ...qa.answerTypes.map((t) => t.count));
+    const maxAnswerTypeCount = Math.max(1, ...qa.answerTypes.map((t) => t.replies));
     const badgeColor = kind === 'question' ? qColor : aColor;
 
     const jump = [
@@ -842,7 +842,8 @@ window.AppQA = (function() {
               <span className="mx-1 text-slate-300">|</span>
               <Chip active={typeCode === null} onClick={() => setTypeCode(null)}>All types</Chip>
               {types.map((t) => (
-                <Chip key={t.code} active={typeCode === t.code} onClick={() => setTypeCode(t.code)} count={formatNumber(t.count)}>
+                <Chip key={t.code} active={typeCode === t.code} onClick={() => setTypeCode(t.code)}
+                      count={formatNumber(kind === 'question' ? t.count : t.replies)}>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full inline-block flex-shrink-0" style={{ backgroundColor: badgeColor(t.code) }} />
                     {t.code}

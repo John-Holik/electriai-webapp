@@ -50,7 +50,7 @@ window.AppResearch = (function() {
         hovertemplate: cats.map(c =>
           `<b>${c.category}</b><br>` +
           `Total Questions: ${c.totalQuestions}<br>` +
-          `Solution Rate: ${(c.resolutionRate * 100).toFixed(1)}%<br>` +
+          `Resolution Rate: ${(c.resolutionRate * 100).toFixed(1)}%<br>` +
           `Total Comments: ${c.totalComments.toLocaleString()}<br>` +
           `Average Views: ${Math.round(c.avgViews).toLocaleString()}<extra></extra>`
         ),
@@ -99,7 +99,7 @@ window.AppResearch = (function() {
       annotations.push({
         x: xMax * 1.05,
         y: meanResolution,
-        text: `Mean Solution Rate: ${meanResolution.toFixed(1)}%`,
+        text: `Mean Resolution: ${meanResolution.toFixed(1)}%`,
         showarrow: false,
         yshift: 12,
         xanchor: 'right',
@@ -123,10 +123,10 @@ window.AppResearch = (function() {
         borderwidth: 1,
         borderpad: 4,
       };
-      annotations.push({ ...quadrantBase, x: xMax * 0.73, y: 46, text: 'I. High Volume<br>High Solution Rate' });
-      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 46, text: 'II. Low Volume<br>High Solution Rate' });
-      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 8, text: 'III. Low Volume<br>Low Solution Rate' });
-      annotations.push({ ...quadrantBase, x: xMax * 0.76, y: 8, text: 'IV. High Volume<br>Low Solution Rate' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.73, y: 46, text: 'I. High Volume<br>High Resolution' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 46, text: 'II. Low Volume<br>High Resolution' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 8, text: 'III. Low Volume<br>Low Resolution' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.76, y: 8, text: 'IV. High Volume<br>Low Resolution' });
 
       const legendBoxX0 = xMax * 0.81;
       const legendBoxX1 = xMax * 1.03;
@@ -184,7 +184,7 @@ window.AppResearch = (function() {
           showgrid: true, gridcolor: 'white', zeroline: false, showline: false,
         },
         yaxis: {
-          title: { text: 'Solution Rate (%)', font: { family: fontFamily, size: fontSize, color: '#000000' } },
+          title: { text: 'Resolution Rate (%)', font: { family: fontFamily, size: fontSize, color: '#000000' } },
           range: [0, yCap],
           tickvals: [0, 10, 20, 30, 40, 50],
           tickfont: { family: fontFamily, size: fontSize, color: '#000000' },

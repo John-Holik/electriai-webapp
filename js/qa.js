@@ -54,18 +54,73 @@ window.AppQA = (function() {
            def: 'Escape category for questions with no technical substance: jokes, small talk, rhetorical jabs.' },
   };
 
+  // Answer forms carry the same slot templates the classifier used, quoted from
+  // the frozen codebook, so each card shows the shape of the reply it names.
   const A_META = {
-    A1:  { color: '#047857', def: 'A specific, actionable answer: do X, or yes if a condition holds.' },
-    A2:  { color: '#059669', def: 'Teaches the mechanism, definition, or rationale rather than instructing.' },
-    A3:  { color: '#10B981', def: 'Practice-based testimony from personal, regional, or trade experience.' },
-    A4:  { color: '#34D399', def: 'Invokes the NEC, local code, a listing, or a manufacturer requirement.' },
-    A5:  { color: '#6EE7B7', def: 'Corrects the asker’s premise, practice, or safety error.' },
-    A6:  { color: '#B45309', def: 'Requests missing details or clarification instead of answering.' },
-    A7:  { color: '#D97706', def: 'Points somewhere else that plausibly holds the solution.' },
-    A8:  { color: '#F59E0B', def: 'The creator addresses the video rather than the question.' },
-    A9:  { color: '#FBBF24', def: 'Attempts an answer while flagging uncertainty.' },
-    A10: { color: '#94A3B8', def: 'Humor, banter, agreement, or promotion with no answer content.' },
+    A1:  { color: '#047857', def: 'A specific, actionable answer: do X, or yes if a condition holds.',
+           templates: ['Use [method/material] for [application].', 'Yes, if [condition] holds; otherwise [alternative].'] },
+    A2:  { color: '#059669', def: 'Teaches the mechanism, definition, or rationale rather than instructing.',
+           templates: ['[Phenomenon] happens because [mechanism].', '[Term] means [concept] in [context].'] },
+    A3:  { color: '#10B981', def: 'Practice-based testimony from personal, regional, or trade experience.',
+           templates: ['In my [trade/region/years] experience, [practice] works because [observation].'] },
+    A4:  { color: '#34D399', def: 'Invokes the NEC, local code, a listing, or a manufacturer requirement.',
+           templates: ['[Code article/standard] requires [rule] for [application].', '[Authority] must approve [practice] in [jurisdiction].'] },
+    A5:  { color: '#6EE7B7', def: 'Corrects the asker’s premise, practice, or safety error.',
+           templates: ['[Stated premise] is wrong: [correction].', '[Practice] is unsafe because [hazard].'] },
+    A6:  { color: '#B45309', def: 'Requests missing details or clarification instead of answering.',
+           templates: ['What [detail] are you working with?', 'Can you share [missing information] first?'] },
+    A7:  { color: '#D97706', def: 'Points somewhere else that plausibly holds the solution.',
+           templates: ['See [video/resource] for [topic].', 'You can get [item] from [source].'] },
+    A8:  { color: '#F59E0B', def: 'The creator addresses the video rather than the question.',
+           templates: ['I will make a video on [subject].', '[Artifact] is available at [location].'] },
+    A9:  { color: '#FBBF24', def: 'Attempts an answer while flagging uncertainty.',
+           templates: ['Probably [answer], but I cannot be sure without [missing detail].'] },
+    A10: { color: '#94A3B8', def: 'Humor, banter, agreement, or promotion with no answer content.',
+           templates: ['[Joke or banter about the situation].', 'Thanks, glad it helped.'] },
   };
+
+  // The two column groups of the answer-form cards: the forms that state an
+  // answer, and the forms that engage the question some other way.
+  const A_GROUPS = [
+    { title: 'Direct answer forms', range: '(A1 to A5)', sub: 'the reply itself states the answer',
+      codes: ['A1', 'A2', 'A3', 'A4', 'A5'] },
+    { title: 'Indirect reply forms', range: '(A6 to A10)', sub: 'the reply points elsewhere, defers, hedges, or does not answer',
+      codes: ['A6', 'A7', 'A8', 'A9', 'A10'] },
+  ];
+
+  const Q_ORDER = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10'];
+
+  // Hatch pattern per question type; the five patterns repeat across the ten hues
+  // so neighboring segments stay distinguishable without relying on color alone.
+  const Q_HATCH = {
+    Q1: 'none', Q2: 'forward', Q3: 'dots', Q4: 'cross', Q5: 'back',
+    Q6: 'none', Q7: 'forward', Q8: 'dots', Q9: 'cross', Q10: 'back',
+  };
+
+  // Mix the hue toward white for segment fills; f is the share of hue kept.
+  const blendWhite = (hex, f) => {
+    const ch = (i) => Math.round(parseInt(hex.slice(i, i + 2), 16) * f + 255 * (1 - f));
+    return `rgb(${ch(1)}, ${ch(3)}, ${ch(5)})`;
+  };
+  // Darken the hue for percentage labels sitting above their own segment.
+  const darken = (hex, f) => {
+    const ch = (i) => Math.round(parseInt(hex.slice(i, i + 2), 16) * f);
+    return `rgb(${ch(1)}, ${ch(3)}, ${ch(5)})`;
+  };
+
+  // Muted fill plus the hatch overlay for one question type's bar segment.
+  function segStyle(code) {
+    const hue = qColor(code);
+    const base = { backgroundColor: blendWhite(hue, 0.55) };
+    const forward = `repeating-linear-gradient(45deg, ${hue} 0 1px, transparent 1px 4px)`;
+    const back = `repeating-linear-gradient(-45deg, ${hue} 0 1px, transparent 1px 4px)`;
+    const kind = Q_HATCH[code];
+    if (kind === 'forward') return { ...base, backgroundImage: forward };
+    if (kind === 'back') return { ...base, backgroundImage: back };
+    if (kind === 'cross') return { ...base, backgroundImage: `${forward}, ${back}` };
+    if (kind === 'dots') return { ...base, backgroundImage: `radial-gradient(${hue} 0.8px, transparent 0.9px)`, backgroundSize: '4px 4px' };
+    return base;
+  }
 
   // Reply-outcome tier colors, shared by the funnel, the per-type chart,
   // the type cards, and the legend.

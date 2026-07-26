@@ -919,25 +919,29 @@ window.AppQA = (function() {
             title="How the crowd answers"
             subtitle={`What the ${formatNumber(s.repliedTyped)} replies to substantive questions actually do, counted once per question under the form of its dominant reply. Every reply carries a form whether or not it solves the question, so the five direct answer forms (A1 to A5) and the five indirect reply forms (A6 to A10) are both shown at full size. ${formatNumber(s.answered)} of the ${formatNumber(s.replied)} replied questions were solved, and ${s.repliedUntyped} replies could not be assigned a form. Click a card to open that form in the dictionary.`}
           />
-          {/* two group headers, then the ten cards interleaved so each row pairs
-              a direct answer form with its indirect counterpart */}
-          <div className="grid md:grid-cols-2 gap-x-5 gap-y-3">
+          {/* Each group is a header plus its five cards. Column flow over six
+              fixed rows puts one group per column on wide screens, which pairs
+              each direct form with its indirect counterpart on a shared row,
+              and falls back to one group after the other on narrow screens. */}
+          <div className="grid gap-x-5 gap-y-3 md:grid-cols-2 md:grid-rows-6 md:grid-flow-col">
             {A_GROUPS.map((g) => (
-              <div key={g.title} className="text-center px-2 pb-1">
-                <div className="text-xs text-slate-800">
-                  <span className="font-semibold">{g.title} </span>
-                  <span className="text-slate-500">{g.range}:</span>
+              <React.Fragment key={g.title}>
+                <div className="text-center px-2 pb-1 self-end">
+                  <div className="text-xs text-slate-800">
+                    <span className="font-semibold">{g.title} </span>
+                    <span className="text-slate-500">{g.range}:</span>
+                  </div>
+                  <div className="text-[11px] italic text-slate-500 leading-snug">{g.sub}</div>
                 </div>
-                <div className="text-[11px] italic text-slate-500 leading-snug">{g.sub}</div>
-              </div>
+                {g.codes.map((code) => {
+                  const t = answerTypeByCode[code];
+                  return t ? (
+                    <AnswerFormCard key={code} t={t} total={s.repliedTyped} qTypeNames={qTypeNames}
+                                    onOpen={() => openType(code, 'answer')} />
+                  ) : null;
+                })}
+              </React.Fragment>
             ))}
-            {A_GROUPS[0].codes.flatMap((code, i) => [code, A_GROUPS[1].codes[i]]).map((code) => {
-              const t = answerTypeByCode[code];
-              return t ? (
-                <AnswerFormCard key={code} t={t} total={s.repliedTyped} qTypeNames={qTypeNames}
-                                onOpen={() => openType(code, 'answer')} />
-              ) : null;
-            })}
           </div>
           <Card><AnswerFormLegend qTypeNames={qTypeNames} /></Card>
         </div>

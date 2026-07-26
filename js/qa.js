@@ -843,7 +843,7 @@ window.AppQA = (function() {
 
     const jump = [
       ['The funnel', funnelRef], ['The taxonomy', taxRef], ['Bottlenecks by type', botRef],
-      ['Answer mechanisms', ansRef], ['Common patterns', patRef], ['The dictionary', dictRef],
+      ['Answer forms', ansRef], ['Common patterns', patRef], ['The dictionary', dictRef],
       ['Every question', recRef], ['Downloads', dlRef],
     ];
 

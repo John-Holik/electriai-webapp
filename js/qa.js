@@ -727,6 +727,7 @@ window.AppQA = (function() {
     const qTypeNames = qa.meta.questionTypeNames || {};
     const outcomes = qa.typeOutcomes || [];
     const outcomeByCode = Object.fromEntries(outcomes.map((o) => [o.code, o]));
+    const answerTypeByCode = Object.fromEntries(qa.answerTypes.map((t) => [t.code, t]));
     const types = kind === 'question' ? qa.questionTypes : qa.answerTypes;
     const activeTypes = typeCode ? types.filter((t) => t.code === typeCode) : types;
     const dictQuery = dictSearch.trim().toLowerCase();

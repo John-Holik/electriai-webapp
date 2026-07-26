@@ -743,7 +743,6 @@ window.AppQA = (function() {
     const contrast = qa.contrast || {};
     const pageCount = Math.max(1, Math.ceil(filteredRecords.length / PAGE));
     const pageRows = filteredRecords.slice(page * PAGE, page * PAGE + PAGE);
-    const maxAnswerTypeCount = Math.max(1, ...qa.answerTypes.map((t) => t.replies));
     const badgeColor = kind === 'question' ? qColor : aColor;
 
     const jump = [

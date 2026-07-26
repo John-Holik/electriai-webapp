@@ -1087,7 +1087,7 @@ window.AppResearch = (function() {
         </section>
 
         {/* Question taxonomy section: what gets asked, how the mix shifted,
-            and how questions get resolved. Data: taxonomy_figures.json. */}
+            and how questions get solved. Data: taxonomy_figures.json. */}
         <div className="space-y-4">
           <section>
             <h3 className="serif text-xl font-semibold text-slate-900 mb-2">The question taxonomy</h3>

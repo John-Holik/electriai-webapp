@@ -602,6 +602,88 @@ window.AppQA = (function() {
     );
   }
 
+  // Every reply of one answer form, paged and searchable. The consolidated
+  // families above a form cover only the replies that carried a solution, so
+  // this is where the rest of that form's records live: each one shows either
+  // the answer that solved it or a summary of what its replies did instead.
+  function FormRecords({ code, rows }) {
+    const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState('');
+    const [page, setPage] = useState(0);
+    const PAGE = 25;
+
+    const filtered = useMemo(() => {
+      const q = query.trim().toLowerCase();
+      if (!q) return rows;
+      return rows.filter((r) => r.questionExcerpt.toLowerCase().includes(q)
+        || String(r.canonical || '').toLowerCase().includes(q)
+        || String(r.answerExcerpt || '').toLowerCase().includes(q)
+        || String(r.replySummary || '').toLowerCase().includes(q));
+    }, [rows, query]);
+
+    const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE));
+    const shown = filtered.slice(page * PAGE, page * PAGE + PAGE);
+
+    return (
+      <div className="border border-slate-200 rounded-lg overflow-hidden bg-slate-50/50">
+        <button onClick={() => setOpen(!open)} className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-slate-100/70">
+          <span className="text-slate-400 text-xs flex-shrink-0">{open ? '▾' : '▸'}</span>
+          <span className="flex-1 min-w-0">
+            <span className="text-sm font-medium text-slate-900">Every question answered by {code}</span>
+            <span className="block text-[11px] text-slate-500 mt-0.5">
+              All {formatNumber(rows.length)} records of this form, including the replies that carried no solution
+            </span>
+          </span>
+          <span className="text-[11px] text-slate-500 tabular-nums flex-shrink-0">{formatNumber(rows.length)} records</span>
+        </button>
+        {open && (
+          <div className="px-4 pb-3 pt-2 border-t border-slate-200 space-y-3 bg-white">
+            <input
+              value={query}
+              onChange={(e) => { setQuery(e.target.value); setPage(0); }}
+              placeholder="Search these questions and replies…"
+              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:border-slate-400"
+            />
+            <p className="text-[11px] text-slate-500">{formatNumber(filtered.length)} records match</p>
+            <div className="divide-y divide-slate-100">
+              {shown.map((r) => (
+                <div key={r.commentId} className="py-3 space-y-1.5">
+                  <div className="flex items-start gap-2">
+                    <p className="text-xs text-slate-800 leading-snug flex-1">{r.questionExcerpt}</p>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <CategoryBadge code={r.primaryType} color={qColor(r.primaryType)} />
+                      <OutcomeBadge answered={r.answered} replyCount={r.replyCount} />
+                    </div>
+                  </div>
+                  {r.canonical && <p className="text-[11px] text-slate-500 leading-snug italic">{r.canonical}</p>}
+                  {r.answerExcerpt
+                    ? <p className="text-[11px] text-emerald-800 leading-snug"><span className="font-medium">Answer: </span>{r.answerExcerpt}</p>
+                    : r.replySummary
+                      ? <p className="text-[11px] text-slate-500 leading-snug"><span className="font-medium">What the replies did: </span>{r.replySummary}</p>
+                      : null}
+                  <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-400">
+                    <span>{r.replyCount} {Number(r.replyCount) === 1 ? 'reply' : 'replies'}</span>
+                    {r.answerTypes && <AnswerTypeChips codes={r.answerTypes} />}
+                    <a className="text-slate-500 hover:text-slate-900 underline" target="_blank" rel="noopener"
+                       href={youtubeLink(r.videoId, r.commentId)}>View on YouTube</a>
+                  </div>
+                </div>
+              ))}
+              {!shown.length && <p className="text-xs text-slate-500 py-3">No records match that search.</p>}
+            </div>
+            <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
+              <button disabled={page === 0} onClick={() => setPage(page - 1)}
+                      className="px-3 py-1.5 border border-slate-200 rounded-md disabled:opacity-40 hover:bg-slate-50">Previous</button>
+              <span className="tabular-nums">Page {page + 1} of {formatNumber(pageCount)}</span>
+              <button disabled={page + 1 >= pageCount} onClick={() => setPage(page + 1)}
+                      className="px-3 py-1.5 border border-slate-200 rounded-md disabled:opacity-40 hover:bg-slate-50">Next</button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   // Family accordion: label, answer-rate bar, stats line, member patterns.
   function FamilyBlock({ family, isQuestion, accentColor }) {
     const [open, setOpen] = useState(false);

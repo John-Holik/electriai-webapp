@@ -50,7 +50,7 @@ window.AppResearch = (function() {
         hovertemplate: cats.map(c =>
           `<b>${c.category}</b><br>` +
           `Total Questions: ${c.totalQuestions}<br>` +
-          `Resolution Rate: ${(c.resolutionRate * 100).toFixed(1)}%<br>` +
+          `Solution Rate: ${(c.resolutionRate * 100).toFixed(1)}%<br>` +
           `Total Comments: ${c.totalComments.toLocaleString()}<br>` +
           `Average Views: ${Math.round(c.avgViews).toLocaleString()}<extra></extra>`
         ),

@@ -446,45 +446,93 @@ window.AppQA = (function() {
     );
   }
 
-  /* ── Answer mechanism distribution (A1 to A5 vs A6 to A10) ───────────── */
+  /* ── Answer form cards (A1 to A5 vs A6 to A10) ───────────────────────── */
 
-  // One row per answer form: reply count and share, a bar sized against the
-  // largest form, the codebook definition, and a meter for the share of those
-  // replies that carried a solution.
-  function AnswerTypeRows({ codes, answerTypes, max, total }) {
-    const byCode = Object.fromEntries(answerTypes.map((t) => [t.code, t]));
+  // One card per answer form: code badge, name, definition, reply count and
+  // share, the slot templates that form takes, a bar showing which question
+  // types it responds to, and a meter for its resolution rate.
+  function AnswerFormCard({ t, total, qTypeNames, onOpen }) {
+    const meta = A_META[t.code] || {};
+    const share = total ? ((100 * t.replies) / total).toFixed(1) : '0.0';
+    const resolution = t.replies ? Math.round((100 * t.solved) / t.replies) : 0;
+    const mix = Q_ORDER.map((q) => [q, (t.mix || {})[q] || 0]).filter(([, n]) => n > 0);
     return (
-      <div className="space-y-3.5">
-        {codes.map((code) => {
-          const t = byCode[code];
-          if (!t) return null;
-          const meta = A_META[code] || {};
-          const pct = Math.max(1, Math.round((100 * t.replies) / max));
-          const share = ((100 * t.replies) / total).toFixed(1);
-          const solvedPct = t.replies ? Math.round((100 * t.solved) / t.replies) : 0;
-          const label = t.name;
-          return (
-            <div key={code} className="space-y-1">
-              <div className="flex items-baseline gap-2">
-                <CategoryBadge code={code} color={meta.color} />
-                <span className="text-xs font-medium text-slate-800">{label}</span>
-                <span className="ml-auto text-[11px] text-slate-500 tabular-nums flex-shrink-0">
-                  {formatNumber(t.replies)} · {share}%
-                </span>
-              </div>
-              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: pct + '%', backgroundColor: meta.color }} />
-              </div>
-              <p className="text-[11px] text-slate-500 leading-snug">{meta.def}</p>
-              <div className="flex items-center gap-2" title={`${formatNumber(t.solved)} of ${formatNumber(t.replies)} replies of this form carried a solution`}>
-                <span className="h-1 w-16 bg-slate-100 rounded-full overflow-hidden flex-shrink-0">
-                  <span className="block h-full rounded-full bg-slate-500" style={{ width: solvedPct + '%' }} />
-                </span>
-                <span className="text-[10px] text-slate-400 tabular-nums">{solvedPct}% carried a solution</span>
-              </div>
+      <button
+        onClick={onOpen}
+        className="text-left w-full bg-white border border-slate-300 rounded-lg p-4 flex flex-col gap-3 transition duration-200 hover:border-slate-400 hover:shadow-md cursor-pointer"
+        title={`Open ${t.code} in the dictionary browser`}
+      >
+        {/* header: badge, name, definition, and the reply count this form carries */}
+        <p className="text-xs leading-relaxed text-slate-700">
+          <span className="align-middle mr-1.5"><CategoryBadge code={t.code} color="#64748B" /></span>
+          <span className="font-semibold text-slate-900">{t.name}: </span>
+          <span className="italic">{meta.def} </span>
+          <span className="text-slate-500 not-italic">({formatNumber(t.replies)} replies, {share}%)</span>
+        </p>
+
+        {/* the slot templates a reply of this form fills */}
+        <div className="bg-slate-50 rounded-md px-2.5 py-2 space-y-1">
+          {(meta.templates || []).map((tpl, i) => (
+            <div key={i} className="flex gap-1.5">
+              <span className="text-slate-400 flex-shrink-0 text-[11px] leading-relaxed">•</span>
+              <TemplateText text={tpl} color="#64748B" />
             </div>
-          );
-        })}
+          ))}
+        </div>
+
+        <div className="mt-auto space-y-1.5">
+          {/* question types this form responds to, percentage above each wide segment */}
+          <div className="flex h-3 items-end gap-px" aria-hidden="true">
+            {mix.map(([q, n]) => {
+              const pct = Math.round((100 * n) / t.replies);
+              return (
+                <span key={q} className="flex items-end justify-center overflow-hidden"
+                      style={{ width: (100 * n) / t.replies + '%' }}>
+                  {pct >= 5 && (
+                    <span className="text-[9px] tabular-nums leading-none whitespace-nowrap"
+                          style={{ color: darken(qColor(q), 0.62) }}>{pct}%</span>
+                  )}
+                </span>
+              );
+            })}
+          </div>
+          <div className="flex h-2.5 overflow-hidden rounded-sm">
+            {mix.map(([q, n]) => (
+              <span key={q} style={{ width: (100 * n) / t.replies + '%', ...segStyle(q) }}
+                    title={`${q} ${qTypeNames[q] || ''}: ${formatNumber(n)} questions (${Math.round((100 * n) / t.replies)}%)`} />
+            ))}
+          </div>
+
+          {/* resolution rate: the share of this form's questions that ended solved */}
+          <div className="flex items-center gap-2 pt-1"
+               title={`${formatNumber(t.solved)} of ${formatNumber(t.replies)} questions answered by this form ended with a solution`}>
+            <span className="h-1.5 w-24 bg-slate-200 overflow-hidden flex-shrink-0 rounded-sm">
+              <span className="block h-full bg-slate-600" style={{ width: resolution + '%' }} />
+            </span>
+            <span className="text-[11px] text-slate-600 tabular-nums">{resolution}% resolution rate</span>
+          </div>
+        </div>
+      </button>
+    );
+  }
+
+  // Q1 to Q10 swatch legend shared by all ten cards, plus the reading notes.
+  function AnswerFormLegend({ qTypeNames }) {
+    return (
+      <div className="space-y-3 pt-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-1.5">
+          {Q_ORDER.map((q) => (
+            <span key={q} className="inline-flex items-center gap-1.5 text-[11px] text-slate-600 leading-snug">
+              <span className="w-3.5 h-3 flex-shrink-0 rounded-sm border"
+                    style={{ ...segStyle(q), borderColor: qColor(q) }} />
+              <span>{q} {qTypeNames[q]}</span>
+            </span>
+          ))}
+        </div>
+        <div className="text-[11px] text-slate-400 leading-relaxed space-y-0.5">
+          <p>Bar segments show the question types each reply form responds to. The meter gives the resolution rate of those questions.</p>
+          <p>Each question is counted once, under the form of its dominant reply.</p>
+        </div>
       </div>
     );
   }

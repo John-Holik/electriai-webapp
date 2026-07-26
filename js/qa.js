@@ -717,16 +717,16 @@ window.AppQA = (function() {
           <SectionHeader
             eyebrow="The reply side"
             title="How the crowd answers"
-            subtitle={`How the ${formatNumber(s.consolidatedAnswers)} answered questions got their answers: the primary mechanism of the best answering reply. The taxonomy also defines five engagement forms (A6 to A10) that respond to a question without resolving it; their rarity here shows that when a question does get answered, the answer is almost always substantive. Each answered question is counted once, by its primary (first-listed) answer type; the totals sum to the ${formatNumber(s.consolidatedAnswers)} answered questions.`}
+            subtitle={`What the ${formatNumber(s.repliedTyped)} replies to substantive questions actually do: the primary mechanism of the best answering reply, counted once per question by its primary (first-listed) answer type. Every reply carries a mechanism whether or not it solves the question, so the five solution mechanisms (A1 to A5) and the five engagement forms (A6 to A10) are both shown at full size; the meter under each row gives the share of that form's replies that carried a solution. ${formatNumber(s.answered)} of the ${formatNumber(s.replied)} replied questions were solved, and ${s.repliedUntyped} replies could not be assigned a mechanism.`}
           />
           <div className="grid md:grid-cols-2 gap-4">
-            <Card title="Resolution mechanisms" subtitle="Answer types A1 to A5: replies that substantively answer the question">
+            <Card title="Solution mechanisms" subtitle="Answer types A1 to A5: reply forms that substantively answer the question">
               <AnswerTypeRows codes={['A1', 'A2', 'A3', 'A4', 'A5']} answerTypes={qa.answerTypes}
-                              max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
+                              max={maxAnswerTypeCount} total={s.repliedTyped} />
             </Card>
-            <Card title="Engagement without resolution" subtitle="Answer types A6 to A10: reply forms that engage a question without resolving it">
+            <Card title="Engagement without solution" subtitle="Answer types A6 to A10: reply forms that engage a question without solving it">
               <AnswerTypeRows codes={['A6', 'A7', 'A8', 'A9', 'A10']} answerTypes={qa.answerTypes}
-                              max={maxAnswerTypeCount} total={s.consolidatedAnswers} />
+                              max={maxAnswerTypeCount} total={s.repliedTyped} />
             </Card>
           </div>
         </div>

@@ -50,7 +50,7 @@ window.AppResearch = (function() {
         hovertemplate: cats.map(c =>
           `<b>${c.category}</b><br>` +
           `Total Questions: ${c.totalQuestions}<br>` +
-          `Solution Rate: ${(c.resolutionRate * 100).toFixed(1)}%<br>` +
+          `Resolution Rate: ${(c.resolutionRate * 100).toFixed(1)}%<br>` +
           `Total Comments: ${c.totalComments.toLocaleString()}<br>` +
           `Average Views: ${Math.round(c.avgViews).toLocaleString()}<extra></extra>`
         ),
@@ -99,7 +99,7 @@ window.AppResearch = (function() {
       annotations.push({
         x: xMax * 1.05,
         y: meanResolution,
-        text: `Mean Solution Rate: ${meanResolution.toFixed(1)}%`,
+        text: `Mean Resolution: ${meanResolution.toFixed(1)}%`,
         showarrow: false,
         yshift: 12,
         xanchor: 'right',
@@ -123,10 +123,10 @@ window.AppResearch = (function() {
         borderwidth: 1,
         borderpad: 4,
       };
-      annotations.push({ ...quadrantBase, x: xMax * 0.73, y: 46, text: 'I. High Volume<br>High Solution Rate' });
-      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 46, text: 'II. Low Volume<br>High Solution Rate' });
-      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 8, text: 'III. Low Volume<br>Low Solution Rate' });
-      annotations.push({ ...quadrantBase, x: xMax * 0.76, y: 8, text: 'IV. High Volume<br>Low Solution Rate' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.73, y: 46, text: 'I. High Volume<br>High Resolution' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 46, text: 'II. Low Volume<br>High Resolution' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.16, y: 8, text: 'III. Low Volume<br>Low Resolution' });
+      annotations.push({ ...quadrantBase, x: xMax * 0.76, y: 8, text: 'IV. High Volume<br>Low Resolution' });
 
       const legendBoxX0 = xMax * 0.81;
       const legendBoxX1 = xMax * 1.03;
@@ -184,7 +184,7 @@ window.AppResearch = (function() {
           showgrid: true, gridcolor: 'white', zeroline: false, showline: false,
         },
         yaxis: {
-          title: { text: 'Solution Rate (%)', font: { family: fontFamily, size: fontSize, color: '#000000' } },
+          title: { text: 'Resolution Rate (%)', font: { family: fontFamily, size: fontSize, color: '#000000' } },
           range: [0, yCap],
           tickvals: [0, 10, 20, 30, 40, 50],
           tickfont: { family: fontFamily, size: fontSize, color: '#000000' },
@@ -1044,7 +1044,6 @@ window.AppResearch = (function() {
       { label: 'Comments collected',       value: 93317,               format: formatNumber,  hint: 'all comments and replies before filtering' },
       { label: 'Video URLs collected',     value: 4959,                format: formatNumber,  hint: 'across all search keywords, before deduplication' },
       { label: 'Videos analyzed',          value: stats.totalVideos,   format: formatNumber,  hint: `${formatNumber(stats.videosWithQa)} with Q&A comments` },
-      { label: 'Comment threads analyzed', value: stats.totalComments, format: formatNumber },
       { label: 'Unique themes',            value: stats.uniqueThemes,  format: formatNumber },
       { label: 'Total video views',        value: stats.totalViews,    format: formatCompact },
       { label: 'Substantive questions classified', value: 12933,       format: formatNumber,  hint: `${formatNumber(kbMeta.questionFamilies)} recurring question families` },
@@ -1212,7 +1211,7 @@ window.AppResearch = (function() {
           <FigureCard
             number={4}
             title="Knowledge bottleneck across the 10-class schema"
-            caption="Each bubble is one of the ten subject categories. Horizontal position is the total number of questions asked in that category; vertical position is its overall solution rate: the share of all its questions, including the majority that never received a reply, that ended with a substantive answer. Bubble area scales with the category's total comments, and color with the average view count of its videos. Dashed lines mark the mean solution rate (26.5 percent) and the median question count, splitting the plot into four quadrants; quadrant IV (high volume, low solution rate) is the knowledge bottleneck. Solution rates here look low because the denominator is every question asked; Figure 2 separates the two stages, showing that most of the gap is questions that never get a reply at all, while replied questions are answered 71.2 percent of the time."
+            caption="Each bubble is one of the ten subject categories. Horizontal position is the total number of questions asked in that category; vertical position is its overall resolution rate: the share of all its questions, including the majority that never received a reply, that ended with a substantive answer. Bubble area scales with the category's total comments, and color with the average view count of its videos. Dashed lines mark the mean resolution rate (26.5 percent) and the median question count, splitting the plot into four quadrants; quadrant IV (high volume, low resolution) is the knowledge bottleneck. Resolution rates here look low because the denominator is every question asked; Figure 2 separates the two stages, showing that most of the gap is questions that never get a reply at all, while replied questions are answered 71.2 percent of the time."
             dataSource="data/knowledge_bottleneck.json"
           >
             <BottleneckChart bottleneck={state.bottleneck} comments={state.comments} />

@@ -877,7 +877,9 @@ window.AppQA = (function() {
                       <CategoryBadge code={t.code} color={badgeColor(t.code)} />
                       <h4 className="text-xs font-semibold text-slate-700">{t.name || qTypeNames[t.code]}</h4>
                       <span className="text-[11px] text-slate-400 tabular-nums">
-                        {formatNumber(t.count)} {kind === 'question' ? 'questions' : 'answers'} · {formatNumber(t.patternCount)} patterns
+                        {kind === 'question'
+                          ? `${formatNumber(t.count)} questions · ${formatNumber(t.patternCount)} patterns`
+                          : `${formatNumber(t.replies)} replies · ${formatNumber(t.solved)} carried a solution, consolidated into ${formatNumber(t.patternCount)} patterns`}
                       </span>
                     </div>
                     <div className="space-y-2">

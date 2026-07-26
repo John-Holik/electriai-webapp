@@ -772,7 +772,7 @@ window.AppResearch = (function() {
             line: { color: '#94a3b8', width: 1, dash: 'dot' } },
         ],
         annotations: [
-          { xref: 'paper', yref: 'paper', x: 0.01, y: 0.99, text: 'Ignored and unresolved',
+          { xref: 'paper', yref: 'paper', x: 0.01, y: 0.99, text: 'Ignored and unsolved',
             showarrow: false, font: { size: 10, color: '#b91c1c' } },
           { xref: 'paper', yref: 'paper', x: 0.99, y: 0.01, text: 'Well covered',
             showarrow: false, font: { size: 10, color: '#047857' }, xanchor: 'right' },

@@ -61,7 +61,7 @@ window.AppQA = (function() {
     A4:  { color: '#34D399', def: 'Invokes the NEC, local code, a listing, or a manufacturer requirement.' },
     A5:  { color: '#6EE7B7', def: 'Corrects the asker’s premise, practice, or safety error.' },
     A6:  { color: '#B45309', def: 'Requests missing details or clarification instead of answering.' },
-    A7:  { color: '#D97706', def: 'Points somewhere else that plausibly resolves the question.' },
+    A7:  { color: '#D97706', def: 'Points somewhere else that plausibly holds the solution.' },
     A8:  { color: '#F59E0B', def: 'The creator addresses the video rather than the question.' },
     A9:  { color: '#FBBF24', def: 'Attempts an answer while flagging uncertainty.' },
     A10: { color: '#94A3B8', def: 'Humor, banter, agreement, or promotion with no answer content.' },
